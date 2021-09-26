@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode.Localization;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.Utility.RobotHardware;
+import org.firstinspires.ftc.teamcode.Hardware.RobotHardware;
 
 public class Odometer3W extends Odometer{
 
@@ -14,10 +13,10 @@ public class Odometer3W extends Odometer{
     /===================\
     |                   |
     |  A------X------B  |   A represents the left vertical dead-wheel
-    |     ^         |   |   B represents the right vertical dead-wheel, and has to be in line with A
-    |     H         |   |
-    |           V-> |   |   C represents the horizontal dead-wheel, and can be placed anywhere
-    |               C   |
+    |     ^          |  |   B represents the right vertical dead-wheel, and has to be in line with A
+    |     H          |  |
+    |            V-> |  |   C represents the horizontal dead-wheel, and can be placed anywhere
+    |                C  |
     |                   |
     \===================/
     The above diagram is a top-down view of the bottom of the robot, meaning that when you are
@@ -31,22 +30,16 @@ public class Odometer3W extends Odometer{
     private double horizontalOffset = 35.5/2;
     private double verticalOffset = -7.5;
 
-    // These variables allow you to set the direction of the encoders regardless of any reversing going on elsewhere
+    // These variables allow you to set the direction of the encoders globally for all robot hardware
+    // Not recommended, it's better to change directions in the hardware class
     private double rightVerticalDirection = 1;
     private double leftVerticalDirection = 1;
-    private double horizontalDirection = -1;
+    private double horizontalDirection = 1;
 
-    // Encoder Objects
-    private DcMotor leftVerticalEncoder, rightVerticalEncoder, horizontalEncoder;
     // Encoder Variables
     public double leftVertical, rightVertical, horizontal;
     private double lastLeftVertical, lastRightVertical, lastHorizontal;
-    private double leftVerticalChange, rightVerticalChange, horizontalChange;
     private double ticksToDistance;
-    // Math Variables
-    private double headingChange;
-    private double centerArc,turnRadius;
-    private double horizontalAdjust, horizontalExtra;
     private double[] positionChangeVertical = {0, 0}; //Position change vector from vertical encoders
     private double[] positionChangeHorizontal = {0, 0}; //Position change vector from horizontal encoder
     private double[] totalRelativeMovement = {0, 0};
@@ -55,9 +48,6 @@ public class Odometer3W extends Odometer{
     public Odometer3W(LinearOpMode opMode, RobotHardware robothardware){
         this.opMode = opMode;
         this.hardware = robothardware;
-        this.leftVerticalEncoder = hardware.getMotor("leftVerticalEncoder");
-        this.rightVerticalEncoder = hardware.getMotor("rightVerticalEncoder");
-        this.horizontalEncoder = hardware.getMotor("horizontalEncoder");
 
     }
 
@@ -75,21 +65,23 @@ public class Odometer3W extends Odometer{
     public void update(){
         if(opMode.opModeIsActive()) {
 
-            leftVertical = leftVerticalEncoder.getCurrentPosition() * ticksToDistance * leftVerticalDirection;
-            rightVertical = rightVerticalEncoder.getCurrentPosition() * ticksToDistance * rightVerticalDirection;
-            horizontal = horizontalEncoder.getCurrentPosition() * ticksToDistance * horizontalDirection;
+            leftVertical = hardware.getEncoderValue("leftVerticalEncoder") * ticksToDistance * leftVerticalDirection;
+            rightVertical = hardware.getEncoderValue("rightVerticalEncoder") * ticksToDistance * rightVerticalDirection;
+            horizontal = hardware.getEncoderValue("horizontalEncoder") * ticksToDistance * horizontalDirection;
 
-            leftVerticalChange = leftVertical - lastLeftVertical;
-            rightVerticalChange = rightVertical - lastRightVertical;
-            horizontalChange = horizontal - lastHorizontal;
+            double leftVerticalChange = leftVertical - lastLeftVertical;
+            double rightVerticalChange = rightVertical - lastRightVertical;
+            double horizontalChange = horizontal - lastHorizontal;
 
-            headingChange = (rightVerticalChange - leftVerticalChange)/2/horizontalOffset;
+            // Math Variables
+            double headingChange = (rightVerticalChange - leftVerticalChange) / 2 / horizontalOffset;
 
             headingRadians += headingChange;
 
             // Calculating the position-change-vector from two vertical encoders
-            centerArc = (leftVerticalChange + rightVerticalChange) / 2;
+            double centerArc = (leftVerticalChange + rightVerticalChange) / 2;
 
+            double turnRadius;
             if(headingChange == 0) { // Robot has gone straight/not moved
 
                 positionChangeVertical[0] = 0;
@@ -97,14 +89,14 @@ public class Odometer3W extends Odometer{
 
             }else if(Math.abs(rightVerticalChange) < Math.abs(leftVerticalChange)){ //Left encoder is on inside of the turn
 
-                turnRadius = centerArc/headingChange; //Always positive
+                turnRadius = centerArc / headingChange; //Always positive
 
                 positionChangeVertical[0] = turnRadius - Math.cos(headingChange) * turnRadius;
                 positionChangeVertical[1] = Math.sin(headingChange) * turnRadius;
 
             }else{ //Right encoder is on inside of the turn
 
-                turnRadius = centerArc/-headingChange; //Always positive
+                turnRadius = centerArc /-headingChange; //Always positive
 
                 positionChangeVertical[0] = turnRadius - Math.cos(-headingChange) * turnRadius;
                 positionChangeVertical[1] = Math.sin(-headingChange) * turnRadius;
@@ -112,8 +104,8 @@ public class Odometer3W extends Odometer{
             }
 
             //Calculating the position-change-vector from horizontal encoder
-            horizontalAdjust = verticalOffset * headingChange;
-            horizontalExtra = horizontalChange - horizontalAdjust;
+            double horizontalAdjust = verticalOffset * headingChange;
+            double horizontalExtra = horizontalChange - horizontalAdjust;
 
             positionChangeHorizontal[0] = Math.cos(headingChange) * horizontalExtra;
             positionChangeHorizontal[1] = Math.sin(headingChange) * horizontalExtra;
