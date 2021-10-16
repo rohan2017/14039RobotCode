@@ -29,18 +29,6 @@ public class TankDrive extends Drivebase {
         }
     }
 
-    public void setRelativeVelocity(double velX, double velY, double velHeading){
-        if(velX == 404) {
-            leftPower = velY - velHeading;
-            rightPower = velY + velHeading;
-        }else if(velHeading == 404) {
-
-        }else if(velY == 404) {
-
-        }
-
-    }
-
     @Override
     public void freeze(){
 
