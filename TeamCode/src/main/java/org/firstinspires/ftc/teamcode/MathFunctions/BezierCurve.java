@@ -2,10 +2,10 @@ package org.firstinspires.ftc.teamcode.MathFunctions;
 
 public class BezierCurve { // A Cubic Bezier
 
-    private PointEx point0start;
-    private PointEx point1corner;
-    private PointEx point2corner;
-    private PointEx point3end;
+    public PointEx point0start;
+    public PointEx point1corner;
+    public PointEx point2corner;
+    public PointEx point3end;
 
     public BezierCurve(PointEx p0t, PointEx p1c, PointEx p2c, PointEx p3t) {
         this.point0start = p0t;

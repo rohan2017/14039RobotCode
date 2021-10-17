@@ -23,10 +23,10 @@ public class BasicRobotHardware extends RobotHardware {
     public void hardwareMap(HardwareMap hardwareMap) {
 
         //Drive-train
-        rightFront = hardwareMap.get(DcMotorEx.class, "driveFrontRight");
-        leftFront = hardwareMap.get(DcMotorEx.class, "driveFrontLeft");
-        leftBack = hardwareMap.get(DcMotorEx.class, "driveBackLeft");
-        rightBack = hardwareMap.get(DcMotorEx.class, "driveBackRight");
+        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
+        leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
+        rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
 
         //IMU
         imu = hardwareMap.get(BNO055IMU.class, "imu");
