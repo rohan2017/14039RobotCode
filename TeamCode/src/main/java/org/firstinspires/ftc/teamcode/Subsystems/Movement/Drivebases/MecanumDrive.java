@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.Hardware.RobotHardware;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-public class MecanumDrive extends HolonomicDrivebase {
+public class MecanumDrive extends DrivebaseHolonomic {
 
     private double lf, rf, lb, rb; //motor/wheel target forces
 
@@ -20,8 +20,6 @@ public class MecanumDrive extends HolonomicDrivebase {
     final double kineticCoeffFriction = 0.4;
     final double forceToPowerConstant = shaftTorqueToPower * gearRatio/(wheelRadius*robotMass/4*9.81);
     final double headingAccConstant = wheelbaseRadius * Math.PI / 180; // Assuming units of deg/s
-    private String zeroPowerBehavior;
-    private String runMode;
 
     public MecanumDrive(LinearOpMode opMode, RobotHardware hardware) {
         super(opMode, hardware);
@@ -33,11 +31,47 @@ public class MecanumDrive extends HolonomicDrivebase {
         rf = 0;
         lb = 0;
         rb = 0;
+        resetDriveEncoders();
+        reverseMotors();
+        setPowerBehavior("brake");
+        setRunMode("withEncoder");
     }
 
     @Override
     public void update() {
         if(opMode.opModeIsActive()) {
+
+            // Ensure that no motor power is outside -1 to 1 range, preserving ratio
+            double scaleDown = 1;
+            if(Math.abs(lf) > 1) {
+                scaleDown = 1/Math.abs(lf);
+                lf *= scaleDown;
+                rf *= scaleDown;
+                lb *= scaleDown;
+                rb *= scaleDown;
+            }
+            if(Math.abs(rf) > 1) {
+                scaleDown = 1/Math.abs(rf);
+                lf *= scaleDown;
+                rf *= scaleDown;
+                lb *= scaleDown;
+                rb *= scaleDown;
+            }
+            if(Math.abs(lb) > 1) {
+                scaleDown = 1/Math.abs(lb);
+                lf *= scaleDown;
+                rf *= scaleDown;
+                lb *= scaleDown;
+                rb *= scaleDown;
+            }
+            if(Math.abs(rb) > 1) {
+                scaleDown = 1/Math.abs(rb);
+                lf *= scaleDown;
+                rf *= scaleDown;
+                lb *= scaleDown;
+                rb *= scaleDown;
+            }
+
             hardware.getMotor("driveFrontRight").setPower(rf);
             hardware.getMotor("driveFrontLeft").setPower(lf);
             hardware.getMotor("driveBackLeft").setPower(lb);
@@ -45,7 +79,7 @@ public class MecanumDrive extends HolonomicDrivebase {
         }
     }
 
-    public void setRelativeAcceleration(double accX, double accY, double accHeading) {
+    public void setRelativeForce(double forceX, double forceY, double forceHeading) {
         /* Wheel movement to move horizontally
           A          |
           |          V
@@ -55,13 +89,10 @@ public class MecanumDrive extends HolonomicDrivebase {
         */
         //https://discord.com/channels/445308068721590273/456178951849771028/891435261014192128
 
-        double forceX = accX*robotMass;
-        double forceY = accY*robotMass;
-
-        lf = forceToPower(2*(forceY*0.9 + forceX*1.1) - (accHeading * rotationalInertia*headingAccConstant * 1.41), "lf");
-        rf = forceToPower(2*(forceY*0.9 - forceX*1.1) + (accHeading * rotationalInertia*headingAccConstant * 1.41), "rf");
-        lb = forceToPower(2*(forceY*0.9 - forceX*1.1) - (accHeading * rotationalInertia*headingAccConstant * 1.41), "lb");
-        rb = forceToPower(2*(forceY*0.9 + forceX*1.1) + (accHeading * rotationalInertia*headingAccConstant * 1.41), "rb");
+        lf = forceToPower(2*(forceY*0.9 + forceX*1.1) - (forceHeading *headingAccConstant*1.41), "lf");
+        rf = forceToPower(2*(forceY*0.9 - forceX*1.1) + (forceHeading *headingAccConstant*1.41), "rf");
+        lb = forceToPower(2*(forceY*0.9 - forceX*1.1) - (forceHeading *headingAccConstant*1.41), "lb");
+        rb = forceToPower(2*(forceY*0.9 + forceX*1.1) + (forceHeading *headingAccConstant*1.41), "rb");
 
     }
 
@@ -77,7 +108,6 @@ public class MecanumDrive extends HolonomicDrivebase {
     }
 
     public void setPowerBehavior(String behavior) {
-        this.zeroPowerBehavior = behavior;
         if(behavior.equals("brake")){
             hardware.getMotor("driveFrontRight").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             hardware.getMotor("driveFrontLeft").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -92,7 +122,6 @@ public class MecanumDrive extends HolonomicDrivebase {
     }
 
     private void setRunMode(String runMode) {
-        this.runMode = runMode;
         if(runMode.equals("withEncoder")) {
             hardware.getMotor("driveFrontRight").setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             hardware.getMotor("driveFrontLeft").setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -142,8 +171,8 @@ public class MecanumDrive extends HolonomicDrivebase {
         }
     }
 
-    private boolean slipping(String wheel) {
-
+    private boolean slipping(String wheel) { // Need to figure this out. not urgent tho
+        return false;
     }
 
 }

@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode.Subsystems.Movement.Drivebases;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.Hardware.RobotHardware;
 
-public class HolonomicDrivebase extends Drivebase {
+public class DrivebaseHolonomic extends Drivebase {
 
-    public HolonomicDrivebase(LinearOpMode opMode, RobotHardware hardware) {
+    public DrivebaseHolonomic(LinearOpMode opMode, RobotHardware hardware) {
         super(opMode, hardware);
     }
 
@@ -14,6 +14,6 @@ public class HolonomicDrivebase extends Drivebase {
     public void update() {}
     public void freeze() {}
 
-    public void setRelativeAcceleration(double velX , double velY, double velHeading) {}
+    public void setRelativeForce(double velX , double velY, double velHeading) {}
 
 }

@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -15,6 +16,8 @@ public class BasicRobotHardware extends RobotHardware {
     public static DcMotorEx rightFront, leftFront, leftBack, rightBack; //Drive Motor Objects
     //IMU
     public static BNO055IMU imu;
+    //Timer
+    public static ElapsedTime elapsedTime = new ElapsedTime();
 
     @Override
     public void hardwareMap(HardwareMap hardwareMap) {
@@ -62,6 +65,10 @@ public class BasicRobotHardware extends RobotHardware {
         }
     }
 
+    public double[] getImuAcc() {
+        return new double[]{imu.getLinearAcceleration().xAccel, imu.getLinearAcceleration().yAccel};
+    }
+
     @Override
     public DcMotorEx getMotor(String ID) {
         switch (ID) {
@@ -97,6 +104,34 @@ public class BasicRobotHardware extends RobotHardware {
             default:
                 return 0.0;
         }
+    }
+
+    @Override
+    public double getEncoderVelocity(String ID) {
+        switch (ID) {
+            case "driveFrontRight":
+            case "rightVerticalEncoder":
+                return rightFront.getVelocity();
+            case "driveFrontLeft":
+            case "leftVerticalEncoder":
+                return leftFront.getVelocity();
+            case "driveBackRight":
+            case "horizontalEncoder":
+                return rightBack.getVelocity();
+            case "driveBackLeft":
+                return leftBack.getVelocity();
+            default:
+                return 0.0;
+        }
+    }
+
+    @Override
+    public void resetTimer() {
+        elapsedTime.reset();
+    }
+    @Override
+    public double getTime() { // Returns time in milliseconds
+        return elapsedTime.milliseconds();
     }
 
 }

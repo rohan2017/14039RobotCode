@@ -2,11 +2,26 @@ package org.firstinspires.ftc.teamcode.Localization;
 
 public abstract class Localizer {
 
-    public double x, y, heading, xVel, yVel, headingVel;
-    public double loopTime;
+    public double x, y, heading;
+    public double xVel, yVel, headingVel;
+    public double xAcc, yAcc, headingAcc;
+
+    public double loopTime, time;
     protected double lastX, lastY, lastHeadingRadians, headingRadians;
 
-    public void initialize() {}
+    public void initialize() {
+        x = 0;
+        y = 0;
+        heading = 0;
+        xVel = 0;
+        yVel = 0;
+        headingVel = 0;
+        xAcc = 0;
+        yAcc = 0;
+        headingAcc = 0;
+        time = 0;
+        loopTime = 1;
+    }
     public void startTracking(double initialX, double initialY, double initialHeading) {
 
         lastX = initialX;

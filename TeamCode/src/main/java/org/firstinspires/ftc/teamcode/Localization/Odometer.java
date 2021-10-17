@@ -16,6 +16,7 @@ public class Odometer extends Localizer {
         headingRadians = Math.toRadians(initialHeading);
         lastHeadingRadians = headingRadians;
         firstloop = true;
+        time = 0;
 
     }
 

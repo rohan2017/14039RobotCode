@@ -14,8 +14,15 @@ public abstract class RobotHardware {
     public BNO055IMU getImu(String ID) {return null;}
     public double getImuHeading(String ID) {return 0.0;}
     public double getImuHeading() {return 0.0;}
+    public double[] getImuAcc() {return new double[2];}
+
     public DcMotorEx getMotor(String ID) {return null;}
     public double getEncoderValue(String ID) {return 0.0;}
+    public double getEncoderVelocity(String ID) {return 0.0;}
+
     public Servo getServo(String ID) {return null;}
+
+    public void resetTimer() {}
+    public double getTime() {return 0.0;}
 
 }

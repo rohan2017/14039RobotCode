@@ -38,13 +38,13 @@ public class Odometer2WIMU extends Odometer{
     public  double vertical, horizontal;
     private double lastVertical, lastHorizontal;
     private double ticksToDistance;
-    private double lastHeadingImu;
-    private double[] positionChangeVertical = {0, 0}; //Position change vector from vertical encoders
-    private double[] positionChangeHorizontal = {0, 0}; //Position change vector from horizontal encoder
-    private double[] totalRelativeMovement = {0, 0};
-    private double[] totalPositionChange = {0, 0};
 
-    public Odometer2WIMU(LinearOpMode opMode, RobotHardware robothardware){
+    private double lastHeadingImu;
+    private double lastHeadingVel;
+
+    private double[] totalPositionChange = {0,0};
+
+    public Odometer2WIMU(LinearOpMode opMode, RobotHardware robothardware) {
 
         this.opMode = opMode;
         this.hardware = robothardware;
@@ -52,19 +52,20 @@ public class Odometer2WIMU extends Odometer{
     }
 
     @Override
-    public void initialize(){
-
+    public void initialize() {
+        super.initialize();
         lastVertical = 0;
         lastHorizontal = 0;
-
+        lastHeadingVel = 0;
         ticksToDistance = wheelRadius*2*Math.PI/ticksPerRevolution*gearRatio;
 
     }
 
     @Override
-    public void update(){
+    public void update() {
 
-        if(opMode.opModeIsActive()){
+        if(opMode.opModeIsActive()) {
+            time = hardware.getTime();
 
             // HERE IS WHERE TO CHANGE ENCODER OBJECTS
             vertical = hardware.getEncoderValue("verticalEncoder") * ticksToDistance * verticalDirection;
@@ -93,27 +94,7 @@ public class Odometer2WIMU extends Odometer{
 
             headingRadians += headingChange;
 
-            // Calculating the position-change-vector from vertical encoder
-            double verticallAdjust = horizontalOffset * headingChange;
-            double verticalExtra = verticalChange - verticallAdjust;
-
-            positionChangeVertical[1] = Math.cos(headingChange) * verticalExtra;
-            positionChangeVertical[0] = Math.sin(headingChange) * verticalExtra;
-
-            //Calculating the position-change-vector from horizontal encoder
-            double horizontalAdjust = verticalOffset * headingChange;
-            double horizontalExtra = horizontalChange - horizontalAdjust;
-
-            positionChangeHorizontal[0] = Math.cos(headingChange) * horizontalExtra;
-            positionChangeHorizontal[1] = Math.sin(headingChange) * horizontalExtra;
-
-            //Add the two vectors together
-            totalRelativeMovement[0] = positionChangeVertical[0] + positionChangeHorizontal[0];
-            totalRelativeMovement[1] = positionChangeVertical[1] + positionChangeHorizontal[1];
-
-            //Rotate the vector
-            totalPositionChange[0] = totalRelativeMovement[0] * Math.cos(lastHeadingRadians) - totalRelativeMovement[1] * Math.sin(lastHeadingRadians);
-            totalPositionChange[1] = totalRelativeMovement[0] * Math.sin(lastHeadingRadians) + totalRelativeMovement[1] * Math.cos(lastHeadingRadians);
+            totalPositionChange = findPoseTransform(verticalChange, horizontalChange, headingChange);
 
             x = lastX + totalPositionChange[0];
             y = lastY + totalPositionChange[1];
@@ -127,15 +108,69 @@ public class Odometer2WIMU extends Odometer{
             lastHorizontal = horizontal;
 
             heading = Math.toDegrees(headingRadians);
+
+            loopTime = hardware.getTime() - time;
+            calculateVelocity(headingChange);
+            calculateAcceleration();
         }
+    }
+
+    private double[] findPoseTransform(double verticalChange, double horizontalChange, double headingChange) {
+        // Calculating the position-change-vector from vertical encoder
+        double verticalAdjust = horizontalOffset * headingChange;
+        double verticalExtra = verticalChange - verticalAdjust;
+
+        double[] positionChangeVertical = new double[2];
+        positionChangeVertical[1] = Math.cos(headingChange) * verticalExtra;
+        positionChangeVertical[0] = Math.sin(headingChange) * verticalExtra;
+
+        //Calculating the position-change-vector from horizontal encoder
+        double horizontalAdjust = verticalOffset * headingChange;
+        double horizontalExtra = horizontalChange - horizontalAdjust;
+
+        double[] positionChangeHorizontal = new double[2];
+        positionChangeHorizontal[0] = Math.cos(headingChange) * horizontalExtra;
+        positionChangeHorizontal[1] = Math.sin(headingChange) * horizontalExtra;
+
+        //Add the two vectors together
+        double[] totalRelativeMovement = new double[2];
+        totalRelativeMovement[0] = positionChangeVertical[0] + positionChangeHorizontal[0];
+        totalRelativeMovement[1] = positionChangeVertical[1] + positionChangeHorizontal[1];
+
+        //Rotate the vector
+        double[] totalPositionChange = new double[2];
+        totalPositionChange[0] = totalRelativeMovement[0] * Math.cos(lastHeadingRadians) - totalRelativeMovement[1] * Math.sin(lastHeadingRadians);
+        totalPositionChange[1] = totalRelativeMovement[0] * Math.sin(lastHeadingRadians) + totalRelativeMovement[1] * Math.cos(lastHeadingRadians);
+
+        return totalPositionChange.clone();
+    }
+    /*
+    private void calculateVelocity(double xChange, double yChange, double headingChange) {
+        xVel = totalPositionChange[0]/loopTime*1000;
+        yVel = totalPositionChange[1]/loopTime*1000;
+        headingVel = headingChange/loopTime*1000;
+    }
+    */
+    private void calculateVelocity(double headingChange) { // Using encoder velocities
+        double verticalVel = hardware.getEncoderVelocity("verticalEncoder") * ticksToDistance * verticalDirection;
+        double horizontalVel = hardware.getEncoderVelocity("verticalEncoder") * ticksToDistance * verticalDirection;
+        headingVel = headingChange/loopTime*1000;
+        double[] vel = findPoseTransform(verticalVel, horizontalVel, headingVel);
+        xVel = vel[0];
+        yVel = vel[1];
+    }
+
+    private void calculateAcceleration() {
+        double[] acc = hardware.getImuAcc();
+        xAcc = acc[0];
+        yAcc = acc[1];
+        headingAcc = (headingVel - lastHeadingVel)/loopTime*1000;
+        lastHeadingVel = headingVel;
     }
 
     // Utility Methods
     public void setEncoderDirections(double verticalDirection, double horizontalDirection){
-
         this.verticalDirection = verticalDirection;
         this.horizontalDirection = horizontalDirection;
-
     }
-
 }
