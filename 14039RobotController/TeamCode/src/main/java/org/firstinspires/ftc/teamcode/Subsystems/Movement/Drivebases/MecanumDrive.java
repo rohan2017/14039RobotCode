@@ -31,10 +31,6 @@ public class MecanumDrive extends DrivebaseHolonomic {
         rf = 0;
         lb = 0;
         rb = 0;
-        resetDriveEncoders();
-        reverseMotors();
-        setPowerBehavior("brake");
-        setRunMode("withEncoder");
     }
 
     @Override
@@ -89,11 +85,10 @@ public class MecanumDrive extends DrivebaseHolonomic {
         */
         //https://discord.com/channels/445308068721590273/456178951849771028/891435261014192128
 
-        lf = forceToPower(2*(forceY*0.9 + forceX*1.1) - (forceHeading *headingAccConstant*1.41), "lf");
-        rf = forceToPower(2*(forceY*0.9 - forceX*1.1) + (forceHeading *headingAccConstant*1.41), "rf");
-        lb = forceToPower(2*(forceY*0.9 - forceX*1.1) - (forceHeading *headingAccConstant*1.41), "lb");
-        rb = forceToPower(2*(forceY*0.9 + forceX*1.1) + (forceHeading *headingAccConstant*1.41), "rb");
-
+        lf = forceToPower(2*(forceY*0.9 + forceX*1.1) - (forceHeading *headingAccConstant *1.41), "lf");
+        rf = forceToPower(2*(forceY*0.9 - forceX*1.1) + (forceHeading *headingAccConstant *1.41), "rf");
+        lb = forceToPower(2*(forceY*0.9 - forceX*1.1) - (forceHeading *headingAccConstant *1.41), "lb");
+        rb = forceToPower(2*(forceY*0.9 + forceX*1.1) + (forceHeading *headingAccConstant *1.41), "rb");
     }
 
     @Override
@@ -121,7 +116,7 @@ public class MecanumDrive extends DrivebaseHolonomic {
         }
     }
 
-    private void setRunMode(String runMode) {
+    public void setRunMode(String runMode) {
         if(runMode.equals("withEncoder")) {
             hardware.getMotor("driveFrontRight").setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             hardware.getMotor("driveFrontLeft").setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -135,7 +130,7 @@ public class MecanumDrive extends DrivebaseHolonomic {
         }
     }
 
-    private void resetDriveEncoders() {
+    public void resetDriveEncoders() {
 
         hardware.getMotor("driveFrontRight").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hardware.getMotor("driveFrontLeft").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -144,23 +139,20 @@ public class MecanumDrive extends DrivebaseHolonomic {
 
     }
 
-    private void reverseMotors() {
+    public void reverseMotors(String side) {
 
         // Reverse the necessary motors so that when positive power is set to all four, the robot moves forward
-        hardware.getMotor("driveFrontRight").setDirection(DcMotor.Direction.REVERSE);
-        hardware.getMotor("driveFrontLeft").setDirection(DcMotor.Direction.FORWARD);
-        hardware.getMotor("driveBackLeft").setDirection(DcMotor.Direction.FORWARD);
-        hardware.getMotor("driveBackRight").setDirection(DcMotor.Direction.REVERSE);
-
-    }
-
-    public void testMotorDirections() { //Robot moves forwards
-
-        lf = 1;
-        rf = 1;
-        lb = 1;
-        rb = 1;
-
+        if(side.equals("Right")) {
+            hardware.getMotor("driveFrontRight").setDirection(DcMotor.Direction.REVERSE);
+            hardware.getMotor("driveFrontLeft").setDirection(DcMotor.Direction.FORWARD);
+            hardware.getMotor("driveBackLeft").setDirection(DcMotor.Direction.FORWARD);
+            hardware.getMotor("driveBackRight").setDirection(DcMotor.Direction.REVERSE);
+        }else if(side.equals("Left")) {
+            hardware.getMotor("driveFrontRight").setDirection(DcMotor.Direction.FORWARD);
+            hardware.getMotor("driveFrontLeft").setDirection(DcMotor.Direction.REVERSE);
+            hardware.getMotor("driveBackLeft").setDirection(DcMotor.Direction.REVERSE);
+            hardware.getMotor("driveBackRight").setDirection(DcMotor.Direction.FORWARD);
+        }
     }
 
     private double forceToPower(double force, String wheel) {
@@ -173,6 +165,13 @@ public class MecanumDrive extends DrivebaseHolonomic {
 
     private boolean slipping(String wheel) { // Need to figure this out. not urgent tho
         return false;
+    }
+
+    public void setPowers(double lf, double rf, double lb, double rb) {
+        this.lf = lf;
+        this.rf = rf;
+        this.lb = lb;
+        this.rb = rb;
     }
 
 }

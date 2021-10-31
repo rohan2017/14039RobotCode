@@ -10,7 +10,9 @@ public class DrivebaseHolonomic extends Drivebase {
     }
 
     @Override
-    public void initialize() {}
+    public void initialize() {
+
+    }
     public void update() {}
     public void freeze() {}
 

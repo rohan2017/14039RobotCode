@@ -190,4 +190,16 @@ public class MyMath {
         return Z;
     }
 
+    public static double sine(double theta){
+        return sin(toRadians(theta));
+    }
+
+    public static double cosine(double theta){
+        return cos(toRadians(theta));
+    }
+
+    public static double distance(double x1, double y1, double x2, double y2) {
+        return Math.hypot((x1-x2), (y1-y2));
+    }
+
 }
