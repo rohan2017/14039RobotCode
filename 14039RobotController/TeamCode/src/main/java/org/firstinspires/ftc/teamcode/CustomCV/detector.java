@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.CustomCV;
-/*
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -30,12 +30,13 @@ public class detector extends OpenCvPipeline {
 
     public detector(Telemetry t) { telemetry = t; }
 
+
+
     @Override
     public Mat processFrame(Mat input) {
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
-
-        Scalar lowHSV = new Scalar(15, 50, 70);
-        Scalar highHSV = new Scalar(25, 255, 255);
+        Scalar lowHSV = new Scalar(26, 72, 39);
+        Scalar highHSV = new Scalar(106, 232, 199);
 
         Core.inRange(mat, lowHSV, highHSV, mat);
 
@@ -51,17 +52,14 @@ public class detector extends OpenCvPipeline {
         right.release();
         mid.release();
 
-        boolean objectLeft = leftValue > thresh;
-        boolean objectRight = rightValue > thresh;
-        boolean objectMid = midValue > thresh;
 
-        if (objectLeft) {
+        if (leftValue > rightValue && leftValue > midValue) {
             location = Location.LEFT;
             telemetry.addData("pos", "left");
-        }else if (objectRight){
+        }else if (rightValue > midValue && rightValue > leftValue){
             location = Location.RIGHT;
             telemetry.addData("pos", "right");
-        }else if(objectMid){
+        }else{
             location = Location.MID;
             telemetry.addData("pos", "middle");
         }
@@ -88,4 +86,3 @@ public class detector extends OpenCvPipeline {
         return location;
     }
 }
-*/

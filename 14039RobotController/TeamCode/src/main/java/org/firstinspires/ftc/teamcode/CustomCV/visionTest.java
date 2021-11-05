@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.CustomCV;
-/*
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -25,7 +25,7 @@ public class visionTest extends LinearOpMode {
             @Override
             public void onOpened()
             {
-                phoneCam.startStreaming(320,240, OpenCvCameraRotation.SIDEWAYS_LEFT);
+                phoneCam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -42,8 +42,6 @@ public class visionTest extends LinearOpMode {
 
         }
 
-
         phoneCam.stopStreaming();
     }
 }
-*/

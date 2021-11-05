@@ -10,8 +10,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
+
 public class BasicRobotHardware extends RobotHardware {
 
+    RevBulkData bulkData;
     //Drive Motors
     public static DcMotorEx rightFront, leftFront, leftBack, rightBack;
     //Odo Encoders
@@ -21,21 +23,27 @@ public class BasicRobotHardware extends RobotHardware {
     //Timer
     public static ElapsedTime elapsedTime = new ElapsedTime();
 
+
+    ExpansionHubEx expansionHub, expansionHub2;
+    ;
+
     @Override
     public void hardwareMap(HardwareMap hardwareMap) {
+        expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub");
+        expansionHub2 = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
 
         //Drive-train
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
-        rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
+        leftBack = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "leftBack");
+        rightBack = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rightBack");
 
         //Adhametry
-        parallelEncoder = hardwareMap.get(DcMotorEx.class, "parallelEncoder");
-        perpendicularEncoder = hardwareMap.get(DcMotorEx.class, "perpendicularEncoder");
+        parallelEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "parallelEncoder");
+        perpendicularEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "perpendicularEncoder");
 
         //IMU
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu =  hardwareMap.get(BNO055IMU.class, "imu");
 
     }
 
