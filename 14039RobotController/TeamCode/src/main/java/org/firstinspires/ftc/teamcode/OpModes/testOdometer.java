@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robots.MecanumChassisBot;
 
-@Autonomous(name="Odometer2W Test", group="Testing")
+@Autonomous(name="Odometer2W Test", group="Tests")
 public class testOdometer extends LinearOpMode {
 
     // Declare OpMode Members

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Hardware;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -9,11 +10,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
+import java.util.List;
 
 public class BasicRobotHardware extends RobotHardware {
 
-    RevBulkData bulkData;
     //Drive Motors
     public static DcMotorEx rightFront, leftFront, leftBack, rightBack;
     //Odo Encoders
@@ -23,27 +23,25 @@ public class BasicRobotHardware extends RobotHardware {
     //Timer
     public static ElapsedTime elapsedTime = new ElapsedTime();
 
-
-    ExpansionHubEx expansionHub, expansionHub2;
-    ;
+    public static List<LynxModule> allHubs;
 
     @Override
     public void hardwareMap(HardwareMap hardwareMap) {
-        expansionHub = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub");
-        expansionHub2 = hardwareMap.get(ExpansionHubEx.class, "Expansion Hub 2");
 
         //Drive-train
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        leftBack = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "leftBack");
-        rightBack = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "rightBack");
+        leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
+        rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
 
         //Adhametry
-        parallelEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "parallelEncoder");
-        perpendicularEncoder = (ExpansionHubMotor) hardwareMap.get(DcMotorEx.class, "perpendicularEncoder");
+        parallelEncoder = hardwareMap.get(DcMotorEx.class, "parallelEncoder");
+        perpendicularEncoder = hardwareMap.get(DcMotorEx.class, "perpendicularEncoder");
 
         //IMU
         imu =  hardwareMap.get(BNO055IMU.class, "imu");
+
+        allHubs = hardwareMap.getAll(LynxModule.class);
 
     }
 
@@ -58,6 +56,10 @@ public class BasicRobotHardware extends RobotHardware {
         Params.loggingTag          = "IMU";
         Params.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu.initialize(Params);
+
+        for (LynxModule module : allHubs) {
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
 
     }
 

@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.Robots.MecanumChassisBot;
 import org.firstinspires.ftc.teamcode.Subsystems.Movement.MovementHolonomic;
 
-@Autonomous(name="Movement Test 2 ", group="Testing")
+@Autonomous(name="Movement Test 2 ", group="Tests")
 public class testMovement extends LinearOpMode {
 
     // Declare OpMode Members
@@ -28,7 +28,7 @@ public class testMovement extends LinearOpMode {
 
     private void initialize() {
         bot.initialize(hardwareMap);
-        bot.movement.state = "trans 1ient";
+        bot.movement.state = "transient";
         telemetry.addData("status","initialized");
         telemetry.update();
     }

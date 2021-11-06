@@ -58,6 +58,7 @@ public class Odometer2WIMU extends Odometer{
         lastHorizontal = 0;
         lastHeadingVel = 0;
         ticksToDistance = wheelRadius*2*Math.PI/ticksPerRevolution*gearRatio;
+        startTracking(0,0,0);
 
     }
 

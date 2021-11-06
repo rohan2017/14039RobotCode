@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robots.MecanumChassisBot;
 
-@Autonomous(name="Drivebase Test", group="Testing")
+@Autonomous(name="Drivebase Test", group="Tests")
 public class testDrivebase extends LinearOpMode {
 
     // Declare OpMode Members
