@@ -68,7 +68,7 @@ public class MovementHolonomic extends Movement {
 
                 hCorrect = orient.correction;
 
-                setGlobalForce(targVX, targVY, hCorrect);
+                setGlobalVelocity(targVX, targVY, hCorrect);
 
                 drivebase.update();
             } else if (state.equals("converged")) {
@@ -80,12 +80,12 @@ public class MovementHolonomic extends Movement {
         }
     }
 
-    public void setGlobalForce(double xVel, double yVel, double hVel) { // Verified
+    public void setGlobalVelocity(double xVel, double yVel, double hVel) { // Verified
         if(opMode.opModeIsActive()) {
             double h = odometer.heading;
             double xRelVel = cosine(-h) * xVel - sine(-h) * yVel;
             double yRelVel = sine(-h) * xVel + cosine(-h) * yVel;
-            drivebase.setRelativeForce(xRelVel, yRelVel, hVel);
+            drivebase.setRelativeVelocity(xRelVel, yRelVel, hVel);
         }
     }
 

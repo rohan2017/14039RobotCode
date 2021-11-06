@@ -16,6 +16,6 @@ public class DrivebaseHolonomic extends Drivebase {
     public void update() {}
     public void freeze() {}
 
-    public void setRelativeForce(double velX , double velY, double velHeading) {}
+    public void setRelativeVelocity(double velX , double velY, double velHeading) {}
 
 }

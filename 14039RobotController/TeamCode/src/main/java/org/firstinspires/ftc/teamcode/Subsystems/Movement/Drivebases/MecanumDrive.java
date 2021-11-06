@@ -75,7 +75,7 @@ public class MecanumDrive extends DrivebaseHolonomic {
         }
     }
 
-    public void setRelativeForce(double forceX, double forceY, double forceHeading) {
+    public void setRelativeVelocity(double forceX, double forceY, double forceHeading) {
         /* Wheel movement to move horizontally
           A          |
           |          V
@@ -85,10 +85,10 @@ public class MecanumDrive extends DrivebaseHolonomic {
         */
         //https://discord.com/channels/445308068721590273/456178951849771028/891435261014192128
 
-        lf = forceToPower(2*(forceY*0.9 + forceX*1.1) - (forceHeading *headingAccConstant *1.41), "lf");
-        rf = forceToPower(2*(forceY*0.9 - forceX*1.1) + (forceHeading *headingAccConstant *1.41), "rf");
-        lb = forceToPower(2*(forceY*0.9 - forceX*1.1) - (forceHeading *headingAccConstant *1.41), "lb");
-        rb = forceToPower(2*(forceY*0.9 + forceX*1.1) + (forceHeading *headingAccConstant *1.41), "rb");
+        lf = velocityToPower(2*(forceY*0.9 + forceX*1.1) - (forceHeading *headingAccConstant *1.41), "lf");
+        rf = velocityToPower(2*(forceY*0.9 - forceX*1.1) + (forceHeading *headingAccConstant *1.41), "rf");
+        lb = velocityToPower(2*(forceY*0.9 - forceX*1.1) - (forceHeading *headingAccConstant *1.41), "lb");
+        rb = velocityToPower(2*(forceY*0.9 + forceX*1.1) + (forceHeading *headingAccConstant *1.41), "rb");
     }
 
     @Override
@@ -155,7 +155,7 @@ public class MecanumDrive extends DrivebaseHolonomic {
         }
     }
 
-    private double forceToPower(double force, String wheel) {
+    private double velocityToPower(double force, String wheel) {
         if(slipping(wheel)) {
             return force*forceToPowerConstant/kineticCoeffFriction;
         }else {

@@ -145,13 +145,13 @@ public class Odometer2WIMU extends Odometer{
 
         return totalPositionChange.clone();
     }
-    /*
-    private void calculateVelocity(double xChange, double yChange, double headingChange) {
+
+    private void calculateVelocity(double headingChange) {
         xVel = totalPositionChange[0]/loopTime*1000;
         yVel = totalPositionChange[1]/loopTime*1000;
         headingVel = headingChange/loopTime*1000;
     }
-    */
+    /*
     private void calculateVelocity(double headingChange) { // Using encoder velocities
         double verticalVel = hardware.getMotor("verticalEncoder").getVelocity() * ticksToDistance * verticalDirection;
         double horizontalVel = hardware.getMotor("verticalEncoder").getVelocity() * ticksToDistance * verticalDirection;
@@ -160,7 +160,7 @@ public class Odometer2WIMU extends Odometer{
         xVel = vel[0];
         yVel = vel[1];
     }
-
+     */
     private void calculateAcceleration() {
         double[] acc = hardware.getImuAcc();
         xAcc = acc[0];
