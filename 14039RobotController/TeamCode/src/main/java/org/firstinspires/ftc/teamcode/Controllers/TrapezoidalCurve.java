@@ -2,56 +2,39 @@ package org.firstinspires.ftc.teamcode.Controllers;
 
 public class TrapezoidalCurve extends Controller {
 
-    private double maxVel, minVelAccel, minVelDeccel;
+    // Robot intrinsic constants
+    private double maxVel;
+    private final double minVelAccel = 0.02;
+    private final double minVelDeccel = 0;
+    private double aSlope = 1;
+    private double dSlope = -0.04;
+
+    // Calculation Variables
+    private double intersection;
     private double distance;
-    private double accelRange, deccelRange;
-    private double aSlope, dSlope;
 
-    public TrapezoidalCurve(double maxVel, double minVelAccel, double minVelDeccel, double accelRange, double deccelRange, double distance) {
+    public TrapezoidalCurve(double distance, double maxVel) {
         this.distance = distance;
-
-        this.minVelAccel = minVelAccel;
-        this.minVelDeccel = minVelDeccel;
-
-        this.accelRange = accelRange;
-        this.deccelRange = deccelRange;
-        if(distance > (accelRange + deccelRange)) { // If there is enough distance to fully accelerate
-            this.maxVel = maxVel;
-        }else { // If not, scale down the curve
-            this.accelRange = (accelRange + deccelRange)/distance * accelRange;
-            this.deccelRange = (accelRange + deccelRange)/distance * deccelRange;
-            this.maxVel = maxVel * (accelRange + deccelRange)/distance;
-        } //                                                              ___
-        aSlope = (maxVel-minVelAccel)/(accelRange-0); //Rise over run ___/                ___
-        dSlope = (maxVel-minVelDeccel)/((distance-deccelRange)-distance); //Rise over run    \___
-
+        this.maxVel = maxVel;
+        intersection = -(dSlope * distance)/(aSlope-dSlope);
         correction = 0;
-    }
-
-    public void setDistance(double distance) {
-        this.distance = distance;
-        if(distance > (accelRange + deccelRange)) { // If there is enough distance to fully accelerate
-            // No change
-        }else { // If not, scale down the curve
-            accelRange = (accelRange + deccelRange)/distance * accelRange;
-            deccelRange = (accelRange + deccelRange)/distance * deccelRange;
-        }
-    }
-
-    public double getDistance() {
-        return distance;
     }
 
     public void update(double setPoint, double currentDistance) {
         double input = distance - currentDistance;
-        if(input < accelRange && input >= 0){ // If inside the acceleration range
-            correction = aSlope * input + minVelAccel;
-        }else if(input > accelRange && input < (distance-deccelRange)){ // If inside the maxVel range
+        if(input <= intersection) {
+            correction = aSlope * input;
+            if(correction < minVelAccel) {
+                correction = minVelAccel;
+            }
+        }else if(input > intersection) {
+            correction = dSlope * (-currentDistance);
+            if(correction < minVelDeccel) {
+                correction = minVelDeccel;
+            }
+        }
+        if(correction > maxVel) {
             correction = maxVel;
-        }else if(input > (distance-deccelRange) && input < distance){ // If inside the de-accelerate range
-            correction = dSlope * (input-distance+deccelRange) + minVelDeccel;
-        }else {
-            correction = 0;
         }
     }
 }

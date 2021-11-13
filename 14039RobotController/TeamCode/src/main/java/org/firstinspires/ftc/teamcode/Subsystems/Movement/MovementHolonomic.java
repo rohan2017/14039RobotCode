@@ -37,20 +37,21 @@ public class MovementHolonomic extends Movement {
         targetY = 0;
         targetHeading = 0;
 
-        orient = new PID(2,0,0.5,0,5,0);
-        speedFinder = new TrapezoidalCurve(4, 0.5, 0.1, 10, 20, 10);
+        orient = new PID(0.3,0,0.2,0,0.4,0);
+        speedFinder = new TrapezoidalCurve(10, 0.8);
         state = "idle";
     }
 
     public void update() {
         if(opMode.opModeIsActive()) {
             if(!state.equals("idle")) {
+                // State determination
                 if (distance(odometer.x, odometer.y, targetX, targetY) < distanceThreshold && (Math.abs(odometer.heading - targetHeading) < headingThreshold)) {
                     state = "converged";
                 }else {
                     state = "transient";
                 }
-
+                // Actions
                 if (state.equals("transient")) {
 
                     double xDist, yDist, distance, heading;
@@ -101,6 +102,7 @@ public class MovementHolonomic extends Movement {
         this.targetY = Y;
         this.targetHeading = Heading;
         updateControllers();
+        state = "transient";
     }
 
     public void setTarget(PointEx target) {
@@ -110,7 +112,7 @@ public class MovementHolonomic extends Movement {
     public void setTargetPath(ArrayList<PointEx> path) {}
 
     private void updateControllers() {
-        speedFinder.setDistance(distance(targetX, targetY, odometer.x, odometer.y));
+        speedFinder = new TrapezoidalCurve(distance(targetX, targetY, odometer.x, odometer.y), 0.8);
     }
 
     public double getDistance() {
@@ -118,8 +120,5 @@ public class MovementHolonomic extends Movement {
     }
     public double getSpeed() {
         return speedFinder.correction;
-    }
-    public double getTotalDistance() {
-        return speedFinder.getDistance();
     }
 }

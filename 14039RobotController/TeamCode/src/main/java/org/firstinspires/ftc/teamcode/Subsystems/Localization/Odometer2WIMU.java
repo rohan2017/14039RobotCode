@@ -86,6 +86,7 @@ public class Odometer2WIMU extends Odometer{
 
             // Math Variables
             double headingChange = headingImu - lastHeadingImu;
+            //headingChange *= 1.013; // Weird IMU calibration issue
 
             if (headingChange < -Math.PI){ // For example 355 to 2 degrees
                 headingChange = 2*Math.PI + headingChange;
