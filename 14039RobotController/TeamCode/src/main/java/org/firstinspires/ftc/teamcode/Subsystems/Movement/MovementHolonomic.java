@@ -4,10 +4,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Controllers.PID;
 import org.firstinspires.ftc.teamcode.MathFunctions.PointEx;
+import org.firstinspires.ftc.teamcode.Controllers.TrapezoidalCurve;
 import org.firstinspires.ftc.teamcode.Subsystems.Localization.Odometer;
 import org.firstinspires.ftc.teamcode.Subsystems.Movement.Drivebases.DrivebaseHolonomic;
 
 import static org.firstinspires.ftc.teamcode.MathFunctions.MyMath.*;
+
+import java.util.ArrayList;
 
 public class MovementHolonomic extends Movement {
 
@@ -19,7 +22,8 @@ public class MovementHolonomic extends Movement {
     private Odometer odometer;
     private LinearOpMode opMode;
 
-    private PID orient, speedFinder;
+    private PID orient;
+    private TrapezoidalCurve speedFinder;
 
     public MovementHolonomic (LinearOpMode opmode, DrivebaseHolonomic drivebase, Odometer odometer) {
         super(drivebase);
@@ -34,49 +38,52 @@ public class MovementHolonomic extends Movement {
         targetHeading = 0;
 
         orient = new PID(2,0,0.5,0,5,0);
-        speedFinder = new PID(2,0,0.5,0,5,0.1);
+        speedFinder = new TrapezoidalCurve(4, 0.5, 0.1, 10, 20, 10);
         state = "idle";
     }
 
     public void update() {
-        if(!state.equals("idle")) {
-            if (distance(odometer.x, odometer.y, targetX, targetY) < distanceThreshold && (Math.abs(odometer.heading - targetHeading) < headingThreshold)) {
-                state = "converged";
+        if(opMode.opModeIsActive()) {
+            if(!state.equals("idle")) {
+                if (distance(odometer.x, odometer.y, targetX, targetY) < distanceThreshold && (Math.abs(odometer.heading - targetHeading) < headingThreshold)) {
+                    state = "converged";
+                }else {
+                    state = "transient";
+                }
+
+                if (state.equals("transient")) {
+
+                    double xDist, yDist, distance, heading;
+                    double targSpeed, scale;
+                    double targVX, targVY, hCorrect;
+
+                    xDist = targetX - odometer.x;
+                    yDist = targetY - odometer.y;
+                    distance = Math.hypot(xDist, yDist);
+                    heading = odometer.heading;
+
+                    targSpeed = Math.abs(speedFinder.correction);
+                    scale = targSpeed / distance;
+
+                    targVX = xDist * scale;
+                    targVY = yDist * scale;
+                    // Verified ^
+
+                    speedFinder.update(0, distance);
+                    orient.update(targetHeading, heading);
+
+                    hCorrect = orient.correction;
+
+                    setGlobalVelocity(targVX, targVY, hCorrect);
+
+                    drivebase.update();
+                } else if (state.equals("converged")) {
+                    drivebase.freeze();
+                }
+                odometer.update();
             }else {
-                state = "transient";
-            }
-
-            if (state.equals("transient")) {
-                double xDist, yDist, distance, heading;
-                double targSpeed, scale;
-                double targVX, targVY, hCorrect;
-
-                xDist = targetX - odometer.x;
-                yDist = targetY - odometer.y;
-                distance = Math.hypot(xDist, yDist);
-                heading = odometer.heading;
-
-                targSpeed = Math.abs(speedFinder.correction);
-                scale = targSpeed / distance;
-
-                targVX = xDist * scale;
-                targVY = yDist * scale;
-                // Verified ^
-
-                speedFinder.update(0, distance);
-                orient.update(targetHeading, heading);
-
-                hCorrect = orient.correction;
-
-                setGlobalVelocity(targVX, targVY, hCorrect);
-
-                drivebase.update();
-            } else if (state.equals("converged")) {
                 drivebase.freeze();
             }
-            odometer.update();
-        }else {
-            drivebase.freeze();
         }
     }
 
@@ -93,12 +100,26 @@ public class MovementHolonomic extends Movement {
         this.targetX = X;
         this.targetY = Y;
         this.targetHeading = Heading;
+        updateControllers();
     }
 
     public void setTarget(PointEx target) {
-        this.targetX = target.x;
-        this.targetY = target.y;
-        this.targetHeading = target.heading;
+        setTargets(target.x, target.y, target.heading);
     }
 
+    public void setTargetPath(ArrayList<PointEx> path) {}
+
+    private void updateControllers() {
+        speedFinder.setDistance(distance(targetX, targetY, odometer.x, odometer.y));
+    }
+
+    public double getDistance() {
+        return distance(targetX, targetY, odometer.x, odometer.y);
+    }
+    public double getSpeed() {
+        return speedFinder.correction;
+    }
+    public double getTotalDistance() {
+        return speedFinder.getDistance();
+    }
 }

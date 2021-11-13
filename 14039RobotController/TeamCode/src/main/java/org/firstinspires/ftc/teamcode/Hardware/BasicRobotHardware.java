@@ -61,6 +61,8 @@ public class BasicRobotHardware extends RobotHardware {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
+        elapsedTime.startTime();
+
     }
 
     @Override

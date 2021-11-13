@@ -27,7 +27,7 @@ public class testDrivebase extends LinearOpMode {
 
                 bot.drivebase.setPowers((y2-x2), (y1+x1), (y2+x2), (y1-x1));
             }else {
-                bot.drivebase.setRelativeForce(gamepad1.left_stick_x*5, -gamepad1.left_stick_y*5, -gamepad1.right_stick_x*5);
+                bot.drivebase.setRelativeVelocity(gamepad1.left_stick_x*5, -gamepad1.left_stick_y*5, -gamepad1.right_stick_x*5);
             }
             bot.drivebase.update();
             telemetry.addData("JoyX",gamepad1.right_stick_x);
