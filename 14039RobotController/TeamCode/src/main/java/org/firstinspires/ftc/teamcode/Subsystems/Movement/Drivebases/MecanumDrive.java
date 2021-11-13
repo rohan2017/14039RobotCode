@@ -6,20 +6,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class MecanumDrive extends DrivebaseHolonomic {
 
-    private double lf, rf, lb, rb; //motor/wheel target forces
+    private double lf, rf, lb, rb; //motor/wheel target rotational velocities
 
     private final double wheelbaseRadius = 40; //cm
-    private final double robotMass = 10; //kg
-    private final double rotationalInertia = robotMass * Math.pow((wheelbaseRadius/2), 2); //radius/2 assumes uniform weight distribution
     private final double wheelRadius = 5.08; //cm
     private final double gearRatio = 22.0/20.0; //motor-rpm : wheel-rpm
     private final double ticksPerRev = 10; //ticks-per-revolution of motor shaft
-    // Needs to be tuned such that when multiplied by shaft torque it gives motor power.
-    final double shaftTorqueToPower = 1; // Changes based on drive motors
-    final double staticCoeffFriction = 0.6;
-    final double kineticCoeffFriction = 0.4;
-    final double forceToPowerConstant = shaftTorqueToPower * gearRatio/(wheelRadius*robotMass/4*9.81);
-    final double headingAccConstant = wheelbaseRadius * Math.PI / 180; // Assuming units of deg/s
+    final double velToPowerConstant = 1 * gearRatio/wheelRadius; // Gotta be tuned
+    final double headingVelConstant = wheelbaseRadius * Math.PI / 180; // Assuming units of deg/s
 
     public MecanumDrive(LinearOpMode opMode, RobotHardware hardware) {
         super(opMode, hardware);
@@ -75,7 +69,7 @@ public class MecanumDrive extends DrivebaseHolonomic {
         }
     }
 
-    public void setRelativeVelocity(double forceX, double forceY, double forceHeading) {
+    public void setRelativeVelocity(double velX, double velY, double forceHeading) {
         /* Wheel movement to move horizontally
           A          |
           |          V
@@ -85,10 +79,10 @@ public class MecanumDrive extends DrivebaseHolonomic {
         */
         //https://discord.com/channels/445308068721590273/456178951849771028/891435261014192128
 
-        lf = velocityToPower(2*(forceY*0.9 + forceX*1.1) - (forceHeading *headingAccConstant *1.41), "lf");
-        rf = velocityToPower(2*(forceY*0.9 - forceX*1.1) + (forceHeading *headingAccConstant *1.41), "rf");
-        lb = velocityToPower(2*(forceY*0.9 - forceX*1.1) - (forceHeading *headingAccConstant *1.41), "lb");
-        rb = velocityToPower(2*(forceY*0.9 + forceX*1.1) + (forceHeading *headingAccConstant *1.41), "rb");
+        lf = velocityToPower(2*(velY*0.95 + velX*1.05) - (forceHeading *headingVelConstant *1.41), "lf");
+        rf = velocityToPower(2*(velY*0.95 - velX*1.05) + (forceHeading *headingVelConstant *1.41), "rf");
+        lb = velocityToPower(2*(velY*0.95 - velX*1.05) - (forceHeading *headingVelConstant *1.41), "lb");
+        rb = velocityToPower(2*(velY*0.95 + velX*1.05) + (forceHeading *headingVelConstant *1.41), "rb");
     }
 
     @Override
@@ -155,12 +149,8 @@ public class MecanumDrive extends DrivebaseHolonomic {
         }
     }
 
-    private double velocityToPower(double force, String wheel) {
-        if(slipping(wheel)) {
-            return force*forceToPowerConstant/kineticCoeffFriction;
-        }else {
-            return force*forceToPowerConstant/staticCoeffFriction;
-        }
+    private double velocityToPower(double velocity, String wheel) {
+        return velocity * velToPowerConstant;
     }
 
     private boolean slipping(String wheel) { // Need to figure this out. not urgent tho

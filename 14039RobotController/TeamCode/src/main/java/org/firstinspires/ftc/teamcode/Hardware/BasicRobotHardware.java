@@ -75,8 +75,7 @@ public class BasicRobotHardware extends RobotHardware {
         if(ID.equals("hub1")) {
             //May need to change axis unit to work with vertical hubs
             Orientation angles = imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
-            double heading = (angles.firstAngle + 360) % 360;
-            heading *= 1.0126; // Weird issue bc of IMU calibration
+            double heading = ((angles.firstAngle *= 1.03) + 360) % 360; // Weird heading calibration
             return Math.toRadians(heading);
         }else {
             return 0.0;
