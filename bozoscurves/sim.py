@@ -82,7 +82,7 @@ def cubicRoots(P):
     B = c / a
     C = d / a
 
-    Q, R, D, S, T, Im = 0
+    Q, R, D, S, T, Im = 0, 0, 0, 0, 0, 0
     
     Q = (3 * B - math.pow(A, 2)) / 9
     
@@ -140,33 +140,25 @@ def computeIntersections(px, py, lx, ly):
     r = cubicRoots(P)
 
     # verify the roots are in bounds of the linear segment
-    for (var i=0;i < 3;i++)
-        t=r[i];
+    for i in range(0,3):
+        t = r[i]
 
-    X[0]=bx[0] * t * t * t+bx[1] * t * t+bx[2] * t+bx[3];
-    X[1]=by[0] * t * t * t+by[1] * t * t+by[2] * t+by[3];
+    X[0] = bx[0] * t * t * t+bx[1] * t * t+bx[2] * t+bx[3]
+    X[1] = by[0] * t * t * t+by[1] * t * t+by[2] * t+by[3]
 
-    / * above is intersection point assuming infinitely long line segment,
-    make sure we are also in bounds of the line * /
-    var s;
-    if ((lx[1]-lx[0]) != 0) / * if not vertical line * /
-    s=(X[0]-lx[0]) / (lx[1]-lx[0]);
-    else
-    s=(X[1]-ly[0]) / (ly[1]-ly[0]);
+    # above is intersection point assuming infinitely long line segment, make sure we are also in bounds of the line
+    if (lx[1]-lx[0]) != 0:  # if not vertical line
+        s = (X[0]-lx[0]) / (lx[1]-lx[0])
+    else:
+        s = (X[1]-ly[0]) / (ly[1]-ly[0])
+    # in bounds?
+    if t < 0 or t > 1.0 or s < 0 or s > 1.0:
+        X[0]=-100  # move off screen
+        X[1]=-100
 
-    / * in bounds? * /
-    if (t < 0 | | t > 1.0 | | s < 0 | | s > 1.0)
-    {
-    X[0]=-100; / * move off screen * /
-    X[1]=-100;
-    }
-
-    / * move intersection point * /
-    I[i].setAttributeNS(null, "cx", X[0]);
-    I[i].setAttributeNS(null, "cy", X[1]);
-    }
-
-    }
+    # move intersection point
+    I[i].setAttributeNS(null, "cx", X[0])
+    I[i].setAttributeNS(null, "cy", X[1])
 
 
 while run:
