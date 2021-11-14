@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode.Controllers;
 public class SCurve extends Controller {
 
     private double distance;
-    private double accelerationSlope = 3;
+    private double accelerationSlope = 5;
     private double decelerationSlope = -0.8;
-    private double minVel = 0.03;
+    private double minVel = 0.05;
     private double maxVel = 1;
 
     private double t, d, c;

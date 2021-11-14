@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Movement.Drivebases;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.teamcode.Controllers.PID;
 import org.firstinspires.ftc.teamcode.Hardware.RobotHardware;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -12,8 +14,10 @@ public class MecanumDrive extends DrivebaseHolonomic {
     private final double wheelRadius = 5.08; //cm
     private final double gearRatio = 22.0/20.0; //motor-rpm : wheel-rpm
     private final double ticksPerRev = 10; //ticks-per-revolution of motor shaft
-    final double velToPowerConstant = 1 * gearRatio/wheelRadius; // Gotta be tuned
+    final double velToPowerConstant = 0.016 * gearRatio/wheelRadius; // vel * this = power
     final double headingVelConstant = wheelbaseRadius * Math.PI / 180; // Assuming units of deg/s
+
+    private PID velocityConvergeX, velocityConvergeY, velocityConvergeH;
 
     public MecanumDrive(LinearOpMode opMode, RobotHardware hardware) {
         super(opMode, hardware);
@@ -25,6 +29,9 @@ public class MecanumDrive extends DrivebaseHolonomic {
         rf = 0;
         lb = 0;
         rb = 0;
+        velocityConvergeX = new PID(0.003, 0, 0.002, 0, 0.2, 0);
+        velocityConvergeY = new PID(0.003, 0, 0.002, 0, 0.2, 0);
+        velocityConvergeH = new PID(0.003, 0, 0.002, 0, 0.2, 0);
     }
 
     @Override
@@ -69,7 +76,7 @@ public class MecanumDrive extends DrivebaseHolonomic {
         }
     }
 
-    public void setRelativeVelocity(double velX, double velY, double forceHeading) {
+    public void setRelativeVelocity(double velX, double velY, double velHeading, double currentVelX, double currentVelY, double currentVelHeading) {
         /* Wheel movement to move horizontally
           A          |
           |          V
@@ -78,11 +85,18 @@ public class MecanumDrive extends DrivebaseHolonomic {
           V          |
         */
         //https://discord.com/channels/445308068721590273/456178951849771028/891435261014192128
+        velocityConvergeX.update(velX, currentVelX);
+        velocityConvergeY.update(velY, currentVelY);
+        velocityConvergeH.update(velHeading, currentVelHeading);
 
-        lf = velocityToPower(2*(velY*0.95 + velX*1.05) - (forceHeading *headingVelConstant *1.41), "lf");
-        rf = velocityToPower(2*(velY*0.95 - velX*1.05) + (forceHeading *headingVelConstant *1.41), "rf");
-        lb = velocityToPower(2*(velY*0.95 - velX*1.05) - (forceHeading *headingVelConstant *1.41), "lb");
-        rb = velocityToPower(2*(velY*0.95 + velX*1.05) + (forceHeading *headingVelConstant *1.41), "rb");
+        double powX = velX*velToPowerConstant + velocityConvergeX.correction;
+        double powY = velY*velToPowerConstant + velocityConvergeY.correction;
+        double powH = velHeading*velToPowerConstant + velocityConvergeH.correction;
+
+        lf = 2*(powY*0.95 + powX*1.05) - (powH *headingVelConstant *1.41);
+        rf = 2*(powY*0.95 - powX*1.05) + (powH *headingVelConstant *1.41);
+        lb = 2*(powY*0.95 - powX*1.05) - (powH *headingVelConstant *1.41);
+        rb = 2*(powY*0.95 + powX*1.05) + (powH *headingVelConstant *1.41);
     }
 
     @Override
@@ -147,10 +161,6 @@ public class MecanumDrive extends DrivebaseHolonomic {
             hardware.getMotor("driveBackLeft").setDirection(DcMotor.Direction.REVERSE);
             hardware.getMotor("driveBackRight").setDirection(DcMotor.Direction.FORWARD);
         }
-    }
-
-    private double velocityToPower(double velocity, String wheel) {
-        return velocity * velToPowerConstant;
     }
 
     private boolean slipping(String wheel) { // Need to figure this out. not urgent tho

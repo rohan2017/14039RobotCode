@@ -27,11 +27,12 @@ public class testDrivebase extends LinearOpMode {
 
                 bot.drivebase.setPowers((y2-x2), (y1+x1), (y2+x2), (y1-x1));
             }else {
-                bot.drivebase.setRelativeVelocity(gamepad1.left_stick_x*5, -gamepad1.left_stick_y*5, -gamepad1.right_stick_x*5);
+                bot.drivebase.setRelativeVelocity(gamepad1.left_stick_x*0.5, -gamepad1.left_stick_y*0.5, -gamepad1.right_stick_x*0.5, gamepad1.left_stick_x*0.5, -gamepad1.left_stick_y*0.5, -gamepad1.right_stick_x*0.5);
             }
             bot.drivebase.update();
-            telemetry.addData("JoyX",gamepad1.right_stick_x);
-            telemetry.addData("JoyY",-gamepad1.right_stick_y);
+            telemetry.addData("MovementJoyX",gamepad1.left_stick_x*0.5);
+            telemetry.addData("MovementJoyY",-gamepad1.left_stick_y*0.5);
+            telemetry.addData("HeadingJoyX",-gamepad1.right_stick_x*0.5);
             telemetry.update();
         }
         bot.drivebase.freeze();

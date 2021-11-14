@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Subsystems.Movement;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Controllers.PID;
+import org.firstinspires.ftc.teamcode.Controllers.SCurve;
 import org.firstinspires.ftc.teamcode.MathFunctions.PointEx;
 import org.firstinspires.ftc.teamcode.Controllers.TrapezoidalCurve;
 import org.firstinspires.ftc.teamcode.Subsystems.Localization.Odometer;
@@ -22,7 +23,7 @@ public class MovementHolonomic extends Movement {
     private LinearOpMode opMode;
 
     private PID orient;
-    private TrapezoidalCurve speedFinder;
+    private SCurve speedFinder;
 
     public MovementHolonomic (LinearOpMode opmode, DrivebaseHolonomic drivebase, Odometer odometer) {
         super(drivebase);
@@ -36,8 +37,9 @@ public class MovementHolonomic extends Movement {
         targetY = 0;
         targetHeading = 0;
 
-        orient = new PID(0.3,0,0.2,0,0.4,0);
-        speedFinder = new TrapezoidalCurve(10, 0.8);
+        orient = new PID(0.2,0,0.2,0,0.5,0);
+        //speedFinder = new TrapezoidalCurve(10, 0.8);
+        speedFinder = new SCurve(10);
         state = "idle";
     }
 
@@ -92,7 +94,7 @@ public class MovementHolonomic extends Movement {
             double h = odometer.heading;
             double xRelVel = cosine(-h) * xVel - sine(-h) * yVel;
             double yRelVel = sine(-h) * xVel + cosine(-h) * yVel;
-            drivebase.setRelativeVelocity(xRelVel, yRelVel, hVel);
+            drivebase.setRelativeVelocity(xRelVel, yRelVel, hVel, odometer.xVel, odometer.yVel, odometer.headingVel);
         }
     }
 
@@ -111,7 +113,7 @@ public class MovementHolonomic extends Movement {
     public void setTargetPath(ArrayList<PointEx> path) {}
 
     private void updateControllers() {
-        speedFinder = new TrapezoidalCurve(distance(targetX, targetY, odometer.x, odometer.y), 0.8);
+        speedFinder = new SCurve(distance(targetX, targetY, odometer.x, odometer.y));
     }
 
     public double getDistance() {
