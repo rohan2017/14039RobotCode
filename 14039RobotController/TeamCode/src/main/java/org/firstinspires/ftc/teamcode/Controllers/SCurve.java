@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Controllers;
 public class SCurve extends Controller {
 
     private double distance;
+    private double time;
     private double accelerationSlope = 5;
     private double decelerationSlope = -0.8;
     private double minVel = 0.05;
@@ -14,6 +15,8 @@ public class SCurve extends Controller {
 
     public SCurve(double distance) {
         this.distance = distance;
+
+
         t = Math.log(maxVel/minVel - 1) / maxVel;
         d = t/decelerationSlope + distance;
         c = t/accelerationSlope;

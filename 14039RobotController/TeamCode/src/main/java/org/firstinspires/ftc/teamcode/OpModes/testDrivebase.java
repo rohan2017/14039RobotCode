@@ -3,13 +3,15 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.Robots.FFRobot;
 import org.firstinspires.ftc.teamcode.Robots.MecanumChassisBot;
 
 @Autonomous(name="Drivebase Test", group="Tests")
 public class testDrivebase extends LinearOpMode {
 
     // Declare OpMode Members
-    private MecanumChassisBot bot = new MecanumChassisBot(this);
+    //private MecanumChassisBot bot = new MecanumChassisBot(this);
+    private FFRobot bot = new FFRobot(this);
 
     @Override
     public void runOpMode() {
