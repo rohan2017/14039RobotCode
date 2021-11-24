@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpModes;
+package org.firstinspires.ftc.teamcode.OpModes.Tests;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -32,9 +32,7 @@ public class testDrivebase extends LinearOpMode {
                 bot.drivebase.setRelativeVelocity(gamepad1.left_stick_x*0.5, -gamepad1.left_stick_y*0.5, -gamepad1.right_stick_x*0.5, gamepad1.left_stick_x*0.5, -gamepad1.left_stick_y*0.5, -gamepad1.right_stick_x*0.5);
             }
             bot.drivebase.update();
-            telemetry.addData("MovementJoyX",gamepad1.left_stick_x*0.5);
-            telemetry.addData("MovementJoyY",-gamepad1.left_stick_y*0.5);
-            telemetry.addData("HeadingJoyX",-gamepad1.right_stick_x*0.5);
+
             telemetry.update();
         }
         bot.drivebase.freeze();

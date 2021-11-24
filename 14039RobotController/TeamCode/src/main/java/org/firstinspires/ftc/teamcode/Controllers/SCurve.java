@@ -38,6 +38,9 @@ public class SCurve extends Controller {
         }else if(input > crossover) {
             return maxVel / (1 + Math.pow(Math.E, (decelerationSlope * maxVel * (d - input))));
         }
+        else{
+            return  0;
+        }
     }
 
     public double evaluateDistance(double input) {
