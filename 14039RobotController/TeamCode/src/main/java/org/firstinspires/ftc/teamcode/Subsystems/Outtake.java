@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Hardware;
+package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -32,6 +32,7 @@ public class Outtake {
     public void setLiftPower(double pow){
         powerLift = pow;
     }
+
     public void setArmPower(double pow){
         if(pow < 1 && pow > -0.8) {
             powerArm = pow;

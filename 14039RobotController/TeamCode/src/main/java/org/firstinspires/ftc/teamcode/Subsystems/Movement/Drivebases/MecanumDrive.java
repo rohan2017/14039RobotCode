@@ -10,17 +10,21 @@ public class MecanumDrive extends DrivebaseHolonomic {
 
     private double lf, rf, lb, rb; //motor/wheel target rotational velocities
 
-    private final double wheelbaseRadius = 40; //cm
-    private final double wheelRadius = 5.08; //cm
-    private final double gearRatio = 22.0/20.0; //motor-rpm : wheel-rpm
-    private final double ticksPerRev = 10; //ticks-per-revolution of motor shaft
-    final double velToPowerConstant = 0.016 * gearRatio/wheelRadius; // vel * this = power
-    final double headingVelConstant = wheelbaseRadius * Math.PI / 180; // Assuming units of deg/s
+    private final double wheelbaseRadius; //cm
+    private final double wheelRadius; //cm
+    private final double gearRatio; //motor-rpm : wheel-rpm
+    final double velToPowerConstant; // vel * this = power
+    final double headingVelConstant; // Assuming units of deg/s
 
     private PID velocityConvergeX, velocityConvergeY, velocityConvergeH;
 
-    public MecanumDrive(LinearOpMode opMode, RobotHardware hardware) {
+    public MecanumDrive(LinearOpMode opMode, RobotHardware hardware, double wheelbaseRadius, double wheelRadius, double gearRatio) {
         super(opMode, hardware);
+        this.wheelbaseRadius = wheelbaseRadius;
+        this.wheelRadius = wheelRadius;
+        this.gearRatio = gearRatio;
+        velToPowerConstant = 0.016 * gearRatio/wheelRadius;
+        headingVelConstant = wheelbaseRadius * Math.PI / 180;
     }
 
     @Override

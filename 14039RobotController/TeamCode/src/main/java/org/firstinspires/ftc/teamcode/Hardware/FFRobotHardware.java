@@ -5,6 +5,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -18,6 +19,10 @@ public class FFRobotHardware extends RobotHardware {
     public static DcMotorEx rightFront, leftFront, leftBack, rightBack;
     //IMU
     public static BNO055IMU imu;
+    //Operator Motors
+    public static DcMotorEx intake, lift, arm;
+    //Operator Servos
+    public static Servo door, pusher, rotator;
     //Timer
     public static ElapsedTime elapsedTime = new ElapsedTime();
 
@@ -31,6 +36,15 @@ public class FFRobotHardware extends RobotHardware {
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
         rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
+
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
+        lift = hardwareMap.get(DcMotorEx.class, "lift");
+
+        arm = hardwareMap.get(DcMotorEx.class, "arm");
+        door = hardwareMap.get(Servo.class, "door");
+
+        pusher = hardwareMap.get(Servo.class, "pusher");
+        rotator = hardwareMap.get(Servo.class, "rotator");
 
         //IMU
         imu =  hardwareMap.get(BNO055IMU.class, "imu");
@@ -88,13 +102,34 @@ public class FFRobotHardware extends RobotHardware {
             case "driveFrontLeft":
                 return leftFront;
             case "driveBackRight":
+            case "verticalEncoder":
                 return rightBack;
             case "driveBackLeft":
+            case "horizontalEncoder":
                 return leftBack;
+            case "intake":
+                return intake;
+            case "lift":
+                return lift;
+            case "arm":
+                return arm;
             default:
                 return null;
         }
 
+    }
+
+    public Servo getServo(String ID){
+        switch (ID) {
+            case "door":
+                return door;
+            case "pusher":
+                return pusher;
+            case "rotator":
+                return rotator;
+            default:
+                return null;
+        }
     }
 
     @Override

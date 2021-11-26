@@ -27,8 +27,7 @@ public class Odometer2WIMU extends Odometer{
     Odometer measurements can be in whatever units you want, as long as you use the same units for every constant
     */
 
-    private final double horizontalOffset = 3.25;
-    private final double verticalOffset = 17.75;
+    private final double horizontalOffset, verticalOffset;
 
     // These variables allow you to set the direction of the encoders regardless of any reversing going on elsewhere
     private double verticalDirection = -1;
@@ -44,10 +43,12 @@ public class Odometer2WIMU extends Odometer{
 
     private double[] totalPositionChange = {0,0};
 
-    public Odometer2WIMU(LinearOpMode opMode, RobotHardware robothardware) {
+    public Odometer2WIMU(LinearOpMode opMode, RobotHardware robothardware, double horizontalOffset, double verticalOffset) {
 
         this.opMode = opMode;
         this.hardware = robothardware;
+        this.horizontalOffset = horizontalOffset;
+        this.verticalOffset = verticalOffset;
 
     }
 
@@ -59,7 +60,6 @@ public class Odometer2WIMU extends Odometer{
         lastHeadingVel = 0;
         ticksToDistance = wheelRadius*2*Math.PI/ticksPerRevolution*gearRatio;
         startTracking(0,0,0);
-
     }
 
     @Override

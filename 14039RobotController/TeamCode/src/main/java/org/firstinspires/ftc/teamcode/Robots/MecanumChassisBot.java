@@ -4,8 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Hardware.BasicRobotHardware;
-import org.firstinspires.ftc.teamcode.Hardware.Intake;
-import org.firstinspires.ftc.teamcode.Hardware.Outtake;
 import org.firstinspires.ftc.teamcode.Subsystems.Localization.Odometer2WIMU;
 import org.firstinspires.ftc.teamcode.Subsystems.Movement.Drivebases.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Movement.MovementHolonomic;
@@ -14,19 +12,14 @@ public class MecanumChassisBot extends Robot {
 
     public MecanumDrive drivebase;
     public Odometer2WIMU odometer;
-    //public Linear_Odometer odometer;
     public MovementHolonomic movement;
-    public Intake intake;
-    public Outtake outtake;
+
     public MecanumChassisBot(LinearOpMode opMode) {
         super(opMode);
         hardware = new BasicRobotHardware();
-        drivebase = new MecanumDrive(opMode, hardware);
-        odometer = new Odometer2WIMU(opMode, hardware);
-        //odometer = new Linear_Odometer(opMode, hardware);
+        drivebase = new MecanumDrive(opMode, hardware, 40, 5.08, 22.0/20);
+        odometer = new Odometer2WIMU(opMode, hardware, 3.25, 17.75);
         movement = new MovementHolonomic(opMode, drivebase, odometer);
-        intake = new Intake(opMode, hardware);
-        outtake = new Outtake(opMode, hardware);
     }
 
     public void initialize(HardwareMap hardwareMap) {
@@ -38,16 +31,13 @@ public class MecanumChassisBot extends Robot {
         drivebase.resetDriveEncoders();
         drivebase.reverseMotors("Right");
         drivebase.setPowerBehavior("brake");
-        drivebase.setRunMode("withoutEncoder");
+        drivebase.setRunMode("withEncoder");
         movement.initialize();
-        outtake.initialize();
     }
 
     public void update() {
-        drivebase.update();
         odometer.update();
-        intake.update();
         movement.update();
-        outtake.update();
+        drivebase.update();
     }
 }
