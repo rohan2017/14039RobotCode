@@ -2,15 +2,16 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robots.FFRobot;
 import org.firstinspires.ftc.teamcode.Robots.MecanumChassisBot;
 
-@Autonomous(name="teleOp", group="TeleOp")
+@TeleOp(name="teleOp", group="TeleOp")
 public class teleOp extends LinearOpMode {
 
     // Declare OpMode Members
-    private MecanumChassisBot bot = new MecanumChassisBot(this);
+    private FFRobot bot = new FFRobot(this);
 
     @Override
     public void runOpMode() {
@@ -30,7 +31,7 @@ public class teleOp extends LinearOpMode {
             bot.drivebase.setPowers((y2-x2), (y1+x1), (y2+x2), (y1-x1));
 
             if(gamepad1.a) {
-                bot.drivebase.setPowers(0.5, 0.5, 0.5, 0.5);
+                bot.drivebase.setPowers(1, 1, 1, 1);
             }
 
             // INTAKE
@@ -83,6 +84,7 @@ public class teleOp extends LinearOpMode {
             }else if(gamepad2.x) {
                 bot.outtake.rotatorPosition = 0.8;
             }
+
             bot.update();
 
             telemetry.update();

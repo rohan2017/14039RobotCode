@@ -99,8 +99,8 @@ public class Linear_Odometer extends Odometer{
 
 
 
-            x -= (Math.sin(headingImu) * verticalChange) + (Math.sin(90+headingImu) * horizontalChange);
-            y += (Math.cos(headingImu) * verticalChange) - (Math.cos(90+headingImu) * horizontalChange);
+            x -= (Math.sin(headingImu) * verticalChange) + (Math.sin(Math.PI/2+headingImu) * horizontalChange);
+            y += (Math.cos(headingImu) * verticalChange) - (Math.cos(Math.PI/2+headingImu) * horizontalChange);
 
             lastHeadingRadians = headingRadians;
             lastHeadingImu = headingImu;

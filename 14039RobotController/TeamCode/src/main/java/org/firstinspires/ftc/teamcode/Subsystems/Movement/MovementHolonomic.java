@@ -19,17 +19,13 @@ public class MovementHolonomic extends Movement {
     public double headingThreshold = 2;
 
     private DrivebaseHolonomic drivebase;
-    private Odometer odometer;
-    private LinearOpMode opMode;
 
     private PID orient;
     private SCurve speedFinder;
 
     public MovementHolonomic (LinearOpMode opmode, DrivebaseHolonomic drivebase, Odometer odometer) {
-        super(drivebase);
+        super(opmode, odometer);
         this.drivebase = drivebase;
-        this.odometer = odometer;
-        this.opMode = opmode;
     }
 
     public void initialize() {

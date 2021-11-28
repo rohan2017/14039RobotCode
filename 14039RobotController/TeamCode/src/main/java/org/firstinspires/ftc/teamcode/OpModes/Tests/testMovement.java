@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.Robots.MecanumChassisBot;
 import org.firstinspires.ftc.teamcode.Subsystems.Movement.MovementHolonomic;
 
-@Autonomous(name="Movement Test", group="Tests")
+@Autonomous(name="Movement Test", group="Testing")
 public class testMovement extends LinearOpMode {
 
     // Declare OpMode Members

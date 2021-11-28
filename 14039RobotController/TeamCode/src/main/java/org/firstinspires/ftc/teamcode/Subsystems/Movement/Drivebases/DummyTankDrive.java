@@ -5,11 +5,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Hardware.RobotHardware;
 
-public class TankDrive extends Drivebase {
+public class DummyTankDrive extends Drivebase {
 
     private double leftPower, rightPower;
 
-    public TankDrive(LinearOpMode opMode, RobotHardware hardware) {
+    public DummyTankDrive(LinearOpMode opMode, RobotHardware hardware) {
         super(opMode, hardware);
     }
 
@@ -53,7 +53,7 @@ public class TankDrive extends Drivebase {
         }
     }
 
-    private void setRunMode(String runMode){
+    public void setRunMode(String runMode){
 
         if(runMode.equals("withEncoder")){
             hardware.getMotor("driveFrontRight").setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -68,7 +68,7 @@ public class TankDrive extends Drivebase {
         }
     }
 
-    private void resetDriveEncoders(){
+    public void resetDriveEncoders() {
 
         hardware.getMotor("driveFrontRight").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hardware.getMotor("driveFrontLeft").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -77,7 +77,7 @@ public class TankDrive extends Drivebase {
 
     }
 
-    private void reverseMotors(String side) {
+    public void reverseMotors(String side) {
 
         // Reverse the necessary motors so that when positive power is set to all four, the robot moves forward
         if(side.equals("Right")) {
@@ -92,6 +92,19 @@ public class TankDrive extends Drivebase {
             hardware.getMotor("driveBackRight").setDirection(DcMotor.Direction.FORWARD);
         }
 
+    }
+
+    public double getRightEncoder() {
+        return (hardware.getMotor("driveFrontRight").getCurrentPosition() + hardware.getMotor("driveBackRight").getCurrentPosition())/2.0;
+    }
+
+    public double getLeftEncoder() {
+        return (hardware.getMotor("driveFrontLeft").getCurrentPosition() + hardware.getMotor("driveBackLeft").getCurrentPosition())/2.0;
+    }
+
+    public void setPowers(double leftPower, double rightPower) {
+        this.leftPower = leftPower;
+        this.rightPower = rightPower;
     }
 
 }

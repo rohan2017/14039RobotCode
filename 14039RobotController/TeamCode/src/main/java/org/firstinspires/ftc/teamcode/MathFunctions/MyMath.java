@@ -84,6 +84,17 @@ public class MyMath {
         return allPoints;
     }
 
+    public static ArrayList<PointEx> circleCircleIntersection(double x1, double y1, double r1, double x2, double y2, double r2) {
+        double xCoeff = -2*(x1-x2);
+        double yCoeff = -2*(y1-y2);
+        double constant = (Math.pow(r1, 2) - Math.pow(r2, 2)) - (Math.pow(x1, 2) - Math.pow(x2, 2)) - (Math.pow(y1, 2) - Math.pow(y2, 2));
+
+        double lineX1 = constant/xCoeff;
+        double lineY2 = constant/yCoeff;
+
+        return lineCircleIntersection(x1, y1, r1, lineX1, 0, 0, lineY2);
+    }
+
     public static double[] cubicRoots(double a, double b, double c, double d) {
 
         double A=b/a;

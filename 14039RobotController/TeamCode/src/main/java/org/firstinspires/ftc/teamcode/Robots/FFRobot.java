@@ -23,7 +23,7 @@ public class FFRobot extends Robot {
         super(opMode);
         hardware = new FFRobotHardware();
         drivebase = new MecanumDrive(opMode, hardware, 40, 7.62, 22.0/20);
-        odometer = new Odometer2WIMU(opMode, hardware);
+        odometer = new Odometer2WIMU(opMode, hardware,5, 0);
         movement = new MovementHolonomic(opMode, drivebase, odometer);
         intake = new Intake(opMode, hardware);
         outtake = new Outtake(opMode, hardware);
