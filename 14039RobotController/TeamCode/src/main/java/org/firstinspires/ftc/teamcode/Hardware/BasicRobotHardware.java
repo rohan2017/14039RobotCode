@@ -34,9 +34,7 @@ public class BasicRobotHardware extends RobotHardware {
         leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
         rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
 
-        //Adhametry
-        parallelEncoder = hardwareMap.get(DcMotorEx.class, "parallelEncoder");
-        perpendicularEncoder = hardwareMap.get(DcMotorEx.class, "perpendicularEncoder");
+
 
         //IMU
         imu =  hardwareMap.get(BNO055IMU.class, "imu");
@@ -93,14 +91,12 @@ public class BasicRobotHardware extends RobotHardware {
                 return rightFront;
             case "driveFrontLeft":
                 return leftFront;
-            case "driveBackRight":
-                return rightBack;
             case "driveBackLeft":
-                return leftBack;
             case "verticalEncoder":
-                return parallelEncoder;
+                return leftBack;
+            case "driveBackRight":
             case "horizontalEncoder":
-                return perpendicularEncoder;
+                return rightBack;
             default:
                 return null;
         }

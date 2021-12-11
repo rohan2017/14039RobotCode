@@ -91,6 +91,13 @@ public class ChassisHardware extends RobotHardware {
                 return rightBack;
             case "driveBackLeft":
                 return leftBack;
+            case "verticalEncoder":
+                return leftBack;
+            case "horizontalEncoder"    :
+                return rightBack;
+
+
+
             default:
                 return null;
         }

@@ -40,7 +40,7 @@ public class MovementDummyTankDrive extends Movement {
                 // State determination
                 currentDistance = (drivebase.getLeftEncoder() + drivebase.getRightEncoder())/2;
                 currentHeading = odometer.heading;
-                if (distance(targetHeading, targetDistance, currentHeading, currentDistance) > 10) {
+                if (distance(targetHeading, targetDistance, currentHeading, currentDistance) < 2) {
                     state = "converged";
                 }else {
                     state = "transient";

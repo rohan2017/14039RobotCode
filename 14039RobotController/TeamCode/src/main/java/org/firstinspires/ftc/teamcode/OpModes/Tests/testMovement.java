@@ -19,20 +19,13 @@ public class testMovement extends LinearOpMode {
         waitForStart();
         telemetry.addData("status", "running");
         telemetry.update();
-        bot.movement.setTargets(0, 80, 0);
+        bot.movement.setTargets(20, 0);
         while (opModeIsActive() && !bot.movement.state.equals("converged")) {
             bot.movement.update();
-            telemetry.addData("distance", bot.movement.getDistance());
-            telemetry.addData("speed", bot.movement.getSpeed());
+
             telemetry.update();
         }
-        bot.movement.setTargets(40, 40, 90);
-        while (opModeIsActive() && !bot.movement.state.equals("converged")) {
-            bot.movement.update();
-            telemetry.addData("distance", bot.movement.getDistance());
-            telemetry.addData("speed", bot.movement.getSpeed());
-            telemetry.update();
-        }
+
     }
 
     private void initialize() {

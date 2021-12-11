@@ -20,23 +20,21 @@ public class detector extends OpenCvPipeline {
     }
     private Location location;
 
+    private double leftValue,rightValue, midValue;
+
     static final Rect LEFT_ROI = new Rect(new Point(0, 35), new Point(70, 100));
 
     static final Rect RIGHT_ROI = new Rect(new Point(80, 35), new Point(150, 100));
 
     static final Rect MID_ROI = new Rect(new Point(160, 35), new Point(230, 100));
 
-    static double thresh = 0.4;
-
     public detector(Telemetry t) { telemetry = t; }
-
-
 
     @Override
     public Mat processFrame(Mat input) {
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
-        Scalar lowHSV = new Scalar(26, 72, 39);
-        Scalar highHSV = new Scalar(106, 232, 199);
+        Scalar lowHSV = new Scalar(0,  175, 130);
+        Scalar highHSV = new Scalar(60, 275, 280);
 
         Core.inRange(mat, lowHSV, highHSV, mat);
 
@@ -44,31 +42,24 @@ public class detector extends OpenCvPipeline {
         Mat right = mat.submat(RIGHT_ROI);
         Mat mid = mat.submat(MID_ROI);
 
-        double leftValue = Core.sumElems(left).val[0] / LEFT_ROI.area() / 255;
-        double rightValue = Core.sumElems(right).val[0] / RIGHT_ROI.area() / 255;
-        double midValue = Core.sumElems(mid).val[0] / MID_ROI.area() / 255;
+        leftValue = Core.sumElems(left).val[0] / LEFT_ROI.area() / 255;
+        rightValue = Core.sumElems(right).val[0] / RIGHT_ROI.area() / 255;
+        midValue = Core.sumElems(mid).val[0] / MID_ROI.area() / 255;
 
         left.release();
         right.release();
         mid.release();
 
+        double min = min(leftValue,rightValue,midValue);
 
-        if (leftValue > rightValue && leftValue > midValue) {
-            location = Location.LEFT;
-            telemetry.addData("pos", "left");
-        }else if (rightValue > midValue && rightValue > leftValue){
+        if (min == leftValue){
+            location = location.LEFT;
+        } else if (min == rightValue){
             location = Location.RIGHT;
-            telemetry.addData("pos", "right");
-        }else{
-            location = Location.MID;
-            telemetry.addData("pos", "middle");
+        } else {
+            location = location.MID;
         }
 
-        telemetry.addData("Left percentage", Math.round(leftValue * 100) + "%");
-        telemetry.addData("Right percentage", Math.round(rightValue * 100) + "%");
-        telemetry.addData("Middle percentage", Math.round(midValue * 100) + "%");
-
-        telemetry.update();
 
         Imgproc.cvtColor(mat, mat, Imgproc.COLOR_GRAY2RGB);
 
@@ -82,7 +73,22 @@ public class detector extends OpenCvPipeline {
         return mat;
     }
 
+    public static double min(double a, double b, double c) {
+        return Math.min(Math.min(a, b), c);
+    }
     public Location getLocation() {
         return location;
     }
+
+    public double getRightPercent(){
+        return rightValue;
+    }
+    public double getLeftValue(){
+        return leftValue;
+    }
+    public double getMidValue(){
+        return midValue;
+    }
+
+
 }

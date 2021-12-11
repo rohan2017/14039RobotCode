@@ -38,6 +38,9 @@ public class visionTest extends LinearOpMode {
 
         while (opModeIsActive()) {
             telemetry.addData("Position", detector.getLocation());
+            telemetry.addData("Left Value", detector.getLeftValue());
+            telemetry.addData("Mid Value", detector.getMidValue());
+            telemetry.addData("Right Value", detector.getRightPercent());
             telemetry.update();
 
         }
