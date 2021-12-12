@@ -102,9 +102,9 @@ public class DummyTankDrive extends Drivebase {
         return (hardware.getMotor("driveFrontLeft").getCurrentPosition() + hardware.getMotor("driveBackLeft").getCurrentPosition())/2.0;
     }
 
-    public void setPowers(double leftPower, double rightPower) {
-        this.leftPower = leftPower;
-        this.rightPower = rightPower;
+    public void setPowers(double leftPower1, double rightPower1) {
+        leftPower = leftPower1;
+        rightPower = rightPower1;
     }
 
 }

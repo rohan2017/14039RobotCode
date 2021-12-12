@@ -20,7 +20,6 @@ public class testOdometer extends LinearOpMode {
         waitForStart();
         telemetry.addData("status","running");
         telemetry.update();
-
         bot.odometer.startTracking(0,0,0);
         while(opModeIsActive()) {
             telemetry.addData("X", bot.odometer.x);
@@ -40,6 +39,7 @@ public class testOdometer extends LinearOpMode {
 
     private void initialize() {
         bot.initialize(hardwareMap);
+
         telemetry.addData("status","initialized");
         telemetry.update();
     }

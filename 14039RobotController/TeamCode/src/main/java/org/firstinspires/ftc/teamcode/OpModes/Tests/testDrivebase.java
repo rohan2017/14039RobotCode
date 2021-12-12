@@ -30,7 +30,7 @@ public class testDrivebase extends LinearOpMode {
                 double x2 = gamepad1.left_stick_x;
                 double y2 = -gamepad1.left_stick_y;
 
-                //bot.drivebase.setPowers((y2+x2), (y1-x1), (y2-x2), (y1+x1));
+                bot.drivebase.setPowers((y2+x2), (y1-x1), (y2-x2), (y1+x1));
                 //bot.drivebase.setPowers(y2, y1);
             }else {
                 //bot.drivebase.setRelativeVelocity(gamepad1.left_stick_x*0.5, -gamepad1.left_stick_y*0.5, -gamepad1.right_stick_x*0.5, gamepad1.left_stick_x*0.5, -gamepad1.left_stick_y*0.5, -gamepad1.right_stick_x*0.5);
