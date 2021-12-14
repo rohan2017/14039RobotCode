@@ -20,7 +20,7 @@ public class nonHolonomicBot extends Robot {
 
     public nonHolonomicBot(LinearOpMode opMode) {
         super(opMode);
-        hardware = new BasicRobotHardware();
+        hardware = new ChassisHardware();
         drivebase = new DummyTankDrive(opMode, hardware);
         odometer = new DummyOdometer(opMode, hardware);
         movement = new MovementDummyTankDrive(opMode, drivebase, odometer);

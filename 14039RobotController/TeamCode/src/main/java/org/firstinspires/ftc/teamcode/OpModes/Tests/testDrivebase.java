@@ -8,12 +8,12 @@ import org.firstinspires.ftc.teamcode.Robots.FFRobot;
 import org.firstinspires.ftc.teamcode.Robots.FourWheelRobot;
 import org.firstinspires.ftc.teamcode.Robots.MecanumChassisBot;
 
-@TeleOp(name="Mec Drive Test", group="Testing")
+@TeleOp(name="Drivebase Test", group="Testing")
 public class testDrivebase extends LinearOpMode {
 
     // Declare OpMode Members
-    //private FourWheelRobot bot = new FourWheelRobot(this);
-    private MecanumChassisBot bot = new MecanumChassisBot(this);
+    private FourWheelRobot bot = new FourWheelRobot(this);
+    //private MecanumChassisBot bot = new MecanumChassisBot(this);
     //private FFRobot bot = new FFRobot(this);
 
     @Override
@@ -30,8 +30,8 @@ public class testDrivebase extends LinearOpMode {
                 double x2 = gamepad1.left_stick_x;
                 double y2 = -gamepad1.left_stick_y;
 
-                bot.drivebase.setPowers((y2+x2), (y1-x1), (y2-x2), (y1+x1));
-                //bot.drivebase.setPowers(y2, y1);
+                //bot.drivebase.setPowers((y2+x2), (y1-x1), (y2-x2), (y1+x1));
+                bot.drivebase.setPowers(y2, y1);
             }else {
                 //bot.drivebase.setRelativeVelocity(gamepad1.left_stick_x*0.5, -gamepad1.left_stick_y*0.5, -gamepad1.right_stick_x*0.5, gamepad1.left_stick_x*0.5, -gamepad1.left_stick_y*0.5, -gamepad1.right_stick_x*0.5);
             }
@@ -44,6 +44,7 @@ public class testDrivebase extends LinearOpMode {
 
     private void initialize() {
         bot.initialize(hardwareMap);
+        bot.movement.state = "transient";
         telemetry.addData("status","initialized");
         telemetry.update();
     }

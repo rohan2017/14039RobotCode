@@ -12,6 +12,7 @@ public class Intake {
     private RobotHardware hardware;
 
     private double power;
+    private double leftPos, rightPos;
 
     public Intake(LinearOpMode opMode, RobotHardware robothardware) {
         this.opMode = opMode;
@@ -19,7 +20,7 @@ public class Intake {
     }
 
     public void initialize() {
-        hardware.getMotor("intake").setDirection(DcMotor.Direction.REVERSE);
+        //hardware.getMotor("intake").setDirection(DcMotor.Direction.REVERSE);
     }
 
     public void setPower(double pow){
@@ -27,7 +28,19 @@ public class Intake {
     }
 
     public void update () {
-        hardware.getMotor("intake").setPower(power);
+        //hardware.getMotor("intake").setPower(power);
+        hardware.getServo("leftFlipper").setPosition(leftPos);
+        hardware.getServo("rightFlipper").setPosition(rightPos);
+    }
+
+    public void flipUp(){
+        leftPos = 0;
+        rightPos = 1;
+    }
+
+    public void flipDown(){
+        leftPos = 0.62;
+        rightPos = 0.38;
     }
 
 

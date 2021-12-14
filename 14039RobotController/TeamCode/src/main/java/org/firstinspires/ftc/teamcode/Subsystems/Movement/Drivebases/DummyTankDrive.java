@@ -9,14 +9,33 @@ public class DummyTankDrive extends Drivebase {
 
     private double leftPower, rightPower;
 
+    private double leftCal, rightCal;
+
+    private double wheelRadius;
+    private double gearRatio; // motor rotations per wheel rotations
+    private double TpR;
+    private double wheelBase;
+    private double ticksPerCm;
+
     public DummyTankDrive(LinearOpMode opMode, RobotHardware hardware) {
         super(opMode, hardware);
+        setDriveConstants(5, 1, 537.6, 27);
+    }
+
+    public void setDriveConstants(double wheelRadius, double gearRatio, double TpR, double wheelBase) {
+        this.wheelRadius = wheelRadius;
+        this.gearRatio = gearRatio;
+        this.TpR = TpR;
+        this.wheelBase = wheelBase;
+        ticksPerCm = TpR*gearRatio/(wheelRadius*2*Math.PI);
     }
 
     @Override
     public void initialize(){
         leftPower = 0;
         rightPower = 0;
+        rightCal = 0;
+        leftCal = 0;
     }
 
     @Override
@@ -68,13 +87,18 @@ public class DummyTankDrive extends Drivebase {
         }
     }
 
-    public void resetDriveEncoders() {
+    public void hardwareResetDriveEncoders() {
 
         hardware.getMotor("driveFrontRight").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hardware.getMotor("driveFrontLeft").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hardware.getMotor("driveBackLeft").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hardware.getMotor("driveBackRight").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+    }
+
+    public void resetDriveEncoders() {
+        leftCal = getLeftEncoder();
+        rightCal = getRightEncoder();
     }
 
     public void reverseMotors(String side) {
@@ -95,11 +119,11 @@ public class DummyTankDrive extends Drivebase {
     }
 
     public double getRightEncoder() {
-        return (hardware.getMotor("driveFrontRight").getCurrentPosition() + hardware.getMotor("driveBackRight").getCurrentPosition())/2.0;
+        return (hardware.getMotor("driveFrontRight").getCurrentPosition() + hardware.getMotor("driveBackRight").getCurrentPosition())/(2.0*ticksPerCm) - rightCal;
     }
 
     public double getLeftEncoder() {
-        return (hardware.getMotor("driveFrontLeft").getCurrentPosition() + hardware.getMotor("driveBackLeft").getCurrentPosition())/2.0;
+        return (hardware.getMotor("driveFrontLeft").getCurrentPosition() + hardware.getMotor("driveBackLeft").getCurrentPosition())/(2.0*ticksPerCm) - leftCal;
     }
 
     public void setPowers(double leftPower1, double rightPower1) {

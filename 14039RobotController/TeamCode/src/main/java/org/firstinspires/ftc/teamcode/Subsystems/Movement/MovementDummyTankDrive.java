@@ -19,14 +19,13 @@ public class MovementDummyTankDrive extends Movement {
     private double currentHeading;
 
     private PID orient;
-    private PID lateral;
+    private PID longitudinal;
 
-    public MovementDummyTankDrive(LinearOpMode opMode, DummyTankDrive drivebase, Odometer odometer) {
+    public MovementDummyTankDrive(LinearOpMode opMode, DummyTankDrive drivetrain, Odometer odometer) {
         super(opMode, odometer);
-        this.drivebase = drivebase;
-
-        orient = new PID(0.1,0,0.1,0,0.4,0);
-        lateral = new PID(0.1,0,0.2,0,0.8,0);
+        this.drivebase = drivetrain;
+        orient = new PID(0.03,0,0.05,0,0.2,0);
+        longitudinal = new PID(0.15,0,0.15,0,0.5,0);
     }
 
     public void initialize() {
@@ -41,19 +40,16 @@ public class MovementDummyTankDrive extends Movement {
                 // State determination
                 currentDistance = (drivebase.getLeftEncoder() + drivebase.getRightEncoder())/2;
                 currentHeading = odometer.heading;
-                if (distance(targetHeading, targetDistance, currentHeading, currentDistance) < 30) {
+                if (distance(targetHeading, targetDistance, currentHeading, currentDistance) < 5) {
                     state = "converged";
                 }else {
                     state = "transient";
                 }
                 // Actions
                 if (state.equals("transient")) {
-
                     orient.update(targetHeading, currentHeading);
-                    lateral.update(targetDistance, currentDistance);
-                    drivebase.setPowers(lateral.correction - orient.correction, lateral.correction + orient.correction);
-
-                    drivebase.update();
+                    longitudinal.update(targetDistance, currentDistance);
+                    drivebase.setPowers(longitudinal.correction - orient.correction, longitudinal.correction + orient.correction);                    drivebase.update();
                 } else if (state.equals("converged")) {
                     drivebase.freeze();
                 }
@@ -67,7 +63,7 @@ public class MovementDummyTankDrive extends Movement {
     public void setTargets(double targetDistance, double targetHeading) {
         this.targetHeading = targetHeading;
         this.targetDistance = targetDistance;
-        drivebase.resetDriveEncoders();
+        //drivebase.resetDriveEncoders();
         state = "transient";
     }
 
@@ -77,11 +73,12 @@ public class MovementDummyTankDrive extends Movement {
         return distance(targetHeading, targetDistance, currentHeading, currentDistance);
     }
 
-    public double getLateralCorrect(){
-        return lateral.correction;
+    public double getLongitudinalCorrect(){
+        return longitudinal.correction;
     }
     public double getHeadingCorrect(){
         return orient.correction;
     }
+    public double getHeading() {return odometer.heading;}
 
 }

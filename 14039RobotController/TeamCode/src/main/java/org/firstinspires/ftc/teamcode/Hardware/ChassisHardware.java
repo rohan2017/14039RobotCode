@@ -5,6 +5,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -16,6 +17,8 @@ public class ChassisHardware extends RobotHardware {
 
     //Drive Motors
     public static DcMotorEx rightFront, leftFront, leftBack, rightBack;
+    //Servos
+    public static Servo rightFlipper, leftFlipper;
     //IMU
     public static BNO055IMU imu;
     //Timer
@@ -34,6 +37,9 @@ public class ChassisHardware extends RobotHardware {
 
         //IMU
         imu =  hardwareMap.get(BNO055IMU.class, "imu");
+
+        rightFlipper = hardwareMap.get(Servo.class, "rightFlipper");
+        leftFlipper = hardwareMap.get(Servo.class, "leftFlipper");
 
         allHubs = hardwareMap.getAll(LynxModule.class);
 
@@ -91,17 +97,22 @@ public class ChassisHardware extends RobotHardware {
                 return rightBack;
             case "driveBackLeft":
                 return leftBack;
-            case "verticalEncoder":
-                return leftBack;
-            case "horizontalEncoder"    :
-                return rightBack;
+            default:
+                return null;
+        }
+    }
 
+    public Servo getServo(String ID){
+        switch (ID){
+            case "leftFlipper":
+                return leftFlipper;
 
+            case "rightFlipper":
+                return rightFlipper;
 
             default:
                 return null;
         }
-
     }
 
     @Override
