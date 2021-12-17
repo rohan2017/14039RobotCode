@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.teamcode.Hardware.RobotHardware;
 import org.firstinspires.ftc.teamcode.MathFunctions.MyMath;
@@ -11,126 +13,165 @@ import java.util.ArrayList;
 
 public class Outtake {
 
+    private boolean here = false, here2 = false, here3 = false;
+
     private LinearOpMode opMode;
     private RobotHardware hardware;
 
-    private double powerLift, powerArm;
-    private String doorState;
-    public double rotatorPosition;
+    // Slide variables
+    private int slidePosition = 0;
+    private final double spoolDiam = 4.318;
+    private final double ticksPerRevSpool = 580.4;
+    private final double ticksPerCm = ticksPerRevSpool*spoolDiam*Math.PI;
 
-    private final double armRad = 24.13;
-    private final double dropDistance = 10;
+    // Turret variables
+    private int turretPosition = 0;
+    private double gearRatioT = 33/15; // motor/turret rotations
+    private double ticksPerRevTMotor = 537.6;
+    private final double ticksPerDegTurret = ticksPerRevTMotor*gearRatioT/360;
 
-    private double armAngle, rotatorAngle;
+    // Tilt variables
+    private int tiltPosition = 0;
+    private final double startAngle = 10;
+    private double gearRatioP = 27/1; // motor/tilt rotation
+    private double ticksPerRevPMotor = 537.6;
+    private final double ticksPerDegTilt = ticksPerRevPMotor*gearRatioP/360;
+
+    // Basket servo
+    private double servoState;
+    private final double receivePos = 0;
+    private final double holdPos = 0.5;
+    private final double dropPos = 0.7;
+
+    public String state;
 
     public Outtake(LinearOpMode opMode, RobotHardware robothardware) {
         this.opMode = opMode;
         this.hardware = robothardware;
-        rotatorPosition = 0.8;
-        doorState = "closed";
-        powerArm = 0;
-        powerLift = 0;
+        state = "idle";
     }
 
     public void initialize() {
-        hardware.getMotor("lift").setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        hardware.getMotor("lift").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        hardware.getMotor("lift").setDirection(DcMotor.Direction.REVERSE);
-        hardware.getMotor("lift").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hardware.getMotor("arm").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
+        // Turret spin motor
+        hardware.getMotor("turret").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hardware.getMotor("turret").setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hardware.getMotor("turret").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hardware.getMotor("turret").setDirection(DcMotor.Direction.REVERSE);
+        //hardware.getMotor("turret").setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(0,0,0,0));
 
-    public void setLiftPower(double pow){
-        powerLift = pow;
-    }
+        // Tilt motor
+        hardware.getMotor("tilt").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hardware.getMotor("tilt").setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hardware.getMotor("tilt").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hardware.getMotor("tilt").setDirection(DcMotor.Direction.FORWARD);
+        //hardware.getMotor("turret").setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(0,0,0,0));
 
-    public void setArmPower(double pow){
-        if(pow < 1 && pow > -0.8) {
-            powerArm = pow;
-        }
-    }
+        // Spool motor
+        hardware.getMotor("extension").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hardware.getMotor("extension").setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hardware.getMotor("extension").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hardware.getMotor("extension").setDirection(DcMotor.Direction.REVERSE);
+        //hardware.getMotor("turret").setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(0,0,0,0));
 
-    public void doorState(String state){
-        doorState = state;
-    }
-
-    public double[] solveAngles(double targetX, double targetY) {
-        ArrayList<PointEx> allPoints = new ArrayList<>();
-        allPoints = MyMath.circleCircleIntersection(0,0,armRad,targetX,targetY,dropDistance);
-        double armAngle, armAngle2, rotatorAngle, rotatorAngle2;
-        if(allPoints.size() == 0) {
-            //No intersections
-            armAngle = 404;
-            rotatorAngle = 404;
-        }else if(allPoints.size() == 1) {
-            // 1 point
-            PointEx point = allPoints.get(0);
-            armAngle = Math.toDegrees(Math.atan2(point.y, point.x));
-            rotatorAngle = Math.toDegrees(Math.atan2(targetY-point.y, targetX-point.x));
-        }else {
-            // 2 points
-            PointEx point = allPoints.get(0);
-            armAngle = Math.toDegrees(Math.atan2(point.y, point.x));
-            rotatorAngle = Math.toDegrees(Math.atan2(targetY-point.y, targetX-point.x));
-            PointEx point2 = allPoints.get(0);
-            armAngle2 = Math.toDegrees(Math.atan2(point2.y, point2.x));
-            rotatorAngle2 = Math.toDegrees(Math.atan2(targetY-point2.y, targetX-point2.x));
-        }
-
-        double[] angles = {armAngle, rotatorAngle};
-        return angles.clone();
-    }
-
-    public void setArmAngle(double angle) {
-        // Straight out is 90 degrees
-        /*
-        0 ----.---- 180
-              |
-              |
-              90
-         */
-
-    }
-
-    public double getArmAngle(double angle) {
-        return armAngle;
-    }
-
-    public void setRotatorAngle(double angle) {
-        // Straight out is 90 degrees
-        /*
-        0 ----.---- 180
-              |
-              |
-              90
-         */
-    }
-
-    public double getRotatorAngle() {
-        return rotatorAngle;
+        // Intake Servo
+        hardware.getServo("basketFlipper").setPosition(receivePos);
+        state = "transient";
     }
 
     public void update () {
-        if(hardware.getMotor("lift").getCurrentPosition() > 10) {
-            hardware.getMotor("arm").setPower(powerArm);
-            hardware.getServo("rotator").setPosition(rotatorPosition);
+        if(opMode.opModeIsActive()) {
+            if(!state.equals("idle")) {
 
-        }else {
-            hardware.getMotor("arm").setPower(0);
-            if(powerLift < 0) {
-                powerLift = 0;
+                if(MyMath.distance(turretPosition, slidePosition, hardware.getMotor("turret").getCurrentPosition(), hardware.getMotor("extension").getCurrentPosition()) < 10) {
+                    if(Math.abs(tiltPosition - hardware.getMotor("tilt").getCurrentPosition()) < 10) {
+                        state = "converged";
+                    }else {
+                        state = "transient";
+                    }
+                }// bad but works
+
+                if(state.equals("transient")) {
+                    hardware.getMotor("turret").setTargetPosition(turretPosition);
+                    hardware.getMotor("tilt").setTargetPosition(tiltPosition);
+                    hardware.getMotor("extension").setTargetPosition(slidePosition);
+                    hardware.getMotor("turret").setPower(0.3);
+                    hardware.getMotor("tilt").setPower(0.3);
+                    hardware.getMotor("extension").setPower(0.3);
+                    if(servoState == 0) {
+                        hardware.getServo("basketFlipper").setPosition(receivePos);
+                    }else if(servoState == 1) {
+                        hardware.getServo("basketFlipper").setPosition(holdPos);
+                    }else {
+                        hardware.getServo("basketFlipper").setPosition(dropPos);
+                    }
+
+                }
+            }else {
+                hardware.getMotor("extension").setPower(0);
+                hardware.getMotor("tilt").setPower(0);
+                hardware.getMotor("turret").setPower(0);
+                hardware.getServo("basketFlipper").setPosition(receivePos);
             }
-            hardware.getServo("rotator").setPosition(0);
-        }
-
-        hardware.getMotor("lift").setPower(powerLift);
-
-        if (doorState.equals("open")) {
-            hardware.getServo("door").setPosition(0.21);
-        }else {
-            hardware.getServo("door").setPosition(0);
         }
 
     }
 
+    public void setTurretAngle(double angle) {
+        // 0 is straight/center, positive is counter-clockwise rotation
+        if(angle > -35 && angle < 35) { // upper and lower turret angle limits
+            turretPosition = (int)(angle*ticksPerDegTurret);
+        }
+    }
+
+    public void setPitchAngle(double angle) {
+        // 0 is straight flat, 15 is pointed up
+        if(angle > 0 && angle < 25) { // upper and lower turret angle limits
+            tiltPosition = (int)((angle-startAngle)*ticksPerDegTilt);
+        }
+    }
+
+    // Sets the state of the dropoff
+    public void setBoxState(int state) {
+        // 0 - Receive
+        // 1 - Hold
+        // 2 - Drop
+        servoState = state;
+    }
+
+    // Sets the length of the extrusion
+    public void setSlideLength(double length) {
+        if(length > 0 && length < 100) {
+            slidePosition = (int)(length*ticksPerCm);
+        }
+    }
+
+    // Sets the dropoff position relative to the bot
+    public void setOuttakePosition(double x, double y, double z) {}
+
+    public void setTargets(double turretAngle, double tiltAngle, double slideLength, int boxState) {
+        setTurretAngle(turretAngle);
+        setPitchAngle(tiltAngle);
+        setSlideLength(slideLength);
+        setBoxState(boxState);
+        state = "transient";
+    }
+
+    public double getSlideLength(){
+        return slidePosition;
+    }
+    public double getPitchAngle(){
+        return tiltPosition;
+    }
+    public double getTurretPosition(){
+        return turretPosition;
+    }
+    public boolean getCheckpoint1(){
+        return here;
+    }
+    public boolean getCheckpoint2(){
+        return here2;
+    }
+    public boolean getCheckpoint3(){
+        return here3;
+    }
 }

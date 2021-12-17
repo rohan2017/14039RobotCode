@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.CustomCV.detector;
 import org.firstinspires.ftc.teamcode.Robots.FourWheelRobot;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -17,75 +18,34 @@ public class testMovement extends LinearOpMode {
     // Declare OpMode Members
     private FourWheelRobot bot = new FourWheelRobot(this);
     OpenCvCamera phoneCam;
-
+    private double tiltAngle;
     @Override
     public void runOpMode() {
         initialize();
-        /*
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
-        detector detector = new detector(telemetry);
-        phoneCam.setPipeline(detector);
-
-        phoneCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
-            @Override
-            public void onOpened()
-            {
-                phoneCam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
-            }
-
-            @Override
-            public void onError(int errorCode) {
-
-            }
-        });
-*/
         waitForStart();
-
-
-        /*
-        telemetry.addData("status", "running");
-        telemetry.update();
-        while (opModeIsActive()) {
-
-            telemetry.addData("Position", detector.getLocation());
-            telemetry.addData("Left Value", detector.getLeftValue());
-            telemetry.addData("Mid Value", detector.getMidValue());
-            telemetry.addData("Right Value", detector.getRightPercent());
-            telemetry.update();
-
-        }
-
-        phoneCam.stopStreaming();
-
-         */
-
         //bot.movement.setTargets(50, 0);
-        while (opModeIsActive() ) {
-            bot.intake.flipDown();
-            bot.update();
-            bot.intake.flipUp();
-            bot.update();
-            bot.intake.flipDown();
-            bot.update();
-            bot.intake.flipUp();
-            bot.update();
-            bot.intake.flipDown();
-            bot.update();
-            bot.intake.flipUp();
-            bot.update();
-            bot.intake.flipDown();
-            bot.update();
-            bot.intake.flipUp();
-            bot.update();
 
 
+        while (opModeIsActive()) {
+            if (gamepad1.dpad_down){
+                tiltAngle--;
+            } if (gamepad1.dpad_up){
+                tiltAngle++;
+            }
+            bot.outtake.setTargets(gamepad1.left_stick_x*40, tiltAngle, gamepad1.right_stick_y*100, 0);
 
+            telemetry.addData("left stick x scaled", gamepad1.left_stick_x*100);
+            telemetry.addData("tilt angle", tiltAngle);
+            telemetry.addData("extrusion length scaled",gamepad1.right_stick_y*150 );
 
+            telemetry.addData("turret pos", bot.outtake.getTurretPosition());
+            telemetry.addData("tilt pos", bot.outtake.getPitchAngle());
+            telemetry.addData("slide pos", bot.outtake.getSlideLength());
+            bot.update();
+
+            telemetry.update();
         }
-
-
+        bot.outtake.setTargets(0, 0, 0, 0);
     }
 
     private void initialize() {

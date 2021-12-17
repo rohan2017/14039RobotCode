@@ -9,13 +9,17 @@ import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Subsystems.Localization.DummyOdometer;
 import org.firstinspires.ftc.teamcode.Subsystems.Movement.Drivebases.DummyTankDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Movement.MovementDummyTankDrive;
+import org.firstinspires.ftc.teamcode.Subsystems.Outtake;
 
 public class FourWheelRobot extends Robot {
+
 
     public DummyTankDrive drivebase;
     public DummyOdometer odometer;
     public MovementDummyTankDrive movement;
     public Intake intake;
+    public Outtake outtake;
+
     public FourWheelRobot(LinearOpMode opMode) {
         super(opMode);
         hardware = new ChassisHardware();
@@ -23,6 +27,7 @@ public class FourWheelRobot extends Robot {
         drivebase = new DummyTankDrive(opMode, hardware);
         movement = new MovementDummyTankDrive(opMode, drivebase, odometer);
         intake = new Intake(opMode, hardware);
+        outtake = new Outtake(opMode, hardware);
     }
 
     public void initialize(HardwareMap hardwareMap) {
@@ -35,6 +40,8 @@ public class FourWheelRobot extends Robot {
         drivebase.setPowerBehavior("brake");
         drivebase.setRunMode("withEncoder");
         movement.initialize();
+        intake.initialize();
+        outtake.initialize();
     }
 
     public void update() {
@@ -42,5 +49,6 @@ public class FourWheelRobot extends Robot {
         movement.update();
         drivebase.update();
         intake.update();
+        outtake.update();
     }
 }

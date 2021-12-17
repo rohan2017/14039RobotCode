@@ -20,17 +20,23 @@ public class Intake {
     }
 
     public void initialize() {
-        //hardware.getMotor("intake").setDirection(DcMotor.Direction.REVERSE);
+        hardware.getMotor("intake").setDirection(DcMotor.Direction.REVERSE);
+        hardware.getMotor("intake").setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void setPower(double pow){
-        power = pow;
+    public void setPower(double pow) {
+        if(pow < 1 && pow > -1) power = pow;
     }
 
     public void update () {
-        //hardware.getMotor("intake").setPower(power);
-        hardware.getServo("leftFlipper").setPosition(leftPos);
-        hardware.getServo("rightFlipper").setPosition(rightPos);
+        if(opMode.opModeIsActive()) {
+            hardware.getMotor("intake").setPower(power);
+
+            if((leftPos + rightPos) == 1) {
+                hardware.getServo("leftFlipper").setPosition(leftPos);
+                hardware.getServo("rightFlipper").setPosition(rightPos);
+            }
+        }
     }
 
     public void flipUp(){
@@ -42,6 +48,5 @@ public class Intake {
         leftPos = 0.62;
         rightPos = 0.38;
     }
-
 
 }

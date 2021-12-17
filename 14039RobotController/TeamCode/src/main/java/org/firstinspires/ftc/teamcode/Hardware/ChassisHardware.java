@@ -17,10 +17,18 @@ public class ChassisHardware extends RobotHardware {
 
     //Drive Motors
     public static DcMotorEx rightFront, leftFront, leftBack, rightBack;
-    //Servos
+
+    //Intake
+    public static DcMotorEx intake;
     public static Servo rightFlipper, leftFlipper;
+
+    //Outtake
+    public static DcMotorEx turret, tilt, extension;
+    public static Servo basket;
+
     //IMU
     public static BNO055IMU imu;
+
     //Timer
     public static ElapsedTime elapsedTime = new ElapsedTime();
 
@@ -38,8 +46,16 @@ public class ChassisHardware extends RobotHardware {
         //IMU
         imu =  hardwareMap.get(BNO055IMU.class, "imu");
 
+        //Intake
         rightFlipper = hardwareMap.get(Servo.class, "rightFlipper");
         leftFlipper = hardwareMap.get(Servo.class, "leftFlipper");
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
+
+        //Outtake
+        turret = hardwareMap.get(DcMotorEx.class, "turretSpinner");
+        tilt = hardwareMap.get(DcMotorEx.class, "tilt");
+        extension = hardwareMap.get(DcMotorEx.class, "slideExtension");
+        basket = hardwareMap.get(Servo.class, "basketFlipper");
 
         allHubs = hardwareMap.getAll(LynxModule.class);
 
@@ -97,6 +113,14 @@ public class ChassisHardware extends RobotHardware {
                 return rightBack;
             case "driveBackLeft":
                 return leftBack;
+            case "intake":
+                return intake;
+            case "turret":
+                return turret;
+            case "tilt":
+                return tilt;
+            case "extension":
+                return extension;
             default:
                 return null;
         }
@@ -106,10 +130,10 @@ public class ChassisHardware extends RobotHardware {
         switch (ID){
             case "leftFlipper":
                 return leftFlipper;
-
             case "rightFlipper":
                 return rightFlipper;
-
+            case "basketFlipper":
+                return basket;
             default:
                 return null;
         }

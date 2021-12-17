@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.CustomCV;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.CustomCV.detector;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -11,12 +12,16 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 
 @TeleOp(name="Vision Test", group = "Linear Opmode")
 public class visionTest extends LinearOpMode {
-    OpenCvCamera phoneCam;
+    OpenCvCamera camera;
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        /*
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "webcam");
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
         detector detector = new detector(telemetry);
         phoneCam.setPipeline(detector);
 
@@ -46,5 +51,6 @@ public class visionTest extends LinearOpMode {
         }
 
         phoneCam.stopStreaming();
+         */
     }
 }

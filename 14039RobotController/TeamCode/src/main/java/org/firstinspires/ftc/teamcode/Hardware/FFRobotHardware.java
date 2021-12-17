@@ -102,12 +102,8 @@ public class FFRobotHardware extends RobotHardware {
             case "driveFrontLeft":
                 return leftFront;
             case "driveBackRight":
-
-            case "verticalEncoder":
                 return rightBack;
             case "driveBackLeft":
-
-            case "horizontalEncoder":
                 return leftBack;
             case "intake":
                 return intake;
