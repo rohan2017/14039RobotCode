@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.usb.serial.RobotUsbDeviceTty;
 
 import org.firstinspires.ftc.teamcode.Robots.FFRobot;
 import org.firstinspires.ftc.teamcode.Robots.FourWheelRobot;
@@ -66,12 +67,18 @@ public class teleOp extends LinearOpMode {
                 bot.outtake.setTargets(0, 5, 0, 0);
             }
 
-            angle -= gamepad2.left_stick_x;
+            if(Math.abs(gamepad2.left_stick_x) > 0.1) {
+                bot.outtake.setTurretPower(-gamepad2.left_stick_x);
+                angle = bot.outtake.turretPosition/bot.outtake.ticksPerDegTurret;
+            }
+
             length -= gamepad2.left_stick_y;
             if(gamepad2.dpad_up) {
                 tilt += 5;
+                bot.outtake.setTiltPower(0.2);
             }else if(gamepad2.dpad_down) {
                 tilt -= 5;
+                bot.outtake.setTiltPower(0.2);
             }
 
             if(gamepad2.dpad_right) {
@@ -81,19 +88,15 @@ public class teleOp extends LinearOpMode {
             }
 
             if(!reset && loopCount > 15) {
-                bot.outtake.state = "transient";
                 bot.outtake.setTargets(angle, tilt, length, 1);
             }
 
             if(gamepad2.x) {
                 bot.outtake.setBoxState(2);
-                bot.outtake.state = "transient";
             }else if(gamepad2.y) {
                 bot.outtake.setBoxState(0);
-                bot.outtake.state = "transient";
             }else if(gamepad2.right_bumper) {
                 bot.outtake.setBoxState(1);
-                bot.outtake.state = "transient";
             }
 
             bot.drivebase.update();

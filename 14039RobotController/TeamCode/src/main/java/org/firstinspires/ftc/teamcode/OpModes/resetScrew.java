@@ -27,12 +27,10 @@ public class resetScrew extends LinearOpMode {
         while(opModeIsActive()) {
 
             if(gamepad2.dpad_up) {
-                angle ++;
+                bot.hardware.getMotor("tilt").setPower(0.3);
             }else if(gamepad2.dpad_down) {
-                angle --;
+                bot.hardware.getMotor("tilt").setPower(-0.3);
             }
-            bot.hardware.getMotor("tilt").setTargetPosition(angle);
-            bot.hardware.getMotor("tilt").setPower(0.3);
 
             telemetry.addData("tiltPos", bot.hardware.getMotor("tilt").getCurrentPosition());
             telemetry.addData("targetPos", angle);

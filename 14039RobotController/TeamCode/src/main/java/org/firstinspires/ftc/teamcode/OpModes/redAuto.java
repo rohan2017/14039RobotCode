@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
 import static org.firstinspires.ftc.teamcode.CustomCV.detector.Location.LEFT;
+import static org.firstinspires.ftc.teamcode.CustomCV.detector.Location.MID;
+import static org.firstinspires.ftc.teamcode.CustomCV.detector.Location.RIGHT;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -28,7 +30,7 @@ public class redAuto extends LinearOpMode
         // Declare OpMode Members
         private FourWheelRobot bot = new FourWheelRobot(this);
         OpenCvCamera phoneCam;
-        private double x,y,z;
+        private int turretAng, tiltAng, extrudeLength;
 
         @Override
         public void runOpMode() {
@@ -43,7 +45,7 @@ public class redAuto extends LinearOpMode
                 @Override
                 public void onOpened()
                 {
-                    phoneCam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
+                    phoneCam.startStreaming(720,480, OpenCvCameraRotation.SIDEWAYS_RIGHT);
                 }
 
                 @Override
@@ -53,22 +55,38 @@ public class redAuto extends LinearOpMode
             });
             waitForStart();
 
-
             while (opModeIsActive()) {
                 if ( detector.getLocation() == LEFT){
-
-
+                    turretAng= 30;
+                    extrudeLength= 40;
+                    tiltAng= 30;
                 }
-                if ( detector.getLocation() == LEFT){
-
+                if ( detector.getLocation() == MID){
+                    turretAng= 30;
+                    extrudeLength= 40;
+                    tiltAng= 20;
                 }
-                if ( detector.getLocation() == LEFT){
-
+                if ( detector.getLocation() == RIGHT){
+                    turretAng= 30;
+                    extrudeLength= 40;
+                    tiltAng= 10;
                 }
-
-
-
             }
+            sleep(1000);
+            bot.outtake.setTargets(turretAng, tiltAng, extrudeLength, 1);
+            sleep(2000);
+            bot.outtake.setBoxState(2);
+            sleep(1000);
+
+            /*
+            bot.movement.setTargets(100,0);
+            bot.intake.flipDown();
+            while (opModeIsActive() && !bot.movement.state.equals("converged")) {
+                bot.movement.update();
+            }
+            bot.intake.setPower(0.8);
+            */
+
         }
 
 

@@ -60,7 +60,6 @@ public class detector extends OpenCvPipeline {
             location = location.MID;
         }
 
-
         Imgproc.cvtColor(mat, mat, Imgproc.COLOR_GRAY2RGB);
 
         Scalar colorObject = new Scalar(255, 0, 0);
