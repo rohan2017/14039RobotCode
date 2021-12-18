@@ -18,13 +18,11 @@ public class testMovement extends LinearOpMode {
     // Declare OpMode Members
     private FourWheelRobot bot = new FourWheelRobot(this);
     OpenCvCamera phoneCam;
-    private double tiltAngle;
+    private int tiltAngle=0;
     @Override
     public void runOpMode() {
         initialize();
         waitForStart();
-        //bot.movement.setTargets(50, 0);
-
 
         while (opModeIsActive()) {
             if (gamepad1.dpad_down){
@@ -32,16 +30,15 @@ public class testMovement extends LinearOpMode {
             } if (gamepad1.dpad_up){
                 tiltAngle++;
             }
-            bot.outtake.setTargets(gamepad1.left_stick_x*40, tiltAngle, gamepad1.right_stick_y*100, 0);
 
-            telemetry.addData("left stick x scaled", gamepad1.left_stick_x*100);
-            telemetry.addData("tilt angle", tiltAngle);
-            telemetry.addData("extrusion length scaled",gamepad1.right_stick_y*150 );
+            bot.outtake.setTargets(tiltAngle,0, 0, 0);
+            //bot.hardware.getMotor("turret").setTargetPosition(tiltAngle);
+            //bot.hardware.getMotor("turret").setPower(0.4);
 
-            telemetry.addData("turret pos", bot.outtake.getTurretPosition());
-            telemetry.addData("tilt pos", bot.outtake.getPitchAngle());
-            telemetry.addData("slide pos", bot.outtake.getSlideLength());
-            bot.update();
+            telemetry.addData("turret pos",bot.hardware.getMotor("extension").getCurrentPosition());
+            telemetry.addData("turret target pos",tiltAngle);
+
+            bot.outtake.update();
 
             telemetry.update();
         }

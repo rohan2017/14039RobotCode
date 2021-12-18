@@ -37,7 +37,7 @@ public class FourWheelRobot extends Robot {
         drivebase.initialize();
         drivebase.hardwareResetDriveEncoders();
         drivebase.reverseMotors("Right");
-        drivebase.setPowerBehavior("brake");
+        drivebase.setPowerBehavior("float");
         drivebase.setRunMode("withEncoder");
         movement.initialize();
         intake.initialize();

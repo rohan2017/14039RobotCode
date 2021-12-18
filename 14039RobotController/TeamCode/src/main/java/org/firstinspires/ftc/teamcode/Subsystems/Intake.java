@@ -22,6 +22,8 @@ public class Intake {
     public void initialize() {
         hardware.getMotor("intake").setDirection(DcMotor.Direction.REVERSE);
         hardware.getMotor("intake").setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        hardware.getMotor("intake").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        power = 0;
     }
 
     public void setPower(double pow) {
@@ -47,6 +49,13 @@ public class Intake {
     public void flipDown(){
         leftPos = 0.62;
         rightPos = 0.38;
+    }
+
+    public void setPosition(double pos) {
+        if(pos > 0 && pos < 0.62) {
+            leftPos = 0.62-pos;
+            rightPos = 0.38+pos;
+        }
     }
 
 }

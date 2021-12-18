@@ -57,7 +57,7 @@ public class servoTest extends LinearOpMode {
 
     private void initialize(){
 
-        testServo = hardwareMap.servo.get("leftFlipper");
+        testServo = hardwareMap.servo.get("basketFlipper");
         testServo2 = hardwareMap.servo.get("rightFlipper");
 
         telemetry.addData("Status", "Initialized");
