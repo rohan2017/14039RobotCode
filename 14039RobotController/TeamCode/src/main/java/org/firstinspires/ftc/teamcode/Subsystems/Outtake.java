@@ -21,10 +21,11 @@ public class Outtake {
     public int slidePosition = 0;
     public int targetSlidePosition = 0;
     private int slideError = 0;
-    private double slidePower = 0;
+    private double slidePower = 1.0;
     private final double spoolDiam = 4.318;
     private final double ticksPerRevSpool = 0;
     private final double ticksPerCm = 20;
+    private final int slideLimit = 60; // 1300 ticks
 
     // Turret variables
     public int turretMode; // 0-hold position, 1-power
@@ -36,8 +37,7 @@ public class Outtake {
     private final double ticksPerRevTMotor = 537.6;
     public final double ticksPerDegTurret = ticksPerRevTMotor*gearRatioT/360;
     private final double turretLimit = 60;
-    private PID turretControl = new PID(0.05,0.001,0.05,50,0.7,0);
-
+    private PID turretControl = new PID(0.05,0,0,50,0.7,0);
 
     // Tilt variables
     public int tiltMode; // 0-hold position, 1-power
@@ -50,7 +50,7 @@ public class Outtake {
     private final double ticksPerRevPMotor = 537.6;
     public final double ticksPerDegTilt = ticksPerRevPMotor*gearRatioP/360;
     private final double tiltLimit = 40;
-    private PID tiltControl = new PID(0.05,0.001,0.05,50,0.7,0);
+    private PID tiltControl = new PID(0.01,0,0,20,0.4,0);
 
     // Basket servo
     private int servoState = 0;
@@ -118,33 +118,44 @@ public class Outtake {
                 if(state.equals("transient")) {
 
                     // Failsafe to align turret before transfer
+                    /*
                     if(targetSlidePosition < 10) {
                         targetTurretPosition = 0;
                         targetTiltPosition = 0;
                     }
+                    */
+                    if(turretError > 10) {
+                        turretControl.update(targetTurretPosition, turretPosition);
+                    }else if (turretMode == 0) {
+                        turretPower = 0;
+                    }
 
-                    turretControl.update(targetTurretPosition, turretPosition);
-                    tiltControl.update(targetTiltPosition, tiltPosition);
+                    if(tiltError > 10) {
+                        tiltControl.update(targetTiltPosition, tiltPosition);
+                    }else {
+                        tiltPower = 0;
+                    }
 
                     if(tiltMode == 0) tiltPower = tiltControl.correction;
                     if(turretMode == 0) turretPower = turretControl.correction;
 
-                    if(turretPosition > turretLimit*ticksPerDegTurret) {turretPower = -Math.abs(turretPower);}
-                    if(turretPosition < -turretLimit*ticksPerDegTurret) {turretPower = Math.abs(turretPower);}
 
-                    if(tiltPosition > tiltLimit*ticksPerDegTilt) {tiltPower = -Math.abs(turretPower);}
-                    if(tiltPosition < 0) {tiltPower = Math.abs(turretPower);}
+                    if(turretPosition > turretLimit*ticksPerDegTurret && turretPower > 0) {turretPower = 0;}
+                    if(turretPosition < -turretLimit*ticksPerDegTurret && turretPower < 0) {turretPower = 0;}
+
+                    if(tiltPosition > tiltLimit*ticksPerDegTilt && tiltPower > 0) {tiltPower = 0;}
+                    if(tiltPosition < 0 && tiltPower < 0) {tiltPower = 0;} // 0 being lowest position
 
                     hardware.getMotor("turret").setPower(turretPower);
                     hardware.getMotor("tilt").setPower(tiltPower);
-                    hardware.getMotor("extension").setTargetPosition(slidePosition);
+                    hardware.getMotor("extension").setTargetPosition(targetSlidePosition);
                     hardware.getMotor("extension").setPower(slidePower);
 
                     if(servoState == 0) {
                         hardware.getServo("basketFlipper").setPosition(receivePos);
                     }else if(servoState == 1) {
                         hardware.getServo("basketFlipper").setPosition(holdPos);
-                    }else {
+                    }else if(servoState == 2) {
                         hardware.getServo("basketFlipper").setPosition(dropPos);
                     }
                 }
@@ -163,7 +174,6 @@ public class Outtake {
         if(angle > -turretLimit && angle < turretLimit) { // upper and lower turret angle limits
             targetTurretPosition = (int)(angle*ticksPerDegTurret);
         }
-        turretMode = 0;
     }
 
     public void setTurretPower(double power) {
@@ -176,7 +186,6 @@ public class Outtake {
         if(angle >= 0 && angle < tiltLimit) { // upper and lower turret angle limits
             targetTiltPosition = (int)((angle-startAngle)*ticksPerDegTilt);
         }
-        tiltMode = 0;
     }
 
     public void setTiltPower(double power) {
@@ -189,7 +198,7 @@ public class Outtake {
         // 0 - Receive
         // 1 - Hold
         // 2 - Drop
-        servoState = thing;
+        if(thing == 1 || thing == 2 || thing == 3) servoState = thing;
     }
 
     public int getServoState() {
@@ -212,7 +221,7 @@ public class Outtake {
 
     // Sets the length of the extrusion
     public void setSlideLength(double length) {
-        if(length >= 0 && length < 100) {
+        if(length >= 0 && length <= slideLimit) {
             targetSlidePosition = (int)(length*ticksPerCm);
         }
     }

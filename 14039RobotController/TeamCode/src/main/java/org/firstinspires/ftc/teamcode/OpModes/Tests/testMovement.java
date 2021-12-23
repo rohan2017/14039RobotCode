@@ -25,20 +25,13 @@ public class testMovement extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            if (gamepad1.dpad_down){
-                tiltAngle--;
-            } if (gamepad1.dpad_up){
-                tiltAngle++;
-            }
 
-            bot.outtake.setTargets(tiltAngle,0, 0, 0);
+
+
             //bot.hardware.getMotor("turret").setTargetPosition(tiltAngle);
             //bot.hardware.getMotor("turret").setPower(0.4);
 
             telemetry.addData("turret pos",bot.hardware.getMotor("extension").getCurrentPosition());
-            telemetry.addData("turret target pos",tiltAngle);
-
-            bot.outtake.update();
 
             telemetry.update();
         }

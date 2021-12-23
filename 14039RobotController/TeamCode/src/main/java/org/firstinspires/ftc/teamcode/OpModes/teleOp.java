@@ -54,9 +54,9 @@ public class teleOp extends LinearOpMode {
 
             // OUTTAKE
             if(gamepad2.a) {
-                angle = -40;
-                length = 45;
-                tilt = 20;
+                angle = -10; //-40
+                length = 60;
+                tilt = 10;
                 bot.outtake.setBoxState(1);
                 loopCount = 0;
                 reset = false;
@@ -65,20 +65,27 @@ public class teleOp extends LinearOpMode {
             }else if(gamepad2.b) {
                 reset = true;
                 bot.outtake.setTargets(0, 5, 0, 0);
+            }else if(gamepad2.right_stick_button) {
+                reset = false;
+                bot.outtake.setBoxState(1);
             }
 
-            if(Math.abs(gamepad2.left_stick_x) > 0.1) {
+            length -= gamepad2.left_stick_y*2;
+
+            if(Math.abs(gamepad2.left_stick_x) > 0.15) {
                 bot.outtake.setTurretPower(-gamepad2.left_stick_x);
+            }else {
                 angle = bot.outtake.turretPosition/bot.outtake.ticksPerDegTurret;
+                bot.outtake.turretMode = 0;
             }
 
-            length -= gamepad2.left_stick_y;
             if(gamepad2.dpad_up) {
-                tilt += 5;
                 bot.outtake.setTiltPower(0.2);
             }else if(gamepad2.dpad_down) {
-                tilt -= 5;
                 bot.outtake.setTiltPower(0.2);
+            }else {
+                tilt = bot.outtake.tiltPosition/bot.outtake.ticksPerDegTilt;
+                bot.outtake.turretMode = 0;
             }
 
             if(gamepad2.dpad_right) {
@@ -87,7 +94,7 @@ public class teleOp extends LinearOpMode {
                 bot.outtake.startAngle -= 1;
             }
 
-            if(!reset && loopCount > 15) {
+            if(!reset && loopCount > 3) {
                 bot.outtake.setTargets(angle, tilt, length, 1);
             }
 
@@ -111,7 +118,9 @@ public class teleOp extends LinearOpMode {
             telemetry.addData("turret", bot.outtake.turretPosition);
             telemetry.addData("slide", bot.outtake.slidePosition);
             telemetry.addData("tilt", bot.outtake.tiltPosition);
-            telemetry.addData("startPos", bot.outtake.startAngle);
+            telemetry.addData("servo", bot.outtake.getServoState());
+            
+            //telemetry.addData("turret correction", bot.outtake.)
 
             bot.update();
             loopCount ++;
