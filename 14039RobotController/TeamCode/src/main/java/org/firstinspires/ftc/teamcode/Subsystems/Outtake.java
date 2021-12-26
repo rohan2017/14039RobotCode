@@ -2,10 +2,8 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
-import org.firstinspires.ftc.teamcode.Controllers.PID;
+import org.firstinspires.ftc.teamcode.Controllers.PIDF;
 import org.firstinspires.ftc.teamcode.Hardware.RobotHardware;
 import org.firstinspires.ftc.teamcode.MathFunctions.MyMath;
 import org.firstinspires.ftc.teamcode.MathFunctions.PointEx;
@@ -37,7 +35,7 @@ public class Outtake {
     private final double ticksPerRevTMotor = 537.6;
     public final double ticksPerDegTurret = ticksPerRevTMotor*gearRatioT/360;
     private final double turretLimit = 60;
-    private PID turretControl = new PID(0.05,0,0,50,0.7,0);
+    private PIDF turretControl = new PIDF(0.001,0.0001,0.001,0.005,0.01,0.4,0);
 
     // Tilt variables
     public int tiltMode; // 0-hold position, 1-power
@@ -50,7 +48,7 @@ public class Outtake {
     private final double ticksPerRevPMotor = 537.6;
     public final double ticksPerDegTilt = ticksPerRevPMotor*gearRatioP/360;
     private final double tiltLimit = 40;
-    private PID tiltControl = new PID(0.01,0,0,20,0.4,0);
+    private PIDF tiltControl = new PIDF(0.001,0.0001,0.001,0.005,0.01,0.4,0);
 
     // Basket servo
     private int servoState = 0;
@@ -108,7 +106,7 @@ public class Outtake {
                 turretError = Math.abs(turretPosition - targetTurretPosition);
                 slideError = Math.abs(slidePosition - targetSlidePosition);
                 servoError = servoState - getServoState();
-                if(tiltError < 5 && turretError < 5 && slideError < 5 && servoError==0) {
+                if(tiltError < 50 && turretError < 50 && slideError < 50 && servoError==0) {
                     state = "converged";
                 }else {
                     state = "transient";
@@ -117,40 +115,35 @@ public class Outtake {
                 // Actions
                 if(state.equals("transient")) {
 
-                    // Failsafe to align turret before transfer
-                    /*
-                    if(targetSlidePosition < 10) {
-                        targetTurretPosition = 0;
-                        targetTiltPosition = 0;
-                    }
-                    */
-                    if(turretError > 10) {
-                        turretControl.update(targetTurretPosition, turretPosition);
-                    }else if (turretMode == 0) {
-                        turretPower = 0;
-                    }
+                    // Tilt and Turret
+                    turretControl.update(targetTurretPosition, turretPosition);
+                    tiltControl.update(targetTiltPosition, tiltPosition);
 
-                    if(tiltError > 10) {
-                        tiltControl.update(targetTiltPosition, tiltPosition);
-                    }else {
-                        tiltPower = 0;
+                    if(tiltMode == 0) {
+                        tiltPower = tiltControl.correction;
+                        if(tiltError < 50) tiltPower = 0; // Threshold
+                    }
+                    if(turretMode == 0) {
+                        turretPower = turretControl.correction;
+                        if(turretError < 50) turretPower = 0; // Threshold
                     }
 
-                    if(tiltMode == 0) tiltPower = tiltControl.correction;
-                    if(turretMode == 0) turretPower = turretControl.correction;
-
-
+                    // Limits
                     if(turretPosition > turretLimit*ticksPerDegTurret && turretPower > 0) {turretPower = 0;}
                     if(turretPosition < -turretLimit*ticksPerDegTurret && turretPower < 0) {turretPower = 0;}
 
+                    // Limits
                     if(tiltPosition > tiltLimit*ticksPerDegTilt && tiltPower > 0) {tiltPower = 0;}
                     if(tiltPosition < 0 && tiltPower < 0) {tiltPower = 0;} // 0 being lowest position
 
                     hardware.getMotor("turret").setPower(turretPower);
                     hardware.getMotor("tilt").setPower(tiltPower);
-                    hardware.getMotor("extension").setTargetPosition(targetSlidePosition);
-                    hardware.getMotor("extension").setPower(slidePower);
 
+                    // Extension
+                    hardware.getMotor("extension").setTargetPosition(targetSlidePosition);
+                    hardware.getMotor("extension").setPower(1);
+
+                    // Basket Servo
                     if(servoState == 0) {
                         hardware.getServo("basketFlipper").setPosition(receivePos);
                     }else if(servoState == 1) {
@@ -166,31 +159,36 @@ public class Outtake {
                 hardware.getServo("basketFlipper").setPosition(receivePos);
             }
         }
-
     }
 
     public void setTurretAngle(double angle) {
         // 0 is straight/center, positive is counter-clockwise rotation
         if(angle > -turretLimit && angle < turretLimit) { // upper and lower turret angle limits
             targetTurretPosition = (int)(angle*ticksPerDegTurret);
+            turretMode = 0;
         }
     }
 
     public void setTurretPower(double power) {
-        if(power < 1 && power > -1) {turretPower = power;}
-        turretMode = 1;
+        if(power < 1 && power > -1) {
+            turretPower = power;
+            turretMode = 1;
+        }
     }
 
     public void setPitchAngle(double angle) {
         // 0 is straight flat, 15 is pointed up
         if(angle >= 0 && angle < tiltLimit) { // upper and lower turret angle limits
             targetTiltPosition = (int)((angle-startAngle)*ticksPerDegTilt);
+            tiltMode = 0;
         }
     }
 
     public void setTiltPower(double power) {
-        if(power < 1 && power > -1) {tiltPower = power;}
-        tiltMode = 1;
+        if(power < 1 && power > -1) {
+            tiltPower = power;
+            tiltMode = 1;
+        }
     }
 
     // Sets the state of the dropoff
