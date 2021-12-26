@@ -54,49 +54,38 @@ public class teleOp extends LinearOpMode {
 
             // OUTTAKE
             if(gamepad2.a) {
-                angle = -10; //-40
-                length = 60;
+                angle = 10;
+                length = 50;
                 tilt = 10;
                 bot.outtake.setBoxState(1);
                 loopCount = 0;
-                reset = false;
-                bot.outtake.state = "transient";
-                bot.outtake.update();
             }else if(gamepad2.b) {
-                reset = true;
-                bot.outtake.setTargets(0, 5, 0, 0);
-            }else if(gamepad2.right_stick_button) {
-                reset = false;
-                bot.outtake.setBoxState(1);
+                angle = 0;
+                length = 0;
+                tilt = 0;
             }
 
-            length -= gamepad2.left_stick_y*2;
+            // Extension manual control
+            length -= gamepad2.left_stick_y;
 
-//            if(Math.abs(gamepad2.left_stick_x) > 0.15) {
-//                bot.outtake.setTurretPower(-gamepad2.left_stick_x);
-//                angle = bot.outtake.turretPosition/bot.outtake.ticksPerDegTurret;
-//            }else {
-//                bot.outtake.turretMode = 0;
-//            }
-
-            angle -= gamepad2.left_stick_x*2;
-
-//            if(gamepad2.dpad_up) {
-//                bot.outtake.setTiltPower(0.2);
-//                tilt = bot.outtake.tiltPosition/bot.outtake.ticksPerDegTilt;
-//            }else if(gamepad2.dpad_down) {
-//                bot.outtake.setTiltPower(0.2);
-//                tilt = bot.outtake.tiltPosition/bot.outtake.ticksPerDegTilt;
-//            }else {
-//                bot.outtake.turretMode = 0;
-//            }
-
-            if (gamepad2.dpad_left){
-                tilt -= 1;
-            } if ( gamepad2.dpad_right ){
-                tilt +=1;
+            // Turret manual control
+            if(Math.abs(gamepad2.left_stick_x) > 0.15) {
+                bot.outtake.setTurretPower(-gamepad2.left_stick_x * 0.7);
+                angle = bot.outtake.turretPosition/bot.outtake.ticksPerDegTurret;
+            }else {
+                bot.outtake.setTurretAngle(angle);
             }
 
+            // Tilt control
+            if(gamepad2.dpad_up) {
+                bot.outtake.setTiltPower(0.2);
+                tilt = bot.outtake.tiltPosition/bot.outtake.ticksPerDegTilt;
+            }else if(gamepad2.dpad_down) {
+                bot.outtake.setTiltPower(-0.2);
+                tilt = bot.outtake.tiltPosition/bot.outtake.ticksPerDegTilt;
+            }else {
+                bot.outtake.setPitchAngle(tilt);
+            }
 
             if(gamepad2.dpad_right) {
                 bot.outtake.startAngle += 1;
@@ -104,8 +93,8 @@ public class teleOp extends LinearOpMode {
                 bot.outtake.startAngle -= 1;
             }
 
-            if(!reset && loopCount > 3) {
-                bot.outtake.setTargets(angle, tilt, length, 1);
+            if(loopCount > 3) {
+                bot.outtake.setSlideLength(length);
             }
 
             if(gamepad2.x) {
@@ -139,7 +128,6 @@ public class teleOp extends LinearOpMode {
 
             //telemetry.addData("turret correction", bot.outtake.)
 
-            bot.update();
             loopCount ++;
 
             telemetry.update();
