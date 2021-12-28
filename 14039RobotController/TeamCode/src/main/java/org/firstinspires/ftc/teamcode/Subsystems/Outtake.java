@@ -35,7 +35,7 @@ public class Outtake {
     private final double ticksPerRevTMotor = 537.6;
     public final double ticksPerDegTurret = ticksPerRevTMotor*gearRatioT/360;
     private final double turretLimit = 60;
-    private PIDF turretControl = new PIDF(0.001,0.0001,0.001,0.005,0.01,0.4,0);
+    private PIDF turretControl = new PIDF(0.0007,0.00001,0.0007,0.005,0.005,0.4,0);
 
     // Tilt variables
     public int tiltMode; // 0-hold position, 1-power
@@ -48,7 +48,7 @@ public class Outtake {
     private final double ticksPerRevPMotor = 537.6;
     public final double ticksPerDegTilt = ticksPerRevPMotor*gearRatioP/360;
     private final double tiltLimit = 40;
-    private PIDF tiltControl = new PIDF(0.001,0.0001,0.001,0.005,0.01,0.4,0);
+    private PIDF tiltControl = new PIDF(0.0007,0.00001,0.0007,0.005,0.005,0.4,0);
 
     // Basket servo
     private int servoState = 0;
@@ -106,7 +106,7 @@ public class Outtake {
                 turretError = Math.abs(turretPosition - targetTurretPosition);
                 slideError = Math.abs(slidePosition - targetSlidePosition);
                 servoError = servoState - getServoState();
-                if(tiltError < 50 && turretError < 50 && slideError < 50 && servoError==0) {
+                if(tiltError < 20 && turretError < 20 && slideError < 20 && servoError==0 && tiltMode == 0 && turretMode == 0) {
                     state = "converged";
                 }else {
                     state = "transient";
@@ -121,11 +121,11 @@ public class Outtake {
 
                     if(tiltMode == 0) {
                         tiltPower = tiltControl.correction;
-                        if(tiltError < 50) tiltPower = 0; // Threshold
+                        if(tiltError < 20) tiltPower = 0; // Threshold
                     }
                     if(turretMode == 0) {
                         turretPower = turretControl.correction;
-                        if(turretError < 50) turretPower = 0; // Threshold
+                        if(turretError < 20) turretPower = 0; // Threshold
                     }
 
                     // Limits

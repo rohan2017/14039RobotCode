@@ -26,7 +26,6 @@ public class teleOp extends LinearOpMode {
         double angle = 0;
         double length = 0;
         double tilt = 0;
-        boolean reset = true;
 
         double loopCount = 0;
 
@@ -69,21 +68,27 @@ public class teleOp extends LinearOpMode {
             length -= gamepad2.left_stick_y;
 
             // Turret manual control
-            if(Math.abs(gamepad2.left_stick_x) > 0.15) {
-                bot.outtake.setTurretPower(-gamepad2.left_stick_x * 0.7);
-                angle = bot.outtake.turretPosition/bot.outtake.ticksPerDegTurret;
+            if(Math.abs(gamepad2.right_stick_x) > 0.05) {
+                bot.outtake.setTurretPower(-gamepad2.right_stick_x * 0.3);
+                angle = (bot.outtake.turretPosition/bot.outtake.ticksPerDegTurret) - gamepad2.right_stick_x;
             }else {
                 bot.outtake.setTurretAngle(angle);
+                if(bot.outtake.turretMode == 1) {
+                    angle = bot.outtake.turretPosition/bot.outtake.ticksPerDegTurret;
+                }
             }
 
             // Tilt control
             if(gamepad2.dpad_up) {
                 bot.outtake.setTiltPower(0.2);
-                tilt = bot.outtake.tiltPosition/bot.outtake.ticksPerDegTilt;
+                tilt = bot.outtake.tiltPosition/bot.outtake.ticksPerDegTilt + 1.3;
             }else if(gamepad2.dpad_down) {
                 bot.outtake.setTiltPower(-0.2);
-                tilt = bot.outtake.tiltPosition/bot.outtake.ticksPerDegTilt;
+                tilt = bot.outtake.tiltPosition/bot.outtake.ticksPerDegTilt - 1.3;
             }else {
+                if(bot.outtake.tiltMode == 1) {
+                    tilt = bot.outtake.tiltPosition/bot.outtake.ticksPerDegTilt;
+                }
                 bot.outtake.setPitchAngle(tilt);
             }
 
@@ -109,28 +114,22 @@ public class teleOp extends LinearOpMode {
             bot.outtake.update();
             bot.intake.update();
 
-            telemetry.addData("angle", angle);
-            telemetry.addData("tilt", tilt);
-            telemetry.addData("length", length);
-            telemetry.addData("reset", reset);
-
-            telemetry.addData("tilt mode", bot.outtake.tiltMode);
+            telemetry.addData("target turret", angle);
+            telemetry.addData("turret", bot.outtake.turretPosition);
             telemetry.addData("turret mode", bot.outtake.turretMode);
 
-            telemetry.addData("turret", bot.outtake.turretPosition);
-            telemetry.addData("slide", bot.outtake.slidePosition);
+            telemetry.addData("target tilt", tilt);
             telemetry.addData("tilt", bot.outtake.tiltPosition);
+            telemetry.addData("tilt mode", bot.outtake.tiltMode);
+
+            telemetry.addData("target length", length);
+            telemetry.addData("slide", bot.outtake.slidePosition);
+
             telemetry.addData("servo", bot.outtake.getServoState());
-
-            telemetry.addData("reset", reset);
-
             telemetry.addData("state", bot.outtake.state);
-
-            //telemetry.addData("turret correction", bot.outtake.)
+            telemetry.update();
 
             loopCount ++;
-
-            telemetry.update();
         }
         bot.drivebase.freeze();
     }
