@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.usb.serial.RobotUsbDeviceTty;
 
 import org.firstinspires.ftc.teamcode.Robots.FFRobot;
@@ -22,12 +23,9 @@ public class teleOp extends LinearOpMode {
         telemetry.addData("status","running");
         telemetry.update();
 
-        // OUTTAKE
-        double angle = 0;
         double length = 0;
-        double tilt = 0;
-
         double loopCount = 0;
+        boolean reset = false;
 
         while(opModeIsActive()) {
 
@@ -52,44 +50,25 @@ public class teleOp extends LinearOpMode {
             }
 
             // OUTTAKE
-            if(gamepad2.a) {
-                angle = 10;
-                length = 50;
-                tilt = 10;
-                bot.outtake.setBoxState(1);
-                loopCount = 0;
-            }else if(gamepad2.b) {
-                angle = 0;
-                length = 0;
-                tilt = 0;
-            }
-
             // Extension manual control
             length -= gamepad2.left_stick_y;
 
             // Turret manual control
-            if(Math.abs(gamepad2.right_stick_x) > 0.05) {
-                bot.outtake.setTurretPower(-gamepad2.right_stick_x * 0.3);
-                angle = (bot.outtake.turretPosition/bot.outtake.ticksPerDegTurret) - gamepad2.right_stick_x;
-            }else {
-                bot.outtake.setTurretAngle(angle);
-                if(bot.outtake.turretMode == 1) {
-                    angle = bot.outtake.turretPosition/bot.outtake.ticksPerDegTurret;
-                }
+            if(gamepad2.right_stick_x > 0.05) {
+                bot.outtake.setTurretPower(-(gamepad2.right_stick_x - 0.05)*0.3);
+            }else if(gamepad2.right_stick_x < -0.05) {
+                bot.outtake.setTurretPower(-(gamepad2.right_stick_x + 0.05)*0.3);
+            }else if(!reset){
+                bot.outtake.setTurretPower(0);
             }
 
             // Tilt control
             if(gamepad2.dpad_up) {
                 bot.outtake.setTiltPower(0.2);
-                tilt = bot.outtake.tiltPosition/bot.outtake.ticksPerDegTilt + 1.3;
             }else if(gamepad2.dpad_down) {
                 bot.outtake.setTiltPower(-0.2);
-                tilt = bot.outtake.tiltPosition/bot.outtake.ticksPerDegTilt - 1.3;
-            }else {
-                if(bot.outtake.tiltMode == 1) {
-                    tilt = bot.outtake.tiltPosition/bot.outtake.ticksPerDegTilt;
-                }
-                bot.outtake.setPitchAngle(tilt);
+            }else if(!reset){
+                bot.outtake.setTiltPower(0);
             }
 
             if(gamepad2.dpad_right) {
@@ -100,6 +79,21 @@ public class teleOp extends LinearOpMode {
 
             if(loopCount > 3) {
                 bot.outtake.setSlideLength(length);
+            }
+
+            if(gamepad2.a) {
+                loopCount = 0;
+                length = 50;
+                reset = true;
+                bot.outtake.setTargets(10, 10, length, 1);
+            }else if(gamepad2.b) {
+                length = 0;
+                reset = true;
+                bot.outtake.setTargets(0, 0, length, 1);
+            }
+
+            if(bot.outtake.state.equals("converged")) {
+                reset = false;
             }
 
             if(gamepad2.x) {
@@ -114,19 +108,17 @@ public class teleOp extends LinearOpMode {
             bot.outtake.update();
             bot.intake.update();
 
-            telemetry.addData("target turret", angle);
             telemetry.addData("turret", bot.outtake.turretPosition);
             telemetry.addData("turret mode", bot.outtake.turretMode);
 
-            telemetry.addData("target tilt", tilt);
             telemetry.addData("tilt", bot.outtake.tiltPosition);
             telemetry.addData("tilt mode", bot.outtake.tiltMode);
 
-            telemetry.addData("target length", length);
             telemetry.addData("slide", bot.outtake.slidePosition);
 
             telemetry.addData("servo", bot.outtake.getServoState());
-            telemetry.addData("state", bot.outtake.state);
+
+            telemetry.addData("pid", bot.hardware.getMotor("extension").getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
             telemetry.update();
 
             loopCount ++;
