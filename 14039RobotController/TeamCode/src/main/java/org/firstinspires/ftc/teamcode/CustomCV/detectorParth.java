@@ -9,7 +9,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-public class detector extends OpenCvPipeline {
+public class detectorParth extends OpenCvPipeline {
     Telemetry telemetry;
     Mat mat = new Mat();
 
@@ -28,7 +28,7 @@ public class detector extends OpenCvPipeline {
 
     static final Rect MID_ROI = new Rect(new Point(160, 35), new Point(230, 100));
 
-    public detector(Telemetry t) { telemetry = t; }
+    public detectorParth(Telemetry t) { telemetry = t; }
 
     @Override
     public Mat processFrame(Mat input) {

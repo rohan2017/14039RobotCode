@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Hardware;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -21,5 +22,9 @@ public abstract class RobotHardware {
 
     public void resetTimer() {}
     public double getTime() {return 0.0;}
+
+    public int getCameraID(String ID) {return 0;}
+
+    public ModernRoboticsI2cRangeSensor getRangeSensor(String ID) {return null;}
 
 }

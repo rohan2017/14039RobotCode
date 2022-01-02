@@ -119,6 +119,10 @@ public class teleOp extends LinearOpMode {
             telemetry.addData("servo", bot.outtake.getServoState());
 
             telemetry.addData("pid", bot.hardware.getMotor("extension").getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
+
+            telemetry.addData("intaked cargo", bot.intake.hasBlock);
+            telemetry.addData("intensity", bot.intake.filteredIntensity);
+
             telemetry.update();
 
             loopCount ++;

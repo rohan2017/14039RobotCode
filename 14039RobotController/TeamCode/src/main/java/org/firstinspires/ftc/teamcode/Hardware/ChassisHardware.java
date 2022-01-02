@@ -3,14 +3,21 @@ package org.firstinspires.ftc.teamcode.Hardware;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvInternalCamera;
+
 import java.util.List;
 
 public class ChassisHardware extends RobotHardware {
@@ -21,16 +28,24 @@ public class ChassisHardware extends RobotHardware {
     //Intake
     public static DcMotorEx intake;
     public static Servo rightFlipper, leftFlipper;
+    public static ModernRoboticsI2cRangeSensor intakeRange;
+
+
 
     //Outtake
     public static DcMotorEx turret, tilt, extension;
     public static Servo basket;
+   // public static AnalogInput potentiometer;
+
 
     //IMU
     public static BNO055IMU imu;
 
     //Timer
     public static ElapsedTime elapsedTime = new ElapsedTime();
+
+    //Camera
+    public static int cameraMonitorViewId;
 
     public static List<LynxModule> allHubs;
 
@@ -50,6 +65,7 @@ public class ChassisHardware extends RobotHardware {
         rightFlipper = hardwareMap.get(Servo.class, "rightFlipper");
         leftFlipper = hardwareMap.get(Servo.class, "leftFlipper");
         intake = hardwareMap.get(DcMotorEx.class, "intake");
+      //  intakeRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "intake_range");
 
         //Outtake
         turret = hardwareMap.get(DcMotorEx.class, "turretSpinner");
@@ -57,6 +73,11 @@ public class ChassisHardware extends RobotHardware {
         extension = hardwareMap.get(DcMotorEx.class, "slideExtension");
         basket = hardwareMap.get(Servo.class, "basketFlipper");
 
+        //Camera
+        cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+
+        //
+       // potentiometer = hardwareMap.get(AnalogInput.class, "potentiometer");
         allHubs = hardwareMap.getAll(LynxModule.class);
 
     }
@@ -67,7 +88,7 @@ public class ChassisHardware extends RobotHardware {
         BNO055IMU.Parameters Params = new BNO055IMU.Parameters();
         Params.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         Params.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        Params.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opMode
+        Params.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opMode
         Params.loggingEnabled      = true;
         Params.loggingTag          = "IMU";
         Params.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
@@ -137,6 +158,20 @@ public class ChassisHardware extends RobotHardware {
             default:
                 return null;
         }
+    }
+
+
+    public ModernRoboticsI2cRangeSensor getRangeSensor(String ID) {
+        switch (ID) {
+            case "intake_range":
+                return intakeRange;
+            default:
+                return null;
+        }
+    }
+
+    public int getCameraID(String ID) {
+        return cameraMonitorViewId;
     }
 
     @Override

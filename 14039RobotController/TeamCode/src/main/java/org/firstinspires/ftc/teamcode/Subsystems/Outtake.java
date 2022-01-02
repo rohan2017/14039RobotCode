@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.Controllers.PID;
 import org.firstinspires.ftc.teamcode.Controllers.PIDF;
 import org.firstinspires.ftc.teamcode.Hardware.RobotHardware;
 import org.firstinspires.ftc.teamcode.MathFunctions.MyMath;
@@ -29,13 +30,14 @@ public class Outtake {
     public int turretMode; // 0-hold position, 1-power
     public int turretPosition = 0;
     public int targetTurretPosition = 0;
-    private int turretError = 0;
-    private double turretPower = 0;
+    public int turretError = 0;
+    public double turretPower = 0;
     private final double gearRatioT = 33/15; // motor/turret rotations
     private final double ticksPerRevTMotor = 537.6;
     public final double ticksPerDegTurret = ticksPerRevTMotor*gearRatioT/360;
-    private final double turretLimit = 60;
-    private PIDF turretControl = new PIDF(0.002,0,0.00008, 0.05,0,0.4,0);
+    private final double turretLimit = 90;
+    //private PIDF turretControl = new PIDF(0.02,0,0, 0,0,0.6,0.01);
+    private PID turretControl = new PID(0.02,0,0,0,0.6,0.01);
 
     // Tilt variables
     public int tiltMode; // 0-hold position, 1-power
@@ -62,7 +64,7 @@ public class Outtake {
     public Outtake(LinearOpMode opMode, RobotHardware robothardware) {
         this.opMode = opMode;
         this.hardware = robothardware;
-        state = "idle";
+        state = "transient";
     }
 
     public void initialize() {
@@ -95,7 +97,7 @@ public class Outtake {
 
     public void update () {
         if(opMode.opModeIsActive()) {
-            if(!state.equals("idle")) {
+            if(state.equals("transient")) {
 
                 tiltPosition = hardware.getMotor("tilt").getCurrentPosition();
                 turretPosition = hardware.getMotor("turret").getCurrentPosition();
@@ -106,7 +108,8 @@ public class Outtake {
                 turretError = Math.abs(turretPosition - targetTurretPosition);
                 slideError = Math.abs(slidePosition - targetSlidePosition);
                 servoError = servoState - getServoState();
-                if(tiltError < 20 && turretError < 20 && slideError < 20 && servoError==0 && tiltMode == 0 && turretMode == 0) {
+
+                if(tiltError < 5 && turretError < 5 && slideError < 5 && servoError==0 && tiltMode == 0 && turretMode == 0) {
                     state = "converged";
                 }else {
                     state = "transient";
@@ -240,6 +243,7 @@ public class Outtake {
     }
 
     public void setTargets(double turretAngle, double tiltAngle, double slideLength, int boxState) {
+        state = "transient";
         setTurretAngle(turretAngle);
         setPitchAngle(tiltAngle);
         setSlideLength(slideLength);

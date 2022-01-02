@@ -23,13 +23,21 @@ public class outtakeTest extends LinearOpMode {
         telemetry.update();
 
         // OUTTAKE
-        double angle = 10;
-        double length = 60;
-        double tilt = 10;
+        double angle = 70;
+        double length = 0;
+        double tilt = 0;
 
         bot.outtake.setTargets(angle, tilt, length, 1);
-        bot.outtake.state = "transient";
         while (opModeIsActive()) {
+            telemetry.addData("turret ticks ", bot.hardware.getMotor("turret").getCurrentPosition());
+            telemetry.addData("state", bot.outtake.state);
+            telemetry.addData("turret mode", bot.outtake.turretMode);
+            telemetry.addData("turret power", bot.outtake.turretPower);
+            telemetry.addData("turret error", bot.outtake.turretError);
+            telemetry.addData("turret targ in ticks", bot.outtake.targetTurretPosition);
+            telemetry.addData("turret targ angle", bot.outtake.targetTurretPosition/ bot.outtake.ticksPerDegTurret);
+            telemetry.addData("ticks per deg turret", bot.outtake.ticksPerDegTurret);
+            telemetry.update();
             bot.outtake.update();
         }
 

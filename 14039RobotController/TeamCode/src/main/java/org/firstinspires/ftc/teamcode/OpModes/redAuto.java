@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import static org.firstinspires.ftc.teamcode.CustomCV.detector.Location.LEFT;
-import static org.firstinspires.ftc.teamcode.CustomCV.detector.Location.MID;
-import static org.firstinspires.ftc.teamcode.CustomCV.detector.Location.RIGHT;
+import static org.firstinspires.ftc.teamcode.CustomCV.Detector.Location.LEFT;
+import static org.firstinspires.ftc.teamcode.CustomCV.Detector.Location.MID;
+import static org.firstinspires.ftc.teamcode.CustomCV.Detector.Location.RIGHT;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.CustomCV.detector;
+import org.firstinspires.ftc.teamcode.CustomCV.Detector;
 import org.firstinspires.ftc.teamcode.Robots.FourWheelRobot;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -37,7 +37,7 @@ public class redAuto extends LinearOpMode
             initialize();
             int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
             phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
-            detector detector = new detector(telemetry);
+            Detector detector = new Detector();
             phoneCam.setPipeline(detector);
 
             phoneCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()

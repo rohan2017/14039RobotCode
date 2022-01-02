@@ -14,6 +14,10 @@ public class Intake {
     private double power;
     private double leftPos, rightPos;
 
+    public boolean hasBlock = false;
+    public double intensity;
+    public double filteredIntensity = 0;
+
     public Intake(LinearOpMode opMode, RobotHardware robothardware) {
         this.opMode = opMode;
         this.hardware = robothardware;
@@ -24,6 +28,7 @@ public class Intake {
         hardware.getMotor("intake").setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         hardware.getMotor("intake").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         power = 0;
+        filteredIntensity = 0;
     }
 
     public void setPower(double pow) {
@@ -32,6 +37,13 @@ public class Intake {
 
     public void update () {
         if(opMode.opModeIsActive()) {
+            intensity = hardware.getRangeSensor("intake_range").rawOptical();
+            if(intensity >= 0 && intensity < 200) {
+                filteredIntensity += 0.9*(intensity - filteredIntensity);
+            }
+
+            hasBlock = filteredIntensity > 17;
+
             hardware.getMotor("intake").setPower(power);
 
             if((leftPos + rightPos) == 1) {
