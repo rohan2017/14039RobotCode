@@ -12,9 +12,9 @@ import org.firstinspires.ftc.teamcode.Robots.MecanumChassisBot;
 public class testDrivebase extends LinearOpMode {
 
     // Declare OpMode Members
-    private FourWheelRobot bot = new FourWheelRobot(this);
+    //private FourWheelRobot bot = new FourWheelRobot(this);
     //private MecanumChassisBot bot = new MecanumChassisBot(this);
-    //private FFRobot bot = new FFRobot(this);
+    private FFRobot bot = new FFRobot(this);
 
     @Override
     public void runOpMode() {
@@ -24,18 +24,23 @@ public class testDrivebase extends LinearOpMode {
         telemetry.update();
 
         while(opModeIsActive()) {
-            if(true) {
-                double y1 = -gamepad1.right_stick_y;
-                double x1 = gamepad1.right_stick_x;
-                double x2 = gamepad1.left_stick_x;
-                double y2 = -gamepad1.left_stick_y;
 
-                //bot.drivebase.setPowers((y2+x2), (y1-x1), (y2-x2), (y1+x1));
-                bot.drivebase.setPowers(y2, y1);
-            }else {
-                //bot.drivebase.setRelativeVelocity(gamepad1.left_stick_x*0.5, -gamepad1.left_stick_y*0.5, -gamepad1.right_stick_x*0.5, gamepad1.left_stick_x*0.5, -gamepad1.left_stick_y*0.5, -gamepad1.right_stick_x*0.5);
-            }
+            double y1 = -gamepad1.right_stick_y;
+            double x1 = gamepad1.right_stick_x;
+            double x2 = gamepad1.left_stick_x;
+            double y2 = -gamepad1.left_stick_y;
+
+            //bot.drivebase.setPowers((y2+x2), (y1-x1), (y2-x2), (y1+x1));
+            bot.drivebase.setPowers(y2, y1);
+
+            bot.intake.setFlipPosition(gamepad1.left_trigger);
+            bot.intake.setExtendPosition(gamepad1.right_trigger);
+
+            telemetry.addData("leftTrigger", gamepad1.left_trigger);
+            telemetry.addData("rightTrigger", gamepad1.right_trigger);
+
             bot.drivebase.update();
+            bot.intake.update();
 
             telemetry.update();
         }

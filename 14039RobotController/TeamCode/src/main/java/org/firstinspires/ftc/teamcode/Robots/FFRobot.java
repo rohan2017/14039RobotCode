@@ -5,42 +5,42 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Hardware.FFRobotHardware;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.Subsystems.Localization.DummyOdometer;
+import org.firstinspires.ftc.teamcode.Subsystems.Movement.Drivebases.DummyTankDrive;
+import org.firstinspires.ftc.teamcode.Subsystems.Movement.MovementDummyTankDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Outtake;
 import org.firstinspires.ftc.teamcode.Hardware.RobotHardware;
-import org.firstinspires.ftc.teamcode.Subsystems.Localization.Odometer2WIMU;
-import org.firstinspires.ftc.teamcode.Subsystems.Movement.Drivebases.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Subsystems.Movement.MovementHolonomic;
+
 
 public class FFRobot extends Robot {
 
-    public MecanumDrive drivebase;
-    public Odometer2WIMU odometer;
-    public MovementHolonomic movement;
+    public DummyTankDrive drivebase;
+    public MovementDummyTankDrive movement;
+    public DummyOdometer odometer;
     public Intake intake;
-    public Outtake outtake;
+    //public Outtake outtake;
 
     public FFRobot(LinearOpMode opMode) {
         super(opMode);
         hardware = new FFRobotHardware();
-        drivebase = new MecanumDrive(opMode, hardware, 40, 7.62, 22.0/20);
-        odometer = new Odometer2WIMU(opMode, hardware,5, 0);
-        movement = new MovementHolonomic(opMode, drivebase, odometer);
+        drivebase = new DummyTankDrive(opMode, hardware);
+        odometer = new DummyOdometer(opMode, hardware);
+        movement = new MovementDummyTankDrive(opMode, drivebase, odometer);
         intake = new Intake(opMode, hardware);
-        outtake = new Outtake(opMode, hardware);
+        //outtake = new Outtake(opMode, hardware);
     }
 
     public void initialize(HardwareMap hardwareMap) {
         hardware.hardwareMap(hardwareMap);
         hardware.initialize();
         odometer.initialize();
-        odometer.setEncoderDirections(-1, -1);
         drivebase.initialize();
         drivebase.resetDriveEncoders();
-        drivebase.reverseMotors("Right");
+        drivebase.reverseMotors(1, -1, -1, 1);
         drivebase.setPowerBehavior("brake");
         drivebase.setRunMode("withoutEncoder");
         movement.initialize();
-        outtake.initialize();
+        //outtake.initialize();
         intake.initialize();
     }
 
@@ -49,6 +49,6 @@ public class FFRobot extends Robot {
         movement.update();
         drivebase.update();
         intake.update();
-        outtake.update();
+        //outtake.update();
     }
 }

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Subsystems.Movement.Drivebases;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Hardware.RobotHardware;
 
@@ -116,6 +117,29 @@ public class DummyTankDrive extends Drivebase {
             hardware.getMotor("driveBackRight").setDirection(DcMotor.Direction.FORWARD);
         }
 
+    }
+
+    public void reverseMotors(int dirFR, int dirFL, int dirBL, int dirBR) {
+        if(dirFR == 1) {
+            hardware.getMotor("driveFrontRight").setDirection(DcMotor.Direction.FORWARD);
+        }else {
+            hardware.getMotor("driveFrontRight").setDirection(DcMotor.Direction.REVERSE);
+        }
+        if(dirFL == 1) {
+            hardware.getMotor("driveFrontLeft").setDirection(DcMotor.Direction.FORWARD);
+        }else {
+            hardware.getMotor("driveFrontLeft").setDirection(DcMotor.Direction.REVERSE);
+        }
+        if(dirBL == 1) {
+            hardware.getMotor("driveBackLeft").setDirection(DcMotor.Direction.FORWARD);
+        }else {
+            hardware.getMotor("driveBackLeft").setDirection(DcMotor.Direction.REVERSE);
+        }
+        if(dirBR == 1) {
+            hardware.getMotor("driveBackRight").setDirection(DcMotor.Direction.FORWARD);
+        }else {
+            hardware.getMotor("driveBackRight").setDirection(DcMotor.Direction.REVERSE);
+        }
     }
 
     public double getRightEncoder() {

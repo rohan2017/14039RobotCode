@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Hardware;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -17,14 +18,26 @@ public class FFRobotHardware extends RobotHardware {
 
     //Drive Motors
     public static DcMotorEx rightFront, leftFront, leftBack, rightBack;
+
+    //Intake
+    public static DcMotorEx intake;
+    public static Servo rightFlipper, leftFlipper;
+    public static Servo rightExtend, leftExtend;
+    public static ModernRoboticsI2cRangeSensor intakeRange;
+
+    //Outtake
+    public static DcMotorEx turret, tilt, extension;
+    public static Servo basket;
+    // public static AnalogInput potentiometer;
+
     //IMU
     public static BNO055IMU imu;
-    //Operator Motors
-    public static DcMotorEx intake, lift, arm;
-    //Operator Servos
-    public static Servo door, pusher, rotator;
+
     //Timer
     public static ElapsedTime elapsedTime = new ElapsedTime();
+
+    //Camera
+    public static int cameraMonitorViewId;
 
     public static List<LynxModule> allHubs;
 
@@ -37,17 +50,29 @@ public class FFRobotHardware extends RobotHardware {
         leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
         rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
 
-        intake = hardwareMap.get(DcMotorEx.class, "intake");
-        lift = hardwareMap.get(DcMotorEx.class, "lift");
-
-        arm = hardwareMap.get(DcMotorEx.class, "arm");
-        door = hardwareMap.get(Servo.class, "door");
-
-        pusher = hardwareMap.get(Servo.class, "pusher");
-        rotator = hardwareMap.get(Servo.class, "rotator");
-
         //IMU
         imu =  hardwareMap.get(BNO055IMU.class, "imu");
+
+
+        //Intake
+        rightFlipper = hardwareMap.get(Servo.class, "rightFlipper");
+        leftFlipper = hardwareMap.get(Servo.class, "leftFlipper");
+        rightExtend = hardwareMap.get(Servo.class, "rightExtend");
+        leftExtend = hardwareMap.get(Servo.class, "leftExtend");
+        // intake = hardwareMap.get(DcMotorEx.class, "intake");
+        // intakeRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "intake_range");
+
+        /*
+        //Outtake
+        turret = hardwareMap.get(DcMotorEx.class, "turretSpinner");
+        tilt = hardwareMap.get(DcMotorEx.class, "tilt");
+        extension = hardwareMap.get(DcMotorEx.class, "slideExtension");
+        basket = hardwareMap.get(Servo.class, "basketFlipper");
+        // potentiometer = hardwareMap.get(AnalogInput.class, "potentiometer");
+         */
+
+        //Camera
+        cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
         allHubs = hardwareMap.getAll(LynxModule.class);
 
@@ -59,7 +84,7 @@ public class FFRobotHardware extends RobotHardware {
         BNO055IMU.Parameters Params = new BNO055IMU.Parameters();
         Params.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         Params.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        Params.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opMode
+        Params.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opMode
         Params.loggingEnabled      = true;
         Params.loggingTag          = "IMU";
         Params.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
@@ -107,27 +132,46 @@ public class FFRobotHardware extends RobotHardware {
                 return leftBack;
             case "intake":
                 return intake;
-            case "lift":
-                return lift;
-            case "arm":
-                return arm;
+            case "turret":
+                return turret;
+            case "tilt":
+                return tilt;
+            case "extension":
+                return extension;
             default:
                 return null;
         }
-
     }
 
     public Servo getServo(String ID){
-        switch (ID) {
-            case "door":
-                return door;
-            case "pusher":
-                return pusher;
-            case "rotator":
-                return rotator;
+        switch (ID){
+            case "leftFlipper":
+                return leftFlipper;
+            case "rightFlipper":
+                return rightFlipper;
+            case "leftExtend":
+                return leftExtend;
+            case "rightExtend":
+                return rightExtend;
+            case "basketFlipper":
+                return basket;
             default:
                 return null;
         }
+    }
+
+
+    public ModernRoboticsI2cRangeSensor getRangeSensor(String ID) {
+        switch (ID) {
+            case "intake_range":
+                return intakeRange;
+            default:
+                return null;
+        }
+    }
+
+    public int getCameraID(String ID) {
+        return cameraMonitorViewId;
     }
 
     @Override

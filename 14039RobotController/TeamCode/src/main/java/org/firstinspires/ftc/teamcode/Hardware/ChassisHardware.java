@@ -30,13 +30,10 @@ public class ChassisHardware extends RobotHardware {
     public static Servo rightFlipper, leftFlipper;
     public static ModernRoboticsI2cRangeSensor intakeRange;
 
-
-
     //Outtake
     public static DcMotorEx turret, tilt, extension;
     public static Servo basket;
-   // public static AnalogInput potentiometer;
-
+    // public static AnalogInput potentiometer;
 
     //IMU
     public static BNO055IMU imu;
