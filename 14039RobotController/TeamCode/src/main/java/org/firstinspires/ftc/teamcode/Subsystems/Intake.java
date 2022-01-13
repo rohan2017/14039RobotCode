@@ -25,14 +25,15 @@ public class Intake {
     }
 
     public void initialize() {
-        /*
+
         hardware.getMotor("intake").setDirection(DcMotor.Direction.REVERSE);
+        /*
         hardware.getMotor("intake").setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         hardware.getMotor("intake").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-         */
+        */
         power = 0;
         filteredIntensity = 0;
-        flipUp();
+        flipHold();
         retract();
     }
 
@@ -42,13 +43,13 @@ public class Intake {
 
     public void update() {
         if(opMode.opModeIsActive()) {
-            //intensity = hardware.getRangeSensor("intake_range").rawOptical();
+            intensity = hardware.getRangeSensor("intake_range").rawOptical();
             if(intensity >= 0 && intensity < 200) {
                 filteredIntensity += 0.9*(intensity - filteredIntensity);
             }
             hasBlock = filteredIntensity > 17;
 
-            //hardware.getMotor("intake").setPower(power);
+            hardware.getMotor("intake").setPower(power);
 
             if((leftPos + rightPos) == 1) {
                 hardware.getServo("leftFlipper").setPosition(leftPos);
@@ -62,9 +63,13 @@ public class Intake {
         }
     }
 
+    public void flipHold(){
+        leftPos = 0.62;
+        rightPos = 0.38;
+    }
     public void flipUp() {
-        leftPos = 1;
-        rightPos = 0;
+        leftPos = 0.97;
+        rightPos = 0.03;
     }
 
     public void flipDown() {
@@ -78,17 +83,17 @@ public class Intake {
     }
 
     public void setFlipPosition(double pos) {
-        if(pos > 0 && pos < 0.62) {
-            rightPos = 0.62-pos;
-            leftPos = 0.38+pos;
-        }
+        if (pos < 0) pos = 0;
+        if (pos > 0.62) pos = 0.62;
+        rightPos = 0.62 - pos;
+        leftPos = 0.38 + pos;
     }
 
     public void setExtendPosition(double pos) {
-        if(pos > 0 && pos < 0.33) {
-            rightExtendPos = 1-pos;
-            leftExtendPos = 0+pos;
-        }
+        if(pos < 0) pos = 0;
+        if(pos > 0.33) pos = 0.33;
+        rightExtendPos = 1-pos;
+        leftExtendPos = 0+pos;
     }
 
 }

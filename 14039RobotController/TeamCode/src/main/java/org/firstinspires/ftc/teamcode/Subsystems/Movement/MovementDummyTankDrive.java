@@ -46,6 +46,7 @@ public class MovementDummyTankDrive extends Movement {
                     state = "transient";
                 }
                 // Actions
+
                 if (state.equals("transient")) {
                     orient.update(targetHeading, currentHeading);
                     longitudinal.update(targetDistance, currentDistance);

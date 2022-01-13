@@ -59,12 +59,12 @@ public class Outtake {
     private final double holdPos = 0.46;
     private final double dropPos = 0;
 
-    public String state;
+    public State state;
 
     public Outtake(LinearOpMode opMode, RobotHardware robothardware) {
         this.opMode = opMode;
         this.hardware = robothardware;
-        state = "transient";
+        state = State.TRANSIENT;
     }
 
     public void initialize() {
@@ -92,12 +92,12 @@ public class Outtake {
 
         // Intake Servo
         hardware.getServo("basketFlipper").setPosition(receivePos);
-        state = "transient";
+        state = State.TRANSIENT;
     }
 
     public void update () {
         if(opMode.opModeIsActive()) {
-            if(state.equals("transient")) {
+            if(state != State.IDLE) {
 
                 tiltPosition = hardware.getMotor("tilt").getCurrentPosition();
                 turretPosition = hardware.getMotor("turret").getCurrentPosition();
@@ -110,13 +110,13 @@ public class Outtake {
                 servoError = servoState - getServoState();
 
                 if(tiltError < 5 && turretError < 5 && slideError < 5 && servoError==0 && tiltMode == 0 && turretMode == 0) {
-                    state = "converged";
+                    state = State.CONVERGED;
                 }else {
-                    state = "transient";
+                    state = State.TRANSIENT;
                 }
 
                 // Actions
-                if(state.equals("transient")) {
+                if(state == State.TRANSIENT) {
 
                     // Tilt and Turret
                     turretControl.update(targetTurretPosition, turretPosition);
@@ -243,7 +243,7 @@ public class Outtake {
     }
 
     public void setTargets(double turretAngle, double tiltAngle, double slideLength, int boxState) {
-        state = "transient";
+        state = State.TRANSIENT;
         setTurretAngle(turretAngle);
         setPitchAngle(tiltAngle);
         setSlideLength(slideLength);

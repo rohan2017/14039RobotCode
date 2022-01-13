@@ -1,12 +1,9 @@
 package org.firstinspires.ftc.teamcode.OpModes.Tests;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robots.FFRobot;
-import org.firstinspires.ftc.teamcode.Robots.FourWheelRobot;
-import org.firstinspires.ftc.teamcode.Robots.MecanumChassisBot;
 
 @TeleOp(name="Drivebase Test", group="Testing")
 public class testDrivebase extends LinearOpMode {

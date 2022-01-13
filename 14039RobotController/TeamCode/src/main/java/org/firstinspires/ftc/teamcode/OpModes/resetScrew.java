@@ -1,12 +1,9 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Robots.FFRobot;
 import org.firstinspires.ftc.teamcode.Robots.FourWheelRobot;
-import org.firstinspires.ftc.teamcode.Robots.MecanumChassisBot;
 
 @TeleOp(name="reset Tilt", group="TeleOp")
 public class resetScrew extends LinearOpMode {

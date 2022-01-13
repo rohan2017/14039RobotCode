@@ -27,7 +27,7 @@ public class ChassisHardware extends RobotHardware {
 
     //Intake
     public static DcMotorEx intake;
-    public static Servo rightFlipper, leftFlipper;
+    public static Servo rightFlipper, leftFlipper, leftExtend,rightExtend;
     public static ModernRoboticsI2cRangeSensor intakeRange;
 
     //Outtake
@@ -62,7 +62,9 @@ public class ChassisHardware extends RobotHardware {
         rightFlipper = hardwareMap.get(Servo.class, "rightFlipper");
         leftFlipper = hardwareMap.get(Servo.class, "leftFlipper");
         intake = hardwareMap.get(DcMotorEx.class, "intake");
-      //  intakeRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "intake_range");
+        leftExtend = hardwareMap.get(Servo.class, "leftExtend");
+        rightExtend = hardwareMap.get(Servo.class, "leftFlipper");
+        intakeRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "intake_range");
 
         //Outtake
         turret = hardwareMap.get(DcMotorEx.class, "turretSpinner");
@@ -72,6 +74,7 @@ public class ChassisHardware extends RobotHardware {
 
         //Camera
         cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+
 
         //
        // potentiometer = hardwareMap.get(AnalogInput.class, "potentiometer");
@@ -150,6 +153,10 @@ public class ChassisHardware extends RobotHardware {
                 return leftFlipper;
             case "rightFlipper":
                 return rightFlipper;
+            case "leftExtend":
+                return leftExtend;
+            case "rightExtend":
+                return rightExtend;
             case "basketFlipper":
                 return basket;
             default:

@@ -1,20 +1,15 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.usb.serial.RobotUsbDeviceTty;
 
-import org.firstinspires.ftc.teamcode.Robots.FFRobot;
-import org.firstinspires.ftc.teamcode.Robots.FourWheelRobot;
-import org.firstinspires.ftc.teamcode.Robots.MecanumChassisBot;
+import org.firstinspires.ftc.teamcode.Robots.testBot;
 
 @TeleOp(name="teleOp", group="TeleOp")
 public class teleOp extends LinearOpMode {
 
     // Declare OpMode Members
-    private FourWheelRobot bot = new FourWheelRobot(this);
+    private testBot bot = new testBot(this);
 
     @Override
     public void runOpMode() {
@@ -30,7 +25,7 @@ public class teleOp extends LinearOpMode {
         while(opModeIsActive()) {
 
             // DRIVING
-            bot.drivebase.setPowers(-gamepad1.left_stick_y, -gamepad1.right_stick_y);
+            // bot.drivebase.setPowers(-gamepad1.left_stick_y, -gamepad1.right_stick_y);
 
             // INTAKE
             if(gamepad1.right_bumper) {
@@ -51,6 +46,7 @@ public class teleOp extends LinearOpMode {
 
             // OUTTAKE
             // Extension manual control
+            /*
             length -= gamepad2.left_stick_y;
 
             // Turret manual control
@@ -103,11 +99,11 @@ public class teleOp extends LinearOpMode {
             }else if(gamepad2.right_bumper) {
                 bot.outtake.setBoxState(1);
             }
+            */
 
-            bot.drivebase.update();
-            bot.outtake.update();
-            bot.intake.update();
+            bot.update();
 
+            /*
             telemetry.addData("turret", bot.outtake.turretPosition);
             telemetry.addData("turret mode", bot.outtake.turretMode);
 
@@ -119,7 +115,7 @@ public class teleOp extends LinearOpMode {
             telemetry.addData("servo", bot.outtake.getServoState());
 
             telemetry.addData("pid", bot.hardware.getMotor("extension").getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
-
+            */
             telemetry.addData("intaked cargo", bot.intake.hasBlock);
             telemetry.addData("intensity", bot.intake.filteredIntensity);
 
@@ -127,12 +123,12 @@ public class teleOp extends LinearOpMode {
 
             loopCount ++;
         }
-        bot.drivebase.freeze();
+       // bot.drivebase.freeze();
     }
 
     private void initialize() {
         bot.initialize(hardwareMap);
-        bot.drivebase.setRunMode("withoutEncoder");
+        // bot.drivebase.setRunMode("withoutEncoder");
         telemetry.addData("status","initialized");
         telemetry.update();
     }

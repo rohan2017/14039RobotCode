@@ -1,13 +1,9 @@
 package org.firstinspires.ftc.teamcode.OpModes.Tests;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.usb.serial.RobotUsbDeviceTty;
 
-import org.firstinspires.ftc.teamcode.Robots.FFRobot;
 import org.firstinspires.ftc.teamcode.Robots.FourWheelRobot;
-import org.firstinspires.ftc.teamcode.Robots.MecanumChassisBot;
 
 @TeleOp(name="outtake test", group="TeleOp")
 public class outtakeTest extends LinearOpMode {
