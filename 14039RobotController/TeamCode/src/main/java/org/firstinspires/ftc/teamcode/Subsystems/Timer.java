@@ -35,15 +35,16 @@ public class Timer {
     }
 
     public void delay(int millis) {
-        targetTime = millis + time;
+        setTargetTime(millis + time);
     }
 
-    public void delaySeconds(int seconds) {
-        targetTime = seconds*1000 + time;
+    public void delaySeconds(double seconds) {
+        setTargetTime(seconds*1000 + time);
     }
 
-    public void setTargetTime(int targTime) {
+    public void setTargetTime(double targTime) {
         targetTime = targTime;
+        state = State.TRANSIENT;
     }
 
     public double getTime() {

@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Hardware.FFRobotHardware;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Subsystems.Localization.DummyOdometer;
+import org.firstinspires.ftc.teamcode.Subsystems.Localization.Odometer6WD;
 import org.firstinspires.ftc.teamcode.Subsystems.Movement.Drivebases.DummyTankDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Movement.MovementDummyTankDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Outtake;
@@ -16,17 +17,17 @@ public class FFRobot extends Robot {
 
     public DummyTankDrive drivebase;
     public MovementDummyTankDrive movement;
-    public DummyOdometer odometer;
-    public Intake intake;
+    public Odometer6WD odometer;
+    //public Intake intake;
     //public Outtake outtake;
 
     public FFRobot(LinearOpMode opMode) {
         super(opMode);
         hardware = new FFRobotHardware();
         drivebase = new DummyTankDrive(opMode, hardware);
-        odometer = new DummyOdometer(opMode, hardware);
+        odometer = new Odometer6WD(opMode, hardware);
         movement = new MovementDummyTankDrive(opMode, drivebase, odometer);
-        intake = new Intake(opMode, hardware);
+        //intake = new Intake(opMode, hardware);
         //outtake = new Outtake(opMode, hardware);
     }
 
@@ -37,18 +38,18 @@ public class FFRobot extends Robot {
         drivebase.initialize();
         drivebase.resetDriveEncoders();
         drivebase.reverseMotors(1, -1, -1, 1);
-        drivebase.setPowerBehavior("brake");
-        drivebase.setRunMode("withoutEncoder");
+        drivebase.setPowerBehavior("float");
+        drivebase.setRunMode("withEncoder");
         movement.initialize();
         //outtake.initialize();
-        intake.initialize();
+        //intake.initialize();
     }
 
     public void update() {
         odometer.update();
         movement.update();
         drivebase.update();
-        intake.update();
+        //intake.update();
         //outtake.update();
     }
 }

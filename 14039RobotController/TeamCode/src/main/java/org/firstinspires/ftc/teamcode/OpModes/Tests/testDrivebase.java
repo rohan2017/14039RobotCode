@@ -9,8 +9,6 @@ import org.firstinspires.ftc.teamcode.Robots.FFRobot;
 public class testDrivebase extends LinearOpMode {
 
     // Declare OpMode Members
-    //private FourWheelRobot bot = new FourWheelRobot(this);
-    //private MecanumChassisBot bot = new MecanumChassisBot(this);
     private FFRobot bot = new FFRobot(this);
 
     @Override
@@ -30,19 +28,7 @@ public class testDrivebase extends LinearOpMode {
             //bot.drivebase.setPowers((y2+x2), (y1-x1), (y2-x2), (y1+x1));
             bot.drivebase.setPowers(y2, y1);
 
-            if(gamepad1.left_trigger < 0.62) {
-                bot.intake.setFlipPosition(gamepad1.left_trigger);
-            }
-            if(gamepad1.right_trigger < 0.33) {
-                bot.intake.setExtendPosition(gamepad1.right_trigger);
-            }
-
-
-            telemetry.addData("leftTrigger", gamepad1.left_trigger);
-            telemetry.addData("rightTrigger", gamepad1.right_trigger);
-
             bot.drivebase.update();
-            bot.intake.update();
 
             telemetry.update();
         }

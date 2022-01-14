@@ -27,10 +27,9 @@ public class Intake {
     public void initialize() {
 
         hardware.getMotor("intake").setDirection(DcMotor.Direction.REVERSE);
-        /*
         hardware.getMotor("intake").setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         hardware.getMotor("intake").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        */
+
         power = 0;
         filteredIntensity = 0;
         flipHold();

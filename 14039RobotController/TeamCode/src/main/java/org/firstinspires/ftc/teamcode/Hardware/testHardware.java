@@ -60,6 +60,10 @@ public class testHardware extends RobotHardware {
         rightExtend = hardwareMap.get(Servo.class, "rightExtend");
         intakeRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "intake_range");
 
+        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
+        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+
+
         //Camera
         cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 

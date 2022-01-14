@@ -30,7 +30,6 @@ public class intakeAuto extends LinearOpMode
         waitForStart();
         telemetry.addData("status","running");
         telemetry.update();
-
     }
 
 

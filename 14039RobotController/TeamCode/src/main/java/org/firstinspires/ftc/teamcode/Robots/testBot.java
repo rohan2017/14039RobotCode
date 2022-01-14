@@ -17,21 +17,23 @@ public class testBot extends Robot {
 
     public Intake intake;
     public Timer time;
-    // public Vision vision;
 
     public testBot(LinearOpMode opMode) {
         super(opMode);
         this.hardware = new testHardware();
         this.intake = new Intake(opMode, hardware);
+        this.time = new Timer(opMode,hardware);
     }
 
     public void initialize(HardwareMap hardwareMap) {
         hardware.hardwareMap(hardwareMap);
         hardware.initialize();
         intake.initialize();
+        time.initialize();
     }
 
     public void update() {
         intake.update();
+        time.update();
     }
 }
