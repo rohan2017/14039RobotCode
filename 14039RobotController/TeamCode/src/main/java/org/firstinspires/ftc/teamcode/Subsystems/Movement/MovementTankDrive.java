@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.Subsystems.Movement;
-
+/*
 import static org.firstinspires.ftc.teamcode.MathFunctions.MyMath.*;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.Controllers.PID;
@@ -43,11 +43,11 @@ public class MovementTankDrive extends Movement {
                 }
                 // Actions
 
-                if (state.equals("transient")) {
+                if (state == State.TRANSIENT) {
                     orient.update(targetHeading, currentHeading);
                     longitudinal.update(targetDistance, currentDistance);
                     drivebase.setPowers(longitudinal.correction - orient.correction, longitudinal.correction + orient.correction);                    drivebase.update();
-                } else if (state.equals("converged")) {
+                } else if (state == State.CONVERGED) {
                     drivebase.freeze();
                 }
             }else {
@@ -61,7 +61,7 @@ public class MovementTankDrive extends Movement {
         this.targetHeading = targetHeading;
         this.targetDistance = targetDistance;
         //drivebase.resetDriveEncoders();
-        state = "transient";
+        state = State.TRANSIENT;
     }
 
     public double getDistToTarget(){
@@ -121,3 +121,4 @@ public class MovementTankDrive extends Movement {
     public double getHeading() {return odometer.heading;}
 
 }
+*/

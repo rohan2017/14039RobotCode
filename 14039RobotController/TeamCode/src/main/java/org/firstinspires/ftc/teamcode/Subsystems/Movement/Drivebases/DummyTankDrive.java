@@ -20,7 +20,7 @@ public class DummyTankDrive extends Drivebase {
 
     public DummyTankDrive(LinearOpMode opMode, RobotHardware hardware) {
         super(opMode, hardware);
-        setDriveConstants(5, 1, 537.6, 27);
+        setDriveConstants(5.07, 1, 537.6, 24.35);
     }
 
     public void setDriveConstants(double wheelRadius, double gearRatio, double TpR, double wheelBase) {

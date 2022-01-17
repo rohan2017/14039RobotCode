@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robots.FourWheelRobot;
+import org.firstinspires.ftc.teamcode.Subsystems.State;
 import org.openftc.easyopencv.OpenCvCamera;
 
 import org.firstinspires.ftc.teamcode.CustomCV.Detector;
@@ -85,7 +86,7 @@ public class redAuto extends LinearOpMode
 
         private void initialize() {
             bot.initialize(hardwareMap);
-            bot.movement.state = "transient";
+            bot.movement.state = State.TRANSIENT;
             bot.intake.flipUp();
             bot.update();
             telemetry.addData("status","initialized");

@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode.Subsystems.Movement;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -8,6 +9,7 @@ import org.firstinspires.ftc.teamcode.MathFunctions.PointEx;
 import org.firstinspires.ftc.teamcode.Controllers.TrapezoidalCurve;
 import org.firstinspires.ftc.teamcode.Subsystems.Localization.Odometer;
 import org.firstinspires.ftc.teamcode.Subsystems.Movement.Drivebases.DrivebaseHolonomic;
+import org.firstinspires.ftc.teamcode.Subsystems.State;
 
 import static org.firstinspires.ftc.teamcode.MathFunctions.MyMath.*;
 import java.util.ArrayList;
@@ -36,17 +38,17 @@ public class MovementHolonomic extends Movement {
         orient = new PID(0.2,0,0.2,0,0.5,0);
         //speedFinder = new TrapezoidalCurve(10, 0.8);
         speedFinder = new SCurve(10);
-        state = "idle";
+        state = State.IDLE;
     }
 
     public void update() {
         if(opMode.opModeIsActive()) {
-            if(!state.equals("idle")) {
+            if(state != State.IDLE) {
                 // State determination
                 if (distance(odometer.x, odometer.y, targetX, targetY) < distanceThreshold && (Math.abs(odometer.heading - targetHeading) < headingThreshold)) {
-                    state = "converged";
+                    state = State.CONVERGED;
                 }else {
-                    state = "transient";
+                    state = State.CONVERGED;
                 }
                 // Actions
                 if (state.equals("transient")) {
@@ -99,7 +101,7 @@ public class MovementHolonomic extends Movement {
         this.targetY = Y;
         this.targetHeading = Heading;
         updateControllers();
-        state = "transient";
+        state = State.TRANSIENT;
     }
 
     public void setTarget(PointEx target) {

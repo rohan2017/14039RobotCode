@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robots.FFRobot;
+import org.firstinspires.ftc.teamcode.Subsystems.State;
 
 @TeleOp(name="Drivebase Test", group="Testing")
 public class testDrivebase extends LinearOpMode {
@@ -37,7 +38,7 @@ public class testDrivebase extends LinearOpMode {
 
     private void initialize() {
         bot.initialize(hardwareMap);
-        bot.movement.state = "transient";
+        bot.movement.state = State.TRANSIENT;
         telemetry.addData("status","initialized");
         telemetry.update();
     }
