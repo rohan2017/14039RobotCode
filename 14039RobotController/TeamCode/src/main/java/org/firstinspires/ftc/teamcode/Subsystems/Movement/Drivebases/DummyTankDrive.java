@@ -15,7 +15,7 @@ public class DummyTankDrive extends Drivebase {
     private double wheelRadius;
     private double gearRatio; // motor rotations per wheel rotations
     private double TpR;
-    private double wheelBase;
+    public double wheelBase;
     private double ticksPerCm;
 
     public DummyTankDrive(LinearOpMode opMode, RobotHardware hardware) {

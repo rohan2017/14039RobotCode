@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.Controllers.PID;
 import org.firstinspires.ftc.teamcode.Controllers.SCurve;
 import org.firstinspires.ftc.teamcode.MathFunctions.PointEx;
-import org.firstinspires.ftc.teamcode.Controllers.TrapezoidalCurve;
 import org.firstinspires.ftc.teamcode.Subsystems.Localization.Odometer;
 import org.firstinspires.ftc.teamcode.Subsystems.Movement.Drivebases.DrivebaseHolonomic;
 import org.firstinspires.ftc.teamcode.Subsystems.State;
@@ -48,10 +47,10 @@ public class MovementHolonomic extends Movement {
                 if (distance(odometer.x, odometer.y, targetX, targetY) < distanceThreshold && (Math.abs(odometer.heading - targetHeading) < headingThreshold)) {
                     state = State.CONVERGED;
                 }else {
-                    state = State.CONVERGED;
+                    state = State.TRANSIENT;
                 }
                 // Actions
-                if (state.equals("transient")) {
+                if (state == State.TRANSIENT) {
 
                     double xDist, yDist, distance, heading;
                     double targSpeed, scale;
@@ -77,7 +76,7 @@ public class MovementHolonomic extends Movement {
                     setGlobalVelocity(targVX, targVY, hCorrect);
 
                     drivebase.update();
-                } else if (state.equals("converged")) {
+                } else if (state == State.CONVERGED) {
                     drivebase.freeze();
                 }
                 odometer.update();

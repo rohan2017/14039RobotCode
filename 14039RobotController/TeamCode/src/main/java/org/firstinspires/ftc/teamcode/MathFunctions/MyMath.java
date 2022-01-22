@@ -84,6 +84,33 @@ public class MyMath {
         return allPoints;
     }
 
+    public static PointEx lineLineIntersection(PointEx line1P1, PointEx line1P2, PointEx line2P1, PointEx line2P2) {
+        double slope1 = slope(line1P1, line1P2);
+        double slope2 = slope(line2P1, line2P2);
+        if(slope1 == slope2) {
+            return null;
+        }else {
+            double x = (line1P1.x * slope1 - line1P1.y - line2P1.x * slope2 + line2P1.y) / (slope1 - slope2);
+            double y = slope1 * (x - line1P2.x) + line1P2.y;
+            return new PointEx(x, y, 0);
+        }
+    }
+
+    public static PointEx perpendicularBisector(PointEx P1, PointEx P2) {
+        if(slope(P1, P2) != 0) {
+            double perpSlope = -1/slope(P1, P2);
+            PointEx midPt = midPoint(P1, P2);
+            midPt.heading = perpSlope;
+            return midPt;
+        }else {
+            return null;
+        }
+    }
+
+    public static double slope(PointEx P1, PointEx P2) {
+        return (P2.y - P1.y)/(P2.x - P1.x);
+    }
+
     public static ArrayList<PointEx> circleCircleIntersection(double x1, double y1, double r1, double x2, double y2, double r2) {
         double xCoeff = -2*(x1-x2);
         double yCoeff = -2*(y1-y2);
@@ -211,6 +238,28 @@ public class MyMath {
 
     public static double distance(double x1, double y1, double x2, double y2) {
         return Math.hypot((x1-x2), (y1-y2));
+    }
+
+    public static double distance(PointEx p1, PointEx p2) {
+        return Math.hypot((p1.x-p2.x), (p1.y-p2.y));
+    }
+
+    public static double clip(double value, double min, double max) {
+        if(value < min) {
+            value = min;
+        }else if(value > max) {
+            value = max;
+        }
+        return value;
+    }
+
+    public static PointEx midPoint(PointEx p1, PointEx p2) {
+        return new PointEx((p1.x + p2.x)/2,(p1.y + p2.y)/2,(p1.heading + p2.heading)/2);
+    }
+
+    public static double[] midPoint(double x1, double y1, double x2, double y2) {
+        double[] midP = {(x1+x2)/2, (y1+y2)/2};
+        return midP.clone();
     }
 
 }

@@ -9,7 +9,7 @@ public class PurePursuit {
 
         // Initialized like this to create a condition where there is no intersection
         PointEx targetPoint = new PointEx(0,0,0); // Default case
-        targetPoint.speed = 404;
+        targetPoint.speed = 40404;
 
         for(int i=0; i<path.size()-1; i++) {
 
@@ -54,10 +54,9 @@ public class PurePursuit {
             double distanceToOne = Math.hypot((pathPoint1.x - targetPoint.x), (pathPoint1.y - targetPoint.y));
             double distanceToTwo = segmentDistance - distanceToOne;
 
-            targetPoint.heading = (pathPoint1.heading * distanceToOne + pathPoint2.heading * distanceToTwo) / (segmentDistance); //Linear average of point 1 and point 2 heading
-            targetPoint.speed = (pathPoint1.speed * distanceToOne + pathPoint2.speed * distanceToTwo) / (segmentDistance); //Linear average of point 1 and point 2 speeds
+            targetPoint.heading = (pathPoint1.heading * distanceToOne + pathPoint2.heading * distanceToTwo) / (segmentDistance); //Lerp of point 1 and point 2 heading
+            targetPoint.speed = (pathPoint1.speed * distanceToOne + pathPoint2.speed * distanceToTwo) / (segmentDistance); //Lerp of point 1 and point 2 speeds
 
-            //Pass on action variables here
         }
 
         return targetPoint;
@@ -73,6 +72,45 @@ public class PurePursuit {
         }
 
         return getTargetPoint(robotX, robotY, leastDistance+10, path);
+    }
+
+    public static void generateTrajectoryH(ArrayList<PointEx> path, VelocityCurve veloCurve) {
+        double totalDistance = 0;
+        for(int i=0; i<path.size()-1; i++) {
+            PointEx pathPoint1 = path.get(i);
+            PointEx pathPoint2 = path.get(i+1);
+            totalDistance += MyMath.distance(pathPoint1, pathPoint2);
+        }
+        veloCurve.setDistance(totalDistance);
+        double distance = 0;
+        path.get(0).speed = veloCurve.getTargetVelocity(0);
+        for(int i=0; i<path.size()-1; i++) {
+            PointEx pathPoint1 = path.get(i);
+            PointEx pathPoint2 = path.get(i+1);
+            distance += MyMath.distance(pathPoint1, pathPoint2);
+            pathPoint1.heading = Math.toDegrees(Math.atan2(pathPoint2.y-pathPoint1.y, pathPoint2.x-pathPoint1.x))-90;
+            pathPoint2.speed = veloCurve.getTargetVelocity(distance);
+        }
+        path.get(path.size()-1).heading = path.get(path.size()-2).heading;
+    }
+
+    public static void generateTrajectory(ArrayList<PointEx> path, VelocityCurve veloCurve) {
+        double totalDistance = 0;
+        for(int i=0; i<path.size()-1; i++) {
+            PointEx pathPoint1 = path.get(i);
+            PointEx pathPoint2 = path.get(i+1);
+            totalDistance += MyMath.distance(pathPoint1, pathPoint2);
+        }
+        veloCurve.setDistance(totalDistance);
+        double distance = 0;
+        path.get(0).speed = veloCurve.getTargetVelocity(0);
+        for(int i=0; i<path.size()-1; i++) {
+            PointEx pathPoint1 = path.get(i);
+            PointEx pathPoint2 = path.get(i+1);
+            distance += MyMath.distance(pathPoint1, pathPoint2);
+            pathPoint2.speed = veloCurve.getTargetVelocity(distance);
+        }
+
     }
 
 }
