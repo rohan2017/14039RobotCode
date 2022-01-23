@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.CustomCV.Detector.Location.RIGHT;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.Robots.FFRobot;
 import org.firstinspires.ftc.teamcode.Robots.FourWheelRobot;
 import org.firstinspires.ftc.teamcode.Subsystems.State;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -22,7 +23,7 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 public class redAuto extends LinearOpMode
  {
         // Declare OpMode Members
-        private FourWheelRobot bot = new FourWheelRobot(this);
+        private FFRobot bot = new FFRobot(this);
         OpenCvCamera phoneCam;
         private int turretAng, tiltAng, extrudeLength;
 

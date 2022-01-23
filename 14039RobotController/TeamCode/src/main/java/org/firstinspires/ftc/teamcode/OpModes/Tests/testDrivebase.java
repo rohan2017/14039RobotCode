@@ -19,6 +19,8 @@ public class testDrivebase extends LinearOpMode {
         telemetry.addData("status","running");
         telemetry.update();
 
+        bot.odometer.startTracking(0,0,0);
+
         while(opModeIsActive()) {
 
             double y1 = -gamepad1.right_stick_y;
@@ -26,11 +28,16 @@ public class testDrivebase extends LinearOpMode {
             double x2 = gamepad1.left_stick_x;
             double y2 = -gamepad1.left_stick_y;
 
-            //bot.drivebase.setPowers((y2+x2), (y1-x1), (y2-x2), (y1+x1));
             bot.drivebase.setPowers(y2, y1);
 
-            bot.drivebase.update();
+            // bot.drivebase.update();
+            // bot.odometer.update();
+            // bot.intake.update();
+            bot.update();
 
+            telemetry.addData("X", bot.odometer.x);
+            telemetry.addData("Y",bot.odometer.y);
+            telemetry.addData("H",bot.odometer.heading);
             telemetry.update();
         }
         bot.drivebase.freeze();

@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -28,7 +29,7 @@ public class FFRobotHardware extends RobotHardware {
     //Outtake
     public static DcMotorEx turret, tilt, extension;
     public static Servo basket;
-    // public static AnalogInput potentiometer;
+    public static AnalogInput potentiometer;
 
     //IMU
     public static BNO055IMU imu;
@@ -53,23 +54,20 @@ public class FFRobotHardware extends RobotHardware {
         //IMU
         imu =  hardwareMap.get(BNO055IMU.class, "imu");
 
-
         //Intake
         rightFlipper = hardwareMap.get(Servo.class, "rightFlipper");
         leftFlipper = hardwareMap.get(Servo.class, "leftFlipper");
         rightExtend = hardwareMap.get(Servo.class, "rightExtend");
         leftExtend = hardwareMap.get(Servo.class, "leftExtend");
-        // intake = hardwareMap.get(DcMotorEx.class, "intake");
-        // intakeRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "intake_range");
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
+        intakeRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "intakeRange");
 
-        /*
         //Outtake
-        turret = hardwareMap.get(DcMotorEx.class, "turretSpinner");
-        tilt = hardwareMap.get(DcMotorEx.class, "tilt");
-        extension = hardwareMap.get(DcMotorEx.class, "slideExtension");
-        basket = hardwareMap.get(Servo.class, "basketFlipper");
-        // potentiometer = hardwareMap.get(AnalogInput.class, "potentiometer");
-         */
+        turret = hardwareMap.get(DcMotorEx.class, "turret");
+        tilt = hardwareMap.get(DcMotorEx.class, "slidePivot");
+        extension = hardwareMap.get(DcMotorEx.class, "slideExtend");
+        //basket = hardwareMap.get(Servo.class, "basketFlipper");
+        potentiometer = hardwareMap.get(AnalogInput.class, "slidePivotPot");
 
         //Camera
         cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());

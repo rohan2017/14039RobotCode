@@ -34,6 +34,7 @@ public class Intake {
         filteredIntensity = 0;
         flipHold();
         retract();
+        update();
     }
 
     public void setPower(double pow) {
@@ -72,8 +73,8 @@ public class Intake {
     }
 
     public void flipDown() {
-        leftPos = 0.38;
-        rightPos = 0.62;
+        leftPos = 0.41;
+        rightPos = 0.59;
     }
 
     public void retract() {

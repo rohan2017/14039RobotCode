@@ -3,13 +3,15 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Robots.FFRobot;
 import org.firstinspires.ftc.teamcode.Robots.testBot;
+import org.firstinspires.ftc.teamcode.Subsystems.State;
 
 @TeleOp(name="teleOp", group="TeleOp")
 public class teleOp extends LinearOpMode {
 
     // Declare OpMode Members
-    private testBot bot = new testBot(this);
+    private FFRobot bot = new FFRobot(this);
 
     @Override
     public void runOpMode() {
@@ -25,28 +27,29 @@ public class teleOp extends LinearOpMode {
         while(opModeIsActive()) {
 
             // DRIVING
-            // bot.drivebase.setPowers(-gamepad1.left_stick_y, -gamepad1.right_stick_y);
+            bot.drivebase.setPowers(-gamepad1.left_stick_y, -gamepad1.right_stick_y);
 
             // INTAKE
-            if(gamepad1.right_bumper) {
-                bot.intake.setPower(-0.5);
-            }else if(gamepad1.right_trigger > 0.1) {
+            if(gamepad2.right_bumper) {
+                bot.intake.setPower(-0.8);
+            }else if(gamepad2.right_trigger > 0.1) {
                 bot.intake.setPower(0.8);
             }else {
                 bot.intake.setPower(0);
             }
-            if(gamepad1.left_trigger > 0.1) {
-                bot.intake.flipUp();
-                if (gamepad1.left_trigger > 0.7) {
-                    bot.intake.setPower(-0.8);
-                }
-            }else {
+            // flipping
+            if(gamepad2.left_stick_y < -0.1) {
                 bot.intake.flipDown();
+            }else if(gamepad2.left_stick_y > 0.1) {
+                bot.intake.flipUp();
+            }else {
+                bot.intake.flipHold();
             }
+            // extend
+            bot.intake.setExtendPosition(gamepad2.left_trigger);
 
             // OUTTAKE
             // Extension manual control
-            /*
             length -= gamepad2.left_stick_y;
 
             // Turret manual control
@@ -88,7 +91,7 @@ public class teleOp extends LinearOpMode {
                 bot.outtake.setTargets(0, 0, length, 1);
             }
 
-            if(bot.outtake.state.equals("converged")) {
+            if(bot.outtake.state == State.CONVERGED) {
                 reset = false;
             }
 
@@ -99,7 +102,6 @@ public class teleOp extends LinearOpMode {
             }else if(gamepad2.right_bumper) {
                 bot.outtake.setBoxState(1);
             }
-            */
 
             bot.update();
 
@@ -123,7 +125,7 @@ public class teleOp extends LinearOpMode {
 
             loopCount ++;
         }
-       // bot.drivebase.freeze();
+       bot.drivebase.freeze();
     }
 
     private void initialize() {

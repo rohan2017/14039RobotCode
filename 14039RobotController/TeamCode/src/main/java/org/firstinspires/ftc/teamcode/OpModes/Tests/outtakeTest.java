@@ -3,13 +3,14 @@ package org.firstinspires.ftc.teamcode.OpModes.Tests;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Robots.FFRobot;
 import org.firstinspires.ftc.teamcode.Robots.FourWheelRobot;
 
 @TeleOp(name="outtake test", group="TeleOp")
 public class outtakeTest extends LinearOpMode {
 
     // Declare OpMode Members
-    private FourWheelRobot bot = new FourWheelRobot(this);
+    private FFRobot bot = new FFRobot(this);
 
     @Override
     public void runOpMode() {

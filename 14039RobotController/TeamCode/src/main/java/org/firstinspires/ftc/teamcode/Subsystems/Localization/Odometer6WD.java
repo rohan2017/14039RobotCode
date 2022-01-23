@@ -71,8 +71,8 @@ public class Odometer6WD extends Odometer {
             // SLIP CORRECTION
             double expectedDifference = headingChange*wheelBase;
             double correction = (rightChange-leftChange) - expectedDifference; // actual - expected
-            double rightChangeBiased = rightChange - correction*0.3;
-            double leftChangeBiased = leftChange + correction*0.3;
+            double rightChangeBiased = rightChange - correction*0.05;
+            double leftChangeBiased = leftChange + correction*0.05;
 
             double[] totalPositionChange = new double[2];
             double[] relativeMovement = new double[2];

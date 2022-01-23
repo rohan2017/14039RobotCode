@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.OpModes.Tests;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.MathFunctions.PointEx;
 import org.firstinspires.ftc.teamcode.Robots.FFRobot;
 import org.firstinspires.ftc.teamcode.Robots.FourWheelRobot;
 import org.firstinspires.ftc.teamcode.Robots.testBot;
@@ -18,25 +19,18 @@ public class testMovement extends LinearOpMode {
     public void runOpMode() {
         initialize();
         waitForStart();
-        bot.movement.setTargetDistance(-50);
+        telemetry.addData("status","running");
+        telemetry.update();
 
-        while (opModeIsActive() & bot.movement.state != State.CONVERGED) {
-            telemetry.addData("cur distance", bot.movement.currentDistance);
-            telemetry.addData("cur heading", bot.movement.currentHeading);
+        bot.movement.setTarget(new PointEx(0,50,0));
+        while (opModeIsActive() && bot.movement.state != State.CONVERGED) {
+            telemetry.addData("movement state", bot.movement.state);
             telemetry.update();
             bot.update();
         }
-        bot.movement.setTargetDistance(0);
-        while (opModeIsActive() & bot.movement.state != State.CONVERGED) {
-            telemetry.addData("cur distance", bot.movement.currentDistance);
-            telemetry.addData("cur heading", bot.movement.currentHeading);
-            telemetry.update();
-            bot.update();
-        }
-        bot.movement.setTargetHeading(90);
-        while (opModeIsActive() & bot.movement.state != State.CONVERGED) {
-            telemetry.addData("cur distance", bot.movement.currentDistance);
-            telemetry.addData("cur heading", bot.movement.currentHeading);
+        bot.movement.setTarget(new PointEx(0,50,90));
+        while (opModeIsActive() && bot.movement.state != State.CONVERGED) {
+            telemetry.addData("movement state", bot.movement.state);
             telemetry.update();
             bot.update();
         }
@@ -47,6 +41,7 @@ public class testMovement extends LinearOpMode {
         bot.initialize(hardwareMap);
         bot.movement.state = State.TRANSIENT;
         bot.update();
+
         telemetry.addData("status","initialized");
         telemetry.update();
     }

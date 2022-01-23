@@ -15,14 +15,20 @@ public class MovementTankDrive extends Movement {
     private DummyTankDrive drivebase;
 
     private double leftSpeed, rightSpeed;
-    private PointEx targetPoint;
+    private PointEx targetPoint, currentPosition;
     private ArrayList<PointEx> targetPath;
     private double pathRadius;
+
+    private double distanceThreshold = 8;
+    private double headingThreshold = Math.toRadians(8);
+
+    private PID orient;
+    private PID longitudinal;
 
     public enum DriveMode {
         GoToPoint,
         FollowPath,
-        Turn,
+        GoToPointSimple,
         Stopped
     }
 
@@ -31,6 +37,8 @@ public class MovementTankDrive extends Movement {
     public MovementTankDrive(LinearOpMode opMode, DummyTankDrive drivetrain, Odometer odometer) {
         super(opMode, odometer);
         this.drivebase = drivetrain;
+        orient = new PID(0.005,0,0.001,0,0.2,0);
+        longitudinal = new PID(0.1,0,0.08,0,0.5,0);
     }
 
     public void initialize() {
@@ -38,14 +46,19 @@ public class MovementTankDrive extends Movement {
         leftSpeed = 0;
         rightSpeed = 0;
         mode = DriveMode.GoToPoint;
-        PointEx targetPoint = new PointEx(0,0,0);
+        targetPoint = new PointEx(0,0,0);
+        currentPosition = new PointEx(odometer.x, odometer.y, odometer.heading);
     }
 
     public void update() {
         if(opMode.opModeIsActive()) {
+            currentPosition.x = odometer.x;
+            currentPosition.y = odometer.y;
+            currentPosition.heading = odometer.heading;
+
             if(state != State.IDLE) {
                 // State determination
-                if(MyMath.distance(targetPoint, new PointEx(odometer.x, odometer.y, 0)) < 5 && Math.abs(odometer.heading-targetPoint.heading) < 5) {
+                if(MyMath.distance(targetPoint, new PointEx(odometer.x, odometer.y, 0)) < distanceThreshold && Math.abs(odometer.heading-targetPoint.heading) < headingThreshold) {
                     state = State.CONVERGED;
                 }else {
                     state = State.TRANSIENT;
@@ -68,7 +81,8 @@ public class MovementTankDrive extends Movement {
                                 mode = DriveMode.Stopped;
                             }
                             break;
-                        case Turn:
+                        case GoToPointSimple:
+                            updateTargetPointSimple();
                             drivebase.setPowers(leftSpeed, rightSpeed);
                             break;
                         case Stopped:
@@ -93,6 +107,8 @@ public class MovementTankDrive extends Movement {
 
     public void setTarget(PointEx point) {
         targetPoint = point;
+        targetPoint.heading = Math.toRadians(targetPoint.heading);
+        mode = DriveMode.GoToPointSimple;
     }
 
     private boolean followTrajectory() {
@@ -114,8 +130,7 @@ public class MovementTankDrive extends Movement {
     }
 
     private boolean updateTargetPointArc() { // moves in a circular arc to end up at a target point
-        PointEx currentPosition = new PointEx(odometer.x, odometer.y, odometer.heading+Math.PI/2);
-        double relHeading = currentPosition.heading - Math.atan2((targetPoint.y - odometer.y), (targetPoint.x - odometer.x));
+        double relHeading = currentPosition.heading+Math.PI/2 - Math.atan2((targetPoint.y - odometer.y), (targetPoint.x - odometer.x));
         if(Math.abs(relHeading) < 0.01) { // If point is straight ahead
             leftSpeed = MyMath.distance(currentPosition, targetPoint);
             rightSpeed = leftSpeed;
@@ -128,7 +143,7 @@ public class MovementTankDrive extends Movement {
             PointEx perp1 = MyMath.perpendicularBisector(currentPosition, targetPoint);
             if(perp1 != null) {
                 PointEx perp2 = new PointEx(perp1.x+1, perp1.y+perp1.heading, 0);
-                double perpHeadingSlope = -1/Math.tan(currentPosition.heading);
+                double perpHeadingSlope = -1/Math.tan(currentPosition.heading+Math.PI/2);
                 PointEx positionPerp = new PointEx(currentPosition.x+1, currentPosition.y+perpHeadingSlope, 0);
                 PointEx turnCenter = MyMath.lineLineIntersection(currentPosition, positionPerp, perp1, perp2);
                 if(turnCenter != null) {
@@ -152,16 +167,20 @@ public class MovementTankDrive extends Movement {
         return false;
     }
 
-    private void updateTargetPointSimple(PointEx point) {
-        PointEx currentPosition = new PointEx(odometer.x, odometer.y, odometer.heading+Math.PI/2);
-        double relHeading = currentPosition.heading - Math.atan2((point.y - odometer.y), (point.x - odometer.x));
-        if(relHeading < 0) {
-            leftSpeed = (1 + relHeading*drivebase.wheelBase/2)/(1 - relHeading*drivebase.wheelBase/2);
-            rightSpeed = 1;
+    private void updateTargetPointSimple() {
+        double pointHeading = Math.atan2((targetPoint.y - odometer.y), (targetPoint.x - odometer.x)) - Math.PI/2;
+        double distance = MyMath.distance(targetPoint, currentPosition);
+        if(distance > distanceThreshold) {
+            orient.update(Math.toDegrees(pointHeading), Math.toDegrees(currentPosition.heading));
+            longitudinal.update(0, distance);
+            rightSpeed = -longitudinal.correction + orient.correction;
+            leftSpeed = -longitudinal.correction - orient.correction;
         }else {
-            rightSpeed = (1 - relHeading*drivebase.wheelBase/2)/(1 + relHeading*drivebase.wheelBase/2);
-            leftSpeed = 1;
+            orient.update(Math.toDegrees(targetPoint.heading), Math.toDegrees(currentPosition.heading));
+            rightSpeed = orient.correction;
+            leftSpeed = -orient.correction;
         }
+
     }
 
 }
