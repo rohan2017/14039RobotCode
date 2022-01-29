@@ -46,7 +46,7 @@ public class FFRobot extends Robot {
         drivebase.setRunMode("frontWithEncoder");
         movement.initialize();
         //outtake.initialize();
-        intake.initialize();
+        //intake.initialize();
         time.initialize();
     }
 

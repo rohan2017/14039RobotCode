@@ -14,7 +14,7 @@ public class potentiometerTest extends LinearOpMode {
         telemetry.addData("status", "running");
         telemetry.update();
 
-        AnalogInput potentiometer = hardwareMap.analogInput.get("potentiometer");
+        AnalogInput potentiometer = hardwareMap.analogInput.get("slidePivotPot");
 
         while (opModeIsActive()) {
             double voltreading = (float) potentiometer.getVoltage();

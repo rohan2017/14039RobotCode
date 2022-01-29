@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Controllers.PID;
 import org.firstinspires.ftc.teamcode.Controllers.PIDF;
@@ -32,10 +33,10 @@ public class Outtake {
     public int targetTurretPosition = 0;
     public int turretError = 0;
     public double turretPower = 0;
-    private final double gearRatioT = 33/15; // motor/turret rotations
-    private final double ticksPerRevTMotor = 537.6;
+    private final double gearRatioT = 10/3; // motor/turret rotations
+    private final double ticksPerRevTMotor = 751.8;
     public final double ticksPerDegTurret = ticksPerRevTMotor*gearRatioT/360;
-    private final double turretLimit = 90;
+    private final double turretLimit = 40;
     //private PIDF turretControl = new PIDF(0.02,0,0, 0,0,0.6,0.01);
     private PID turretControl = new PID(0.02,0,0,0,0.6,0.01);
 
@@ -70,28 +71,26 @@ public class Outtake {
     public void initialize() {
         // Turret spin motor
         hardware.getMotor("turret").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hardware.getMotor("turret").setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hardware.getMotor("turret").setMode(DcMotor.RunMode.RUN_TO_POSITION);
         hardware.getMotor("turret").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hardware.getMotor("turret").setDirection(DcMotor.Direction.REVERSE);
         //hardware.getMotor("turret").setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(0,0,0,0));
 
         // Tilt motor
-        hardware.getMotor("tilt").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hardware.getMotor("tilt").setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hardware.getMotor("tilt").setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         hardware.getMotor("tilt").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hardware.getMotor("tilt").setDirection(DcMotor.Direction.FORWARD);
-        //hardware.getMotor("turret").setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(0,0,0,0));
 
         // Spool motor
         hardware.getMotor("extension").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hardware.getMotor("extension").setTargetPosition(0);
-        hardware.getMotor("extension").setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hardware.getMotor("extension").setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         hardware.getMotor("extension").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        hardware.getMotor("extension").setDirection(DcMotor.Direction.REVERSE);
+        hardware.getMotor("extension").setDirection(DcMotor.Direction.FORWARD);
         //hardware.getMotor("turret").setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(0,0,0,0));
 
         // Intake Servo
-        hardware.getServo("basketFlipper").setPosition(receivePos);
+        //hardware.getServo("basketFlipper").setPosition(receivePos);
         state = State.TRANSIENT;
     }
 
@@ -99,7 +98,7 @@ public class Outtake {
         if(opMode.opModeIsActive()) {
             if(state != State.IDLE) {
 
-                tiltPosition = hardware.getMotor("tilt").getCurrentPosition();
+                //tiltPosition = hardware.getMotor("tilt").getCurrentPosition();
                 turretPosition = hardware.getMotor("turret").getCurrentPosition();
                 slidePosition = hardware.getMotor("extension").getCurrentPosition();
 
@@ -140,13 +139,14 @@ public class Outtake {
                     if(tiltPosition < 0 && tiltPower < 0) {tiltPower = 0;} // 0 being lowest position
 
                     hardware.getMotor("turret").setPower(turretPower);
-                    hardware.getMotor("tilt").setPower(tiltPower);
+                    //hardware.getMotor("tilt").setPower(tiltPower);
 
                     // Extension
                     hardware.getMotor("extension").setTargetPosition(targetSlidePosition);
-                    hardware.getMotor("extension").setPower(1);
+                    hardware.getMotor("extension").setPower(0.2);
 
                     // Basket Servo
+                    /*
                     if(servoState == 0) {
                         hardware.getServo("basketFlipper").setPosition(receivePos);
                     }else if(servoState == 1) {
@@ -154,12 +154,13 @@ public class Outtake {
                     }else if(servoState == 2) {
                         hardware.getServo("basketFlipper").setPosition(dropPos);
                     }
+                     */
                 }
             }else {
                 hardware.getMotor("extension").setPower(0);
                 hardware.getMotor("tilt").setPower(0);
                 hardware.getMotor("turret").setPower(0);
-                hardware.getServo("basketFlipper").setPosition(receivePos);
+                //hardware.getServo("basketFlipper").setPosition(receivePos);
             }
         }
     }
@@ -203,7 +204,7 @@ public class Outtake {
     }
 
     public int getServoState() {
-        double position = hardware.getServo("basketFlipper").getPosition();
+        double position = 0; //hardware.getServo("basketFlipper").getPosition();
         double dropDist = Math.abs(position - dropPos);
         double receiveDist = Math.abs(position - receivePos);
         double holdDist = Math.abs(position - holdPos);
@@ -248,6 +249,10 @@ public class Outtake {
         setPitchAngle(tiltAngle);
         setSlideLength(slideLength);
         setBoxState(boxState);
+    }
+
+    private void pivotAngleHoldPower() { // Determine FF constant for holding slides level
+
     }
 
 }

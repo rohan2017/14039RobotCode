@@ -20,7 +20,7 @@ public class MovementTankDrive extends Movement {
     private double pathRadius;
 
     private double distanceThreshold = 8;
-    private double headingThreshold = Math.toRadians(8);
+    private double headingThreshold = 8;
 
     private PID orient;
     private PID longitudinal;

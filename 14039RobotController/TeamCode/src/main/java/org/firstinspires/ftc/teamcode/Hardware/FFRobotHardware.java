@@ -28,7 +28,7 @@ public class FFRobotHardware extends RobotHardware {
 
     //Outtake
     public static DcMotorEx turret, tilt, extension;
-    public static Servo basket;
+    //public static Servo basket;
     public static AnalogInput potentiometer;
 
     //IMU
@@ -152,7 +152,7 @@ public class FFRobotHardware extends RobotHardware {
             case "rightExtend":
                 return rightExtend;
             case "basketFlipper":
-                return basket;
+                return null;
             default:
                 return null;
         }

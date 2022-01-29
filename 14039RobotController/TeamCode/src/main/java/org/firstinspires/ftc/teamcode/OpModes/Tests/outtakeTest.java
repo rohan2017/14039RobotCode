@@ -20,7 +20,7 @@ public class outtakeTest extends LinearOpMode {
         telemetry.update();
 
         // OUTTAKE
-        double angle = 70;
+        double angle = 0;
         double length = 0;
         double tilt = 0;
 
@@ -28,19 +28,20 @@ public class outtakeTest extends LinearOpMode {
         while (opModeIsActive()) {
             telemetry.addData("turret ticks ", bot.hardware.getMotor("turret").getCurrentPosition());
             telemetry.addData("state", bot.outtake.state);
-            telemetry.addData("turret mode", bot.outtake.turretMode);
-            telemetry.addData("turret power", bot.outtake.turretPower);
             telemetry.addData("turret error", bot.outtake.turretError);
-            telemetry.addData("turret targ in ticks", bot.outtake.targetTurretPosition);
-            telemetry.addData("turret targ angle", bot.outtake.targetTurretPosition/ bot.outtake.ticksPerDegTurret);
-            telemetry.addData("ticks per deg turret", bot.outtake.ticksPerDegTurret);
+            telemetry.addData("turret targTicks", bot.outtake.targetTurretPosition);
+            telemetry.addData("slide position ticks", bot.outtake.slidePosition);
+            telemetry.addData("slide target position", bot.outtake.targetSlidePosition);
             telemetry.update();
             bot.outtake.update();
+            if(gamepad1.a) {
+                bot.outtake.setTargets(60, tilt, length, 1);
+            }else {
+                bot.outtake.setTargets(0, tilt, length, 1);
+            }
         }
 
     }
-
-
 
     private void initialize() {
         bot.initialize(hardwareMap);
