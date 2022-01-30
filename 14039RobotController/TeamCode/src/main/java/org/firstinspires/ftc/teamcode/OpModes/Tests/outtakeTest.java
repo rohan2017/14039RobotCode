@@ -32,12 +32,14 @@ public class outtakeTest extends LinearOpMode {
             telemetry.addData("turret targTicks", bot.outtake.targetTurretPosition);
             telemetry.addData("slide position ticks", bot.outtake.slidePosition);
             telemetry.addData("slide target position", bot.outtake.targetSlidePosition);
+            telemetry.addData("tilt position", bot.outtake.tiltPosition);
+            telemetry.addData("tilt targ position", bot.outtake.targetTiltPosition);
             telemetry.update();
             bot.outtake.update();
             if(gamepad1.a) {
-                bot.outtake.setTargets(60, tilt, length, 1);
+                bot.outtake.setTargets(0, 0, 50, 1);
             }else {
-                bot.outtake.setTargets(0, tilt, length, 1);
+                bot.outtake.setTargets(0, 0, length, 1);
             }
         }
 
@@ -45,7 +47,7 @@ public class outtakeTest extends LinearOpMode {
 
     private void initialize() {
         bot.initialize(hardwareMap);
-        bot.drivebase.setRunMode("withoutEncoder");
+        bot.update();
         telemetry.addData("status","initialized");
         telemetry.update();
     }

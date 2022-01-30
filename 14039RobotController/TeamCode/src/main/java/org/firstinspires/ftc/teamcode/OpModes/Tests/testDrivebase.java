@@ -28,11 +28,9 @@ public class testDrivebase extends LinearOpMode {
             double x2 = gamepad1.left_stick_x;
             double y2 = -gamepad1.left_stick_y;
 
+
             bot.drivebase.setPowers(y2, y1);
 
-            // bot.drivebase.update();
-            // bot.odometer.update();
-            // bot.intake.update();
             bot.update();
 
             telemetry.addData("X", bot.odometer.x);

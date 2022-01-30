@@ -45,8 +45,8 @@ public class FFRobot extends Robot {
         drivebase.setPowerBehavior("float");
         drivebase.setRunMode("frontWithEncoder");
         movement.initialize();
-        //outtake.initialize();
-        //intake.initialize();
+        outtake.initialize();
+        intake.initialize();
         time.initialize();
     }
 
@@ -56,6 +56,13 @@ public class FFRobot extends Robot {
         movement.update();
         drivebase.update();
         intake.update();
-        //outtake.update();
+        outtake.update();
+    }
+
+    public void teleUpdate() {
+        time.update();
+        drivebase.update();
+        intake.update();
+        outtake.update();
     }
 }

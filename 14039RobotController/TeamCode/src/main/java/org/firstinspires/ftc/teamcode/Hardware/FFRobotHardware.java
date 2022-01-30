@@ -28,7 +28,7 @@ public class FFRobotHardware extends RobotHardware {
 
     //Outtake
     public static DcMotorEx turret, tilt, extension;
-    //public static Servo basket;
+    public static Servo basket;
     public static AnalogInput potentiometer;
 
     //IMU
@@ -66,7 +66,7 @@ public class FFRobotHardware extends RobotHardware {
         turret = hardwareMap.get(DcMotorEx.class, "turret");
         tilt = hardwareMap.get(DcMotorEx.class, "slidePivot");
         extension = hardwareMap.get(DcMotorEx.class, "slideExtend");
-        //basket = hardwareMap.get(Servo.class, "basketFlipper");
+        basket = hardwareMap.get(Servo.class, "basketFlipper");
         potentiometer = hardwareMap.get(AnalogInput.class, "slidePivotPot");
 
         //Camera
@@ -152,17 +152,25 @@ public class FFRobotHardware extends RobotHardware {
             case "rightExtend":
                 return rightExtend;
             case "basketFlipper":
-                return null;
+                return basket;
             default:
                 return null;
         }
     }
 
-
     public ModernRoboticsI2cRangeSensor getRangeSensor(String ID) {
         switch (ID) {
             case "intake_range":
                 return intakeRange;
+            default:
+                return null;
+        }
+    }
+
+    public AnalogInput getAnalogInput(String ID) {
+        switch (ID) {
+            case "slidePivot":
+                return potentiometer;
             default:
                 return null;
         }

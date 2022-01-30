@@ -38,7 +38,7 @@ public class Intake {
     }
 
     public void setPower(double pow) {
-        if(pow < 1 && pow > -1) power = pow;
+        if(pow <= 1 && pow >= -1) power = pow;
     }
 
     public void update() {
@@ -73,8 +73,8 @@ public class Intake {
     }
 
     public void flipDown() {
-        leftPos = 0.41;
-        rightPos = 0.59;
+        leftPos = 0.43;
+        rightPos = 0.57;
     }
 
     public void retract() {
