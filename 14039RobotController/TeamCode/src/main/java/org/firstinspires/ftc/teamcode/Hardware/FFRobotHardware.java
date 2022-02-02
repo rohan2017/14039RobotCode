@@ -6,6 +6,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -30,6 +31,7 @@ public class FFRobotHardware extends RobotHardware {
     public static DcMotorEx turret, tilt, extension;
     public static Servo basket;
     public static AnalogInput potentiometer;
+    public static DigitalChannel slideLimit;
 
     //IMU
     public static BNO055IMU imu;
@@ -68,6 +70,7 @@ public class FFRobotHardware extends RobotHardware {
         extension = hardwareMap.get(DcMotorEx.class, "slideExtend");
         basket = hardwareMap.get(Servo.class, "basketFlipper");
         potentiometer = hardwareMap.get(AnalogInput.class, "slidePivotPot");
+        slideLimit = hardwareMap.get(DigitalChannel.class, "slideLimit");
 
         //Camera
         cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -78,6 +81,8 @@ public class FFRobotHardware extends RobotHardware {
 
     @Override
     public void initialize() {
+
+        slideLimit.setMode(DigitalChannel.Mode.INPUT);
 
         BNO055IMU.Parameters Params = new BNO055IMU.Parameters();
         Params.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -171,6 +176,15 @@ public class FFRobotHardware extends RobotHardware {
         switch (ID) {
             case "slidePivot":
                 return potentiometer;
+            default:
+                return null;
+        }
+    }
+
+    public DigitalChannel getDigitalInput(String ID) {
+        switch (ID) {
+            case "slideLimit":
+                return slideLimit;
             default:
                 return null;
         }

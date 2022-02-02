@@ -20,6 +20,7 @@ public class teleOp extends LinearOpMode {
         HOLDING,
         DEPOSIT,
         DUMP,
+        HOMESLIDE,
         HOME,
     }
 
@@ -32,7 +33,6 @@ public class teleOp extends LinearOpMode {
     private final int sharedSlide = 100;
     private final int sharedTilt = 10;
 
-
     @Override
     public void runOpMode() {
         initialize();
@@ -44,7 +44,6 @@ public class teleOp extends LinearOpMode {
         teleM = TeleMode.INTAKE;
 
         while(opModeIsActive()) {
-
             // DRIVING
             bot.drivebase.setPowers(-gamepad1.left_stick_y, -gamepad1.right_stick_y);
             if(gamepad1.left_trigger > 0.1) {
@@ -61,7 +60,7 @@ public class teleOp extends LinearOpMode {
                     if(gamepad2.right_bumper && !bot.intake.hasBlock) {
                         bot.intake.setPower(1);
                         bot.intake.flipDown();
-                    }else if(gamepad2.left_bumper) { // && bot.outtake.readyReceive
+                    }else if(gamepad2.left_bumper && bot.outtake.slideLimitSwitch) { // && bot.outtake.readyReceive
                         bot.intake.flipUp();
                         bot.intake.setExtendPosition(0);
                         bot.time.delaySeconds(0.5);
@@ -71,21 +70,23 @@ public class teleOp extends LinearOpMode {
                         bot.intake.flipHold();
                     }
                     // OUTTAKE
-                    bot.outtake.setTargets(0,0,0,0);
-                    bot.hardware.getMotor("extension").setPower(-0.1);
+                    bot.outtake.setTargets(0,0,-1,0);
                     break;
+
                 case TRANSFER:
                     if(bot.time.state == State.CONVERGED) {
+                        bot.outtake.setSlideLength(0.2);
                         bot.intake.setPower(-1);
+                        // delay 0.3 for handoff
                         bot.time.delaySeconds(0.3);
                         teleM = TeleMode.HOLDING;
                     }
                     break;
                 case HOLDING:
                     if(bot.time.state == State.CONVERGED) {
+                        bot.outtake.setSlideLength(0.2);
                         bot.outtake.setBoxState(1);
                         bot.time.delaySeconds(0.1);
-                        //Delay of 0.1 seconds to give the handoff some time to occur
                         bot.intake.setPower(0);
                         bot.intake.flipHold();
                         teleM = TeleMode.DEPOSIT;
@@ -95,55 +96,71 @@ public class teleOp extends LinearOpMode {
                     if(bot.time.state == State.CONVERGED) {
                         if(gamepad2.b) {
                             bot.outtake.setTargets(sharedTurret, sharedTilt, sharedSlide, 1);
+                            length = sharedSlide;
                         }else if(gamepad2.a) {
                             bot.outtake.setTargets(allianceTurret, allianceTilt, allianceSlide, 1);
+                            length = allianceSlide;
+                        }else {
+                            // Manual turret
+                           // bot.outtake.setTurretPower(-gamepad2.right_stick_x*0.4);
+                            // Manual slides
+                            length -= gamepad2.left_stick_y;
+                            bot.outtake.setSlideLength(length);
                         }
-                        // Manual turret
-                        double turPow = gamepad2.right_stick_x;
-                        if(turPow > 0.1) {
-                            if(Math.abs(turPow - 0.1) < 0.1) turPow = 0.1;
-                            bot.outtake.setTurretPower(turPow - 0.1);
-                        }else if(turPow < -0.1) {
-                            if(Math.abs(turPow + 0.1) < 0.1) turPow = -0.1;
-                            bot.outtake.setTurretPower(turPow + 0.1);
-                        }
-                        // Manual slides
-                        //length -= gamepad2.left_stick_y;
-                        //bot.outtake.setSlideLength(length);
-                        if(gamepad1.left_bumper){
+                        // Dumping
+                        if(gamepad2.y){
+                            bot.outtake.setBoxState(2);
+                            bot.time.delaySeconds(0.5);
                             teleM = TeleMode.DUMP;
                         }
                         break;
                     }
                 case DUMP:
                     if(bot.time.state == State.CONVERGED) {
-                        bot.outtake.setBoxState(2);
-                        if (!gamepad1.left_bumper) {
-                            bot.outtake.setTargets(0, 0, 0, 0);
-                            bot.time.delaySeconds(0.5);
-                            teleM = TeleMode.INTAKE;
+                        bot.outtake.setBoxState(1);
+                        if (!gamepad1.y) {
+                            bot.outtake.setSlideLength(5);
+                            bot.outtake.setPitchAngle(10);
+                            bot.time.delaySeconds(2);
+                            teleM = TeleMode.HOMESLIDE;
                         }
                     }
                     break;
-
+                case HOMESLIDE:
+                    if(bot.time.state == State.CONVERGED) {
+                        bot.outtake.setTargets(0, 2, 1, 1);
+                        bot.time.delaySeconds(0.8);
+                        teleM = TeleMode.HOME;
+                    }
+                    break;
+                case HOME:
+                    if(bot.time.state == State.CONVERGED) {
+                        bot.outtake.setTargets(0, 0, -1, 0);
+                        teleM = TeleMode.INTAKE;
+                    }
+                    break;
             }
 
             bot.teleUpdate();
-            telemetry.addData("drive powers", gamepad1.left_stick_y);
 
-            telemetry.addData("receive state", bot.outtake.readyReceive);
+            telemetry.addData("outtake state", bot.outtake.state);
+            telemetry.addData("mode", teleM);
+
             telemetry.addData("turret", bot.outtake.turretPosition);
-            telemetry.addData("turret mode", bot.outtake.turretMode);
+            telemetry.addData("turret target", bot.outtake.targetTurretPosition);
+            telemetry.addData("turret error", bot.outtake.turretError);
 
             telemetry.addData("tilt position", bot.outtake.tiltPosition);
-            telemetry.addData("tilt mode", bot.outtake.tiltMode);
+            telemetry.addData("tilt target", bot.outtake.targetTiltPosition);
+            telemetry.addData("tilt error", bot.outtake.tiltError);
 
             telemetry.addData("slide", bot.outtake.slidePosition);
-            telemetry.addData("target slide", bot.outtake.targetSlidePosition);
+            telemetry.addData("limit switch", bot.outtake.slideLimitSwitch);
+            telemetry.addData("slide error", bot.outtake.slideError);
 
             telemetry.update();
         }
-       bot.drivebase.freeze();
+        bot.drivebase.freeze();
     }
 
     private void initialize() {

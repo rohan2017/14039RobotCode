@@ -26,21 +26,25 @@ public class outtakeTest extends LinearOpMode {
 
         bot.outtake.setTargets(angle, tilt, length, 1);
         while (opModeIsActive()) {
-            telemetry.addData("turret ticks ", bot.hardware.getMotor("turret").getCurrentPosition());
-            telemetry.addData("state", bot.outtake.state);
+            telemetry.addData("outtake state", bot.outtake.state);
+
+            telemetry.addData("turret", bot.outtake.turretPosition);
+            telemetry.addData("turret target", bot.outtake.targetTurretPosition);
             telemetry.addData("turret error", bot.outtake.turretError);
-            telemetry.addData("turret targTicks", bot.outtake.targetTurretPosition);
-            telemetry.addData("slide position ticks", bot.outtake.slidePosition);
-            telemetry.addData("slide target position", bot.outtake.targetSlidePosition);
+
             telemetry.addData("tilt position", bot.outtake.tiltPosition);
-            telemetry.addData("tilt targ position", bot.outtake.targetTiltPosition);
+            telemetry.addData("tilt target", bot.outtake.targetTiltPosition);
+            telemetry.addData("tilt error", bot.outtake.tiltError);
+
+            telemetry.addData("slide", bot.outtake.slidePosition);
+            telemetry.addData("limit switch", bot.outtake.slideLimitSwitch);
+            telemetry.addData("slide error", bot.outtake.slideError);
+
+
+            bot.outtake.setTargets(-60, 18,0 , 1);
+
             telemetry.update();
             bot.outtake.update();
-            if(gamepad1.a) {
-                bot.outtake.setTargets(0, 0, 50, 1);
-            }else {
-                bot.outtake.setTargets(0, 0, length, 1);
-            }
         }
 
     }

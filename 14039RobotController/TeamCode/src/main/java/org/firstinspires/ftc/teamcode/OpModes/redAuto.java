@@ -67,6 +67,7 @@ public class redAuto extends LinearOpMode
                     tiltAng= 10;
                 }
             }
+
             sleep(1000);
             bot.outtake.setTargets(turretAng, tiltAng, extrudeLength, 1);
             sleep(2000);

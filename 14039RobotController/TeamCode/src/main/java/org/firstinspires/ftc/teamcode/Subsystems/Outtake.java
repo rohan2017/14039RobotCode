@@ -20,12 +20,12 @@ public class Outtake {
     // Slide variables
     public int slidePosition = 0;
     public int targetSlidePosition = 0;
-    private int slideError = 0;
+    public int slideError = 0;
+    public boolean slideLimitSwitch = false;
     private final double spoolCircum = 26.33; // cm
     private final double ticksPerRevSpool = 145.1;
     private final double ticksPerCm = ticksPerRevSpool/spoolCircum;
     private final int slideLimit = 150; // cm
-    private PID slideControl = new PID(0.07,0,0,0,0.5,0);
 
     // Turret variables
     public int turretMode; // 0-hold position, 1-power
@@ -37,17 +37,17 @@ public class Outtake {
     private final double ticksPerRevTMotor = 751.8;
     public final double ticksPerDegTurret = ticksPerRevTMotor*gearRatioT/360;
     private final double turretLimit = 80;
-    //private PIDF turretControl = new PIDF(0.02,0,0, 0,0,0.6,0.01);
-    private PID turretControl = new PID(0.02,0,0,0,0.5,0);
+    //private PIDF turretControl = new PIDF(0.001,0.00001,0, 0,0.01,0.5,0);
+    private PID turretControl = new PID(0.008,0,0.001,0,0.4,0);
 
     // Tilt variables
     public int tiltMode; // 0-hold position, 1-power
     public double tiltPosition = 0;
     public double targetTiltPosition = 0;
-    private double tiltError = 0;
+    public double tiltError = 0;
     private double tiltPower = 0;
     private final double tiltLimit = 18.5; // degrees
-    private PIDF tiltControl = new PIDF(0.075,0,0,0,0,0.4,0);
+    private PIDF tiltControl = new PIDF(0.08,0,0,0,0,0.5,0);
 
     // Basket servo
     private int servoState = 0;
@@ -57,7 +57,6 @@ public class Outtake {
     private final double dropPos = 0.99;
 
     public State state;
-    public boolean readyReceive = false;
 
     public Outtake(LinearOpMode opMode, RobotHardware robothardware) {
         this.opMode = opMode;
@@ -79,13 +78,20 @@ public class Outtake {
         hardware.getMotor("tilt").setDirection(DcMotor.Direction.REVERSE);
 
         // Spool motor
+        hardware.getMotor("extension").setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hardware.getMotor("extension").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hardware.getMotor("extension").setDirection(DcMotor.Direction.REVERSE);
+        //hardware.getMotor("extension").setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(0,0,0,0));
+
+        // RESET SLIDES
+        while(!slideLimitSwitch) {
+            slideLimitSwitch = !hardware.getDigitalInput("slideLimit").getState();
+            hardware.getMotor("extension").setPower(-0.2);
+        }
         hardware.getMotor("extension").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hardware.getMotor("extension").setTargetPosition(0);
-       // hardware.getMotor("extension").setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         hardware.getMotor("extension").setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //hardware.getMotor("extension").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        hardware.getMotor("extension").setDirection(DcMotor.Direction.REVERSE);
-        //hardware.getMotor("turret").setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(0,0,0,0));
+
 
         // Intake Servo
         hardware.getServo("basketFlipper").setPosition(receivePos);
@@ -96,6 +102,7 @@ public class Outtake {
         if(opMode.opModeIsActive()) {
             if(state != State.IDLE) {
 
+                slideLimitSwitch = !hardware.getDigitalInput("slideLimit").getState();
                 tiltPosition = getTiltAngle();
                 turretPosition = hardware.getMotor("turret").getCurrentPosition();
                 slidePosition = hardware.getMotor("extension").getCurrentPosition();
@@ -105,9 +112,8 @@ public class Outtake {
                 turretError = Math.abs(turretPosition - targetTurretPosition);
                 slideError = Math.abs(slidePosition - targetSlidePosition);
                 servoError = servoState - getServoState();
-                readyReceive = slidePosition < 10 && getServoState() == 0;
 
-                if(tiltError < 10 && turretError < 5 && slideError < 10 && servoError==0 && tiltMode == 0 && turretMode == 0) {
+                if(tiltError < 2 && turretError < 8 && slideError < 10 && servoError==0) {
                     state = State.CONVERGED;
                 }else {
                     state = State.TRANSIENT;
@@ -123,7 +129,7 @@ public class Outtake {
                     if(tiltMode == 0) {
                         //tiltPower = tiltControl.correction + pivotAngleHoldPower();
                         tiltPower = tiltControl.correction;
-                        //if(tiltError < 1) tiltPower = 0; // Threshold
+                        if(tiltError < 0.5) tiltPower = 0; // Threshold`
                     }
                     if(turretMode == 0) {
                         turretPower = turretControl.correction;
@@ -136,7 +142,7 @@ public class Outtake {
 
                     // Limits
                     if(tiltPosition > tiltLimit && tiltPower > 0) {tiltPower = 0;}
-                    if(tiltPosition < 0 && tiltPower < 0) {tiltPower = 0;} // 0 being lowest position
+                    if(tiltPosition < -2 && tiltPower < 0) {tiltPower = 0;} // 0 being lowest position
 
                     hardware.getMotor("turret").setPower(turretPower);
                     hardware.getMotor("tilt").setPower(tiltPower);
@@ -144,7 +150,6 @@ public class Outtake {
                     // Extension
                     hardware.getMotor("extension").setTargetPosition(targetSlidePosition);
                     hardware.getMotor("extension").setPower(0.8);
-                    //hardware.getMotor("extension").setPower(slideControl.correction);
 
                     // Basket Servo
                     if(servoState == 0) {
@@ -199,7 +204,7 @@ public class Outtake {
         // 0 - Receive
         // 1 - Hold
         // 2 - Drop
-        if(thing == 1 || thing == 2 || thing == 3) servoState = thing;
+        if(thing == 0 || thing == 1 || thing == 2) servoState = thing;
     }
 
     public int getServoState() {
@@ -222,9 +227,9 @@ public class Outtake {
 
     // Sets the length of the extrusion
     public void setSlideLength(double length) {
-        if(length >= 0 && length <= slideLimit) {
-            targetSlidePosition = (int)(length*ticksPerCm);
-        }
+        if(length <= -1) length = -1;
+        if(length >= slideLimit) length = slideLimit;
+        targetSlidePosition = (int)(length*ticksPerCm);
     }
 
     // Sets the dropoff position relative to the bot
@@ -247,11 +252,13 @@ public class Outtake {
     }
 
     private double pivotAngleHoldPower() { // Determine FF constant for holding slides level
-        return 0.05 + 0.1*slidePosition*ticksPerCm/slideLimit;
+        //return 0.005*slidePosition*ticksPerCm/slideLimit;
+        return 0.005* slidePosition*ticksPerCm;
     }
 
     private double getTiltAngle() {
-        return (hardware.getAnalogInput("slidePivot").getVoltage()/3.3 - 0.51)*270;
+        double ang =  (hardware.getAnalogInput("slidePivot").getVoltage()/3.3 - 0.51)*270;
+        return ang;
     }
 
 }
