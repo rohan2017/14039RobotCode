@@ -47,7 +47,7 @@ public class Intake {
             if(intensity >= 0 && intensity < 200) {
                 filteredIntensity += 0.9*(intensity - filteredIntensity);
             }
-            hasBlock = filteredIntensity > 17;
+            hasBlock = filteredIntensity > 18;
 
             hardware.getMotor("intake").setPower(power);
 
@@ -64,17 +64,17 @@ public class Intake {
     }
 
     public void flipHold(){
-        leftPos = 0.62;
-        rightPos = 0.38;
+        leftPos = 0.22;
+        rightPos = 0.78;
     }
     public void flipUp() {
-        leftPos = 0.97;
-        rightPos = 0.03;
+        leftPos = 0.75;
+        rightPos = 0.25;
     }
 
     public void flipDown() {
-        leftPos = 0.43;
-        rightPos = 0.57;
+        leftPos = 0.1;
+        rightPos = 0.9;
     }
 
     public void retract() {
@@ -85,8 +85,8 @@ public class Intake {
     public void setFlipPosition(double pos) {
         if (pos < 0) pos = 0;
         if (pos > 0.62) pos = 0.62;
-        rightPos = 0.62 - pos;
-        leftPos = 0.38 + pos;
+        rightPos = 0.97 - pos;
+        leftPos = 0.03 + pos;
     }
 
     public void setExtendPosition(double pos) {

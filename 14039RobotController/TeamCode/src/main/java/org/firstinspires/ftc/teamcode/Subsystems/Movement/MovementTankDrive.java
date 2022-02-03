@@ -107,7 +107,7 @@ public class MovementTankDrive extends Movement {
 
     public void setTarget(PointEx point) {
         targetPoint = point;
-        targetPoint.heading = Math.toRadians(targetPoint.heading);
+        targetPoint.heading = point.heading;
         mode = DriveMode.GoToPointSimple;
     }
 
@@ -130,12 +130,12 @@ public class MovementTankDrive extends Movement {
     }
 
     private boolean updateTargetPointArc() { // moves in a circular arc to end up at a target point
-        double relHeading = currentPosition.heading+Math.PI/2 - Math.atan2((targetPoint.y - odometer.y), (targetPoint.x - odometer.x));
+        double relHeading = currentPosition.heading+90 - Math.toDegrees(Math.atan2((targetPoint.y - odometer.y), (targetPoint.x - odometer.x)));
         if(Math.abs(relHeading) < 0.01) { // If point is straight ahead
             leftSpeed = MyMath.distance(currentPosition, targetPoint);
             rightSpeed = leftSpeed;
             return true;
-        }else if(Math.abs(relHeading)%Math.PI < 0.01) { // or behind
+        }else if(Math.abs(relHeading)%180 < 0.01) { // or behind
             leftSpeed = -MyMath.distance(currentPosition, targetPoint);
             rightSpeed = -leftSpeed;
             return true;
@@ -143,7 +143,7 @@ public class MovementTankDrive extends Movement {
             PointEx perp1 = MyMath.perpendicularBisector(currentPosition, targetPoint);
             if(perp1 != null) {
                 PointEx perp2 = new PointEx(perp1.x+1, perp1.y+perp1.heading, 0);
-                double perpHeadingSlope = -1/Math.tan(currentPosition.heading+Math.PI/2);
+                double perpHeadingSlope = -1/Math.tan(Math.toRadians(currentPosition.heading)+Math.PI/2);
                 PointEx positionPerp = new PointEx(currentPosition.x+1, currentPosition.y+perpHeadingSlope, 0);
                 PointEx turnCenter = MyMath.lineLineIntersection(currentPosition, positionPerp, perp1, perp2);
                 if(turnCenter != null) {
@@ -152,7 +152,7 @@ public class MovementTankDrive extends Movement {
                     double innerTrack = (radius-(drivebase.wheelBase/2))*theta;
                     double midTrack = radius*theta;
                     double outerTrack = (radius+(drivebase.wheelBase/2))*theta;
-                    double multiplier = Math.abs(relHeading) > Math.PI/2 ? -1 : 1;
+                    double multiplier = Math.abs(relHeading) > 90 ? -1 : 1;
                     if(Math.signum(turnCenter.y-currentPosition.y)/(turnCenter.x-currentPosition.x) == Math.signum(perpHeadingSlope)) {
                         leftSpeed = outerTrack*multiplier/midTrack;
                         rightSpeed = innerTrack*multiplier/midTrack;
@@ -168,15 +168,15 @@ public class MovementTankDrive extends Movement {
     }
 
     private void updateTargetPointSimple() {
-        double pointHeading = Math.atan2((targetPoint.y - odometer.y), (targetPoint.x - odometer.x)) - Math.PI/2;
+        double pointHeading = Math.toDegrees(Math.atan2((targetPoint.y - odometer.y), (targetPoint.x - odometer.x))) - 90;
         double distance = MyMath.distance(targetPoint, currentPosition);
         if(distance > distanceThreshold) {
-            orient.update(Math.toDegrees(pointHeading), Math.toDegrees(currentPosition.heading));
+            orient.update(pointHeading, currentPosition.heading);
             longitudinal.update(0, distance);
             rightSpeed = -longitudinal.correction + orient.correction;
             leftSpeed = -longitudinal.correction - orient.correction;
         }else {
-            orient.update(Math.toDegrees(targetPoint.heading), Math.toDegrees(currentPosition.heading));
+            orient.update(targetPoint.heading, currentPosition.heading);
             rightSpeed = orient.correction;
             leftSpeed = -orient.correction;
         }
