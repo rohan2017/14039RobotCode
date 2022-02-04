@@ -262,4 +262,15 @@ public class MyMath {
         return midP.clone();
     }
 
+    public static double bound(double value, double upper, double lower) {
+        if(upper < lower) {
+            double tmp = lower;
+            lower = upper;
+            upper = tmp;
+        }
+        if(value >= upper) value = upper;
+        if(value <= lower) value = lower;
+        return value;
+    }
+
 }
