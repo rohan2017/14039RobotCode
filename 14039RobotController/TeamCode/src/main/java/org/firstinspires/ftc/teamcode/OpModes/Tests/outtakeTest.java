@@ -23,7 +23,7 @@ public class outtakeTest extends LinearOpMode {
         double angle = 0;
         double length = 0;
         double tilt = 0;
-
+        int x = 0;
         bot.outtake.setTargets(angle, tilt, length, 1);
         while (opModeIsActive()) {
             telemetry.addData("outtake state", bot.outtake.state);
@@ -40,8 +40,10 @@ public class outtakeTest extends LinearOpMode {
             telemetry.addData("limit switch", bot.outtake.slideLimitSwitch);
             telemetry.addData("slide error", bot.outtake.slideError);
 
-
-            bot.outtake.setTargets(-60, 18,0 , 1);
+            if (gamepad2.dpad_up){
+                x+= 3;
+            }
+            bot.outtake.setTargets(0, x,0 , 1);
 
             telemetry.update();
             bot.outtake.update();

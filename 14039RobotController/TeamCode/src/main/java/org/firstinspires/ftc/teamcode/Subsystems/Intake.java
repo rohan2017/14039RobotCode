@@ -45,9 +45,9 @@ public class Intake {
         if(opMode.opModeIsActive()) {
             intensity = hardware.getRangeSensor("intake_range").rawOptical();
             if(intensity >= 0 && intensity < 200) {
-                filteredIntensity += 0.9*(intensity - filteredIntensity);
+                filteredIntensity += 0.5*(intensity - filteredIntensity);
             }
-            hasBlock = filteredIntensity > 18;
+            hasBlock = filteredIntensity > 20; //used to be 18
 
             hardware.getMotor("intake").setPower(power);
 
@@ -64,17 +64,18 @@ public class Intake {
     }
 
     public void flipHold(){
-        leftPos = 0.22;
-        rightPos = 0.78;
+        leftPos = 0.45;
+        rightPos = 0.55;
     }
+
     public void flipUp() {
-        leftPos = 0.75;
-        rightPos = 0.25;
+        leftPos = 0.85;
+        rightPos = 0.15;
     }
 
     public void flipDown() {
-        leftPos = 0.1;
-        rightPos = 0.9;
+        leftPos = 0.20;
+        rightPos = 0.80;
     }
 
     public void retract() {

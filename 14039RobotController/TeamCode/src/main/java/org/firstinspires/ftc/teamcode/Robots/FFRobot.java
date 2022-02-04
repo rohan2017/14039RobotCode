@@ -42,7 +42,7 @@ public class FFRobot extends Robot {
         drivebase.initialize();
         drivebase.resetDriveEncoders();
         drivebase.reverseMotors(1, -1, -1, 1);
-        drivebase.setPowerBehavior("float");
+        drivebase.setPowerBehavior("brake");
         drivebase.setRunMode("frontWithEncoder");
         movement.initialize();
         outtake.initialize();
