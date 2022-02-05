@@ -15,7 +15,7 @@ public class MovementTankDrive extends Movement {
     private DummyTankDrive drivebase;
 
     private double leftSpeed, rightSpeed;
-    private PointEx targetPoint, currentPosition;
+    public PointEx targetPoint, currentPosition;
     private ArrayList<PointEx> targetPath;
     private double pathRadius;
 
@@ -103,12 +103,14 @@ public class MovementTankDrive extends Movement {
         mode = DriveMode.FollowPath;
         pathRadius = radius;
         targetPath = path;
+        state = State.TRANSIENT;
     }
 
     public void setTarget(PointEx point) {
         targetPoint = point;
         targetPoint.heading = point.heading;
         mode = DriveMode.GoToPointSimple;
+        state = State.TRANSIENT;
     }
 
     private boolean followTrajectory() {

@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.CustomCV.Detector.Location.MID;
 import static org.firstinspires.ftc.teamcode.CustomCV.Detector.Location.RIGHT;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robots.FourWheelRobot;
@@ -16,7 +17,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
-
+@Disabled
 @Autonomous(name="Intake Auto", group="Testing")
 
 public class intakeAuto extends LinearOpMode

@@ -10,11 +10,14 @@ import org.firstinspires.ftc.teamcode.Robots.FourWheelRobot;
 import org.firstinspires.ftc.teamcode.Robots.testBot;
 import org.firstinspires.ftc.teamcode.Subsystems.State;
 
-@Autonomous(name="Movement Test", group="Testing")
-public class testMovement extends LinearOpMode {
+import java.util.ArrayList;
+
+@Autonomous(name="PPtest Test", group="Testing")
+public class PPtest extends LinearOpMode {
 
     // Declare OpMode Members
     private FFRobot bot = new FFRobot(this);
+    private ArrayList<PointEx> path = new ArrayList<>();
 
     @Override
     public void runOpMode() {
@@ -22,27 +25,27 @@ public class testMovement extends LinearOpMode {
         waitForStart();
         telemetry.addData("status","running");
         telemetry.update();
-
-        bot.movement.setTarget(new PointEx(0,50,0));
-        while (opModeIsActive() && bot.movement.state != State.CONVERGED) {
-            telemetry.addData("movement state", bot.movement.state);
+        while (opModeIsActive()) {
+            telemetry.addData("state", bot.movement.state);
+            telemetry.addData("target point", bot.movement.targetPoint.toString());
+            telemetry.addData("current point", bot.movement.currentPosition.toString());
+            bot.movement.setTarget(path, 15);
             telemetry.update();
             bot.update();
         }
-
-        bot.movement.setTarget(new PointEx(0,50,90));
-        while (opModeIsActive() && bot.movement.state != State.CONVERGED) {
-            telemetry.addData("movement state", bot.movement.state);
-            telemetry.update();
-            bot.update();
-        }
-
     }
 
     private void initialize() {
         bot.initialize(hardwareMap);
         bot.movement.state = State.TRANSIENT;
         bot.update();
+
+        // Create paths
+        path.add(new PointEx(-5, 20,-2));
+        path.add(new PointEx(-10, 30,-4));
+        path.add(new PointEx(-15, 50,-8));
+        path.add(new PointEx(-20, 70,-16));
+
 
         telemetry.addData("status","initialized");
         telemetry.update();

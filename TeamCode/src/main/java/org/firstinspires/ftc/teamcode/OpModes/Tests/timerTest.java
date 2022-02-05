@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.OpModes.Tests;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robots.testBot;
 import org.firstinspires.ftc.teamcode.Subsystems.State;
 
+@Disabled
 @TeleOp(name="Timer test", group="Testing")
 public class timerTest extends LinearOpMode {
 

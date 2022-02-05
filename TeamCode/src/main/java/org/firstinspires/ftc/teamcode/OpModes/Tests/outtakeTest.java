@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.OpModes.Tests;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robots.FFRobot;
 import org.firstinspires.ftc.teamcode.Robots.FourWheelRobot;
 
+@Disabled
 @TeleOp(name="outtake test", group="TeleOp")
 public class outtakeTest extends LinearOpMode {
 
@@ -20,12 +22,14 @@ public class outtakeTest extends LinearOpMode {
         telemetry.update();
 
         // OUTTAKE
-        double angle = 0;
-        double length = 0;
-        double tilt = 0;
+        double angle = 30;
+        double length = 50;
+        double tilt = 10;
         int x = 0;
         bot.outtake.setTargets(angle, tilt, length, 1);
         while (opModeIsActive()) {
+            bot.outtake.setTargets(angle, tilt, length, 1);
+
             telemetry.addData("outtake state", bot.outtake.state);
 
             telemetry.addData("turret", bot.outtake.turretPosition);
@@ -40,13 +44,13 @@ public class outtakeTest extends LinearOpMode {
             telemetry.addData("limit switch", bot.outtake.slideLimitSwitch);
             telemetry.addData("slide error", bot.outtake.slideError);
 
-            if (gamepad2.dpad_up){
-                x+= 3;
+            if (gamepad2.a){
+                bot.outtake.setTargets(0, angle,length, 1);
             }
-            bot.outtake.setTargets(0, x,0 , 1);
+
 
             telemetry.update();
-            bot.outtake.update();
+            bot.update();
         }
 
     }

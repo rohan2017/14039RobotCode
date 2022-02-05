@@ -3,8 +3,10 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
+import org.firstinspires.ftc.teamcode.Controllers.GatedPID;
 import org.firstinspires.ftc.teamcode.Controllers.PID;
 import org.firstinspires.ftc.teamcode.Controllers.PIDF;
 import org.firstinspires.ftc.teamcode.Hardware.RobotHardware;
@@ -19,6 +21,7 @@ public class Outtake {
     private RobotHardware hardware;
 
     // Slide variables
+    private double slidePower;
     public int slidePosition = 0;
     public int targetSlidePosition = 0;
     public int slideError = 0;
@@ -26,7 +29,9 @@ public class Outtake {
     private final double spoolCircum = 26.33; // cm
     private final double ticksPerRevSpool = 145.1;
     private final double ticksPerCm = ticksPerRevSpool/spoolCircum;
-    private final int slideLimit = 150; // cm
+    private final int slideLimit = 160; // cm
+    private PIDF slideExtendedCtrl = new PIDF(0.003, 0.00001, 0.00002, 0.002, 0.05, 0.8, 0);
+    private PIDF slideNearCtrl = new PIDF(0.006, 0.00001, 0.00002, 0.002, 0.05, 0.8, 0);
 
     // Turret variables
     public int turretMode; // 0-hold position, 1-power
@@ -38,8 +43,8 @@ public class Outtake {
     private final double ticksPerRevTMotor = 751.8;
     public final double ticksPerDegTurret = ticksPerRevTMotor*gearRatioT/360;
     private final double turretLimit = 80;
-    private PID turretExtendedCtrl = new PID(0.008,0,0.001,0,0.5,0);
-    private PID turretControl = new PID(0.005,0,0.0001,0,0.4,0);
+    private PID turretExtendedCtrl = new PID(0.003,0,0.003,0,0.5,0);
+    private PID turretControl = new PID(0.002,0,0.0003,0,0.4,0);
 
     // Tilt variables
     public int tiltMode; // 0-hold position, 1-power
@@ -48,13 +53,13 @@ public class Outtake {
     public double tiltError = 0;
     public double tiltPower = 0;
     private final double tiltLimit = 30; // degrees
-    public PIDF tiltExtendedCtrl = new PIDF(0.15,0.0000,0,0,0,1,0);
-    public PIDF tiltControl = new PIDF(0.04,0.0001,0,0.001,0.07,0.4,0);
+    public PIDF tiltExtendedCtrl = new PIDF(0.11,0.0000,0,0,0,1,0);
+    public PIDF tiltControl = new PIDF(0.035,0.0001,0,0.001,0.07,0.4,0);
 
     // Basket servo
     private int servoState = 0;
     private int servoError = 0;
-    private final double receivePos = 0;
+    private final double receivePos = 0.02;//SAVOX CAN NOT BE SET TO ZERO!
     private final double primePos = 0.13;
     private final double holdPos = 0.23;
     private final double dropPos = 0.95;
@@ -80,22 +85,10 @@ public class Outtake {
         hardware.getMotor("tilt").setDirection(DcMotor.Direction.REVERSE);
 
         // Spool motor
+        hardware.getMotor("extension").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hardware.getMotor("extension").setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         hardware.getMotor("extension").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hardware.getMotor("extension").setDirection(DcMotor.Direction.REVERSE);
-        hardware.getMotor("extension").setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(15,0.1,0,0.5));
-
-        // RESET SLIDES
-        /*
-        while(!slideLimitSwitch) {
-            slideLimitSwitch = !hardware.getDigitalInput("slideLimit").getState();
-            hardware.getMotor("extension").setPower(-0.2);
-        }
-        hardware.getMotor("extension").setPower(0);
-         */
-        hardware.getMotor("extension").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hardware.getMotor("extension").setTargetPosition(0);
-        hardware.getMotor("extension").setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Intake Servo
         hardware.getServo("basketFlipper").setPosition(receivePos);
@@ -130,15 +123,15 @@ public class Outtake {
                     turretExtendedCtrl.update(targetTurretPosition, turretPosition);
                     tiltControl.update(targetTiltPosition, tiltPosition);
                     tiltExtendedCtrl.update(targetTiltPosition,tiltPosition);
+                    slideExtendedCtrl.update(targetSlidePosition, slidePosition);
+                    slideNearCtrl.update(targetSlidePosition, slidePosition);
 
                     if(tiltMode == 0) {
                         if(slidePosition > 500) {
                             tiltPower = tiltExtendedCtrl.correction;
                         } else{
                             tiltPower = tiltControl.correction;
-
                         }
-                        //if(tiltError < 0.3) tiltPower = 0; // Threshold
                     }
                     if(turretMode == 0) {
                         if(slidePosition > 500) {
@@ -148,36 +141,63 @@ public class Outtake {
                         }
                         //if(turretError < 20) turretPower = 0; // Threshold
                     }
+                    if (slidePosition > 400 && slidePosition < 700 && targetSlidePosition >= 300){ //WOULD BREAK SHARED DEPOSIT
+                        slidePower = 1;
 
-                    // Limits
+                    } else if(slidePosition > 400 && slidePosition < 700 && targetSlidePosition < 300) {
+                        slidePower = -1;
+                    }
+                    else if (slidePosition < 400){
+                        slidePower = slideNearCtrl.correction;
+                    } else if (slidePosition > 700){
+                        slidePower = slideExtendedCtrl.correction;
+                    }
+                     // Turret Limits
                     if(turretPosition > turretLimit*ticksPerDegTurret && turretPower > 0) {turretPower = 0;}
                     if(turretPosition < -turretLimit*ticksPerDegTurret && turretPower < 0) {turretPower = 0;}
 
-                    // Limits
+                    // Tilt Limits
                     if(tiltPosition > tiltLimit && tiltPower > 0) {tiltPower = 0;}
                     if(tiltPosition < -2 && tiltPower < 0) {tiltPower = 0;} // 0 being lowest position
 
+                    // Slide Limits
+                    if(slidePosition > slideLimit*ticksPerCm && slidePower > 0) {slidePower = 0;}
+                    if(slidePosition < -10 && slidePower < 0) {slidePower = 0;}
+//                    if(slidePosition < 60 && slidePower < 0.22 && slidePower > 0){slidePower = 0.22;}
+//                    if(slidePosition < 60 && slidePower > -0.22 && slidePower < 0){slidePower = -0.22;}
+
                     hardware.getMotor("turret").setPower(turretPower);
                     hardware.getMotor("tilt").setPower(tiltPower);
+                    hardware.getMotor("extension").setPower(slidePower);
 
-                    // Extension
-                    hardware.getMotor("extension").setTargetPosition(targetSlidePosition);
-                    hardware.getMotor("extension").setPower(1);
-
-                    // Basket Servo
-                    if(servoState == 0) {
-                        hardware.getServo("basketFlipper").setPosition(receivePos);
-                        servoError = 0;
-                    }else if(servoState == 1) {
-                        hardware.getServo("basketFlipper").setPosition(holdPos);
-                        servoError = 0;
-                    }else if(servoState == 2) {
-                        hardware.getServo("basketFlipper").setPosition(dropPos);
-                        servoError = 0;
-                    }else if(servoState == 3) {
-                        hardware.getServo("basketFlipper").setPosition(primePos);
-                        servoError = 0;
-                    }
+//                    // Basket Servo
+//                    if(servoState == 0) {
+//                        hardware.getServo("basketFlipper").setPosition(receivePos);
+//                        servoError = 0;
+//                    }else if(servoState == 1) {
+//                        hardware.getServo("basketFlipper").setPosition(holdPos);
+//                        servoError = 0;
+//                    }else if(servoState == 2) {
+//                        hardware.getServo("basketFlipper").setPosition(dropPos);
+//                        servoError = 0;
+//                    }else if(servoState == 3) {
+//                        hardware.getServo("basketFlipper").setPosition(primePos);
+//                        servoError = 0;
+//                    }
+                }
+                // Basket Servo
+                if(servoState == 0) {
+                    hardware.getServo("basketFlipper").setPosition(receivePos);
+                    servoError = 0;
+                }else if(servoState == 1) {
+                    hardware.getServo("basketFlipper").setPosition(holdPos);
+                    servoError = 0;
+                }else if(servoState == 2) {
+                    hardware.getServo("basketFlipper").setPosition(dropPos);
+                    servoError = 0;
+                }else if(servoState == 3) {
+                    hardware.getServo("basketFlipper").setPosition(primePos);
+                    servoError = 0;
                 }
             }else {
                 hardware.getMotor("extension").setPower(0);
@@ -223,12 +243,13 @@ public class Outtake {
         // 0 - Receive
         // 1 - Hold
         // 2 - Drop
+        // 3 - Between Recieve and Hold
         if(thing == 0 || thing == 1 || thing == 2 || thing == 3) {
-            if(thing == servoError) {
-                servoError = 0;
-            }else {
-                servoError = 1;
-            }
+//            if(thing == servoError) {
+//                servoError = 0;
+//            }else {
+//                servoError = 1;
+//            }
             servoState = thing;
         }
 

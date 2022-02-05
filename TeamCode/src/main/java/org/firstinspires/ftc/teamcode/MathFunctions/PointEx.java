@@ -13,4 +13,8 @@ public class PointEx {
 
     }
 
+    public String toString() {
+        return "X:" + x + ", Y:" + y + ", H:" + heading;
+    }
+
 }
