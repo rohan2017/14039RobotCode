@@ -258,7 +258,6 @@ public class teleOp extends LinearOpMode {
             telemetry.addData("extended PID  power", bot.outtake.tiltExtendedCtrl.correction);
 
             telemetry.addData("slide", bot.outtake.slidePosition);
-            telemetry.addData("limit switch", bot.outtake.slideLimitSwitch);
             telemetry.addData("slide error", bot.outtake.slideError);
             telemetry.addData("slide PID", bot.hardware.getMotor("extension").getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION).toString());
 

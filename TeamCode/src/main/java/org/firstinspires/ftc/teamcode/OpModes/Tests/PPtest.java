@@ -5,9 +5,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MathFunctions.PointEx;
+import org.firstinspires.ftc.teamcode.MathFunctions.TrapezoidalCurve;
 import org.firstinspires.ftc.teamcode.Robots.FFRobot;
 import org.firstinspires.ftc.teamcode.Robots.FourWheelRobot;
 import org.firstinspires.ftc.teamcode.Robots.testBot;
+import org.firstinspires.ftc.teamcode.Subsystems.Movement.PurePursuit;
 import org.firstinspires.ftc.teamcode.Subsystems.State;
 
 import java.util.ArrayList;
@@ -41,11 +43,11 @@ public class PPtest extends LinearOpMode {
         bot.update();
 
         // Create paths
-        path.add(new PointEx(-5, 20,-2));
-        path.add(new PointEx(-10, 30,-4));
-        path.add(new PointEx(-15, 50,-8));
-        path.add(new PointEx(-20, 70,-16));
-
+        path.add(new PointEx(0, 0,0, 0.7));
+        path.add(new PointEx(-3, 30,0, 1));
+        path.add(new PointEx(-5, 50,0, 1));
+//        path.add(new PointEx(-20, 70,0, 0.4));
+        //PurePursuit.generateTrajectory(path, new TrapezoidalCurve(0, 1));
 
         telemetry.addData("status","initialized");
         telemetry.update();

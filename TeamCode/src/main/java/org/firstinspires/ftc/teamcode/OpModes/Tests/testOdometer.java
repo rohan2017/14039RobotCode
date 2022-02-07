@@ -25,7 +25,7 @@ public class testOdometer extends LinearOpMode {
         bot.odometer.startTracking(0,0,0);
 
         while(opModeIsActive()) {
-            bot.drivebase.setPowers(-gamepad1.left_stick_y, -gamepad1.right_stick_y);
+            bot.drivebase.setPowers(-Math.pow(gamepad1.left_stick_y, 3)*0.5, -Math.pow(gamepad1.right_stick_y, 3)*0.5);
             bot.drivebase.update();
 
             telemetry.addData("X", bot.odometer.x);
@@ -40,7 +40,7 @@ public class testOdometer extends LinearOpMode {
 
     private void initialize() {
         bot.initialize(hardwareMap);
-
+        bot.drivebase.setPowerBehavior("float");
         telemetry.addData("status","initialized");
         telemetry.update();
     }

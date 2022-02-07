@@ -19,8 +19,8 @@ public class MovementTankDrive extends Movement {
     private ArrayList<PointEx> targetPath;
     private double pathRadius;
 
-    private double distanceThreshold = 8;
-    private double headingThreshold = 8;
+    private double distanceThreshold = 0;
+    private double headingThreshold = 0;
 
     private PID orient;
     private PID longitudinal;
@@ -42,12 +42,12 @@ public class MovementTankDrive extends Movement {
     }
 
     public void initialize() {
-        state = State.IDLE;
         leftSpeed = 0;
         rightSpeed = 0;
         mode = DriveMode.GoToPoint;
         targetPoint = new PointEx(0,0,0);
         currentPosition = new PointEx(odometer.x, odometer.y, odometer.heading);
+        state = State.TRANSIENT;
     }
 
     public void update() {
@@ -69,6 +69,7 @@ public class MovementTankDrive extends Movement {
                     switch (mode) {
                         case FollowPath:
                             if(followTrajectory()) {
+
                                 drivebase.setPowers(leftSpeed*targetPoint.speed, rightSpeed*targetPoint.speed);
                             }else {
                                 mode = DriveMode.Stopped;
@@ -127,7 +128,8 @@ public class MovementTankDrive extends Movement {
 
         // Checking if the robot is within a certain distance of the "last" point
         double totalDistance = MyMath.distance(lastPoint, new PointEx(odometer.x, odometer.y, 0));
-        return updateTargetPointArc() && (totalDistance > pathRadius);
+        updateTargetPointSimple();
+        return (totalDistance > pathRadius);
 
     }
 

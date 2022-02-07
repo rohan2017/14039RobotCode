@@ -61,6 +61,7 @@ public class FFRobot extends Robot {
 
     public void teleUpdate() {
         time.update();
+        odometer.update();
         drivebase.update();
         intake.update();
         outtake.update();
