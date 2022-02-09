@@ -44,7 +44,7 @@ public class Outtake {
     public final double ticksPerDegTurret = ticksPerRevTMotor*gearRatioT/360;
     private final double turretLimit = 80;
     private PID turretExtendedCtrl = new PID(0.004,0,0.003,0,0.5,0);
-    private PID turretControl = new PID(0.004,0,0.0003,0,0.4,0);
+    private PID turretControl = new PID(0.004,0,0.0005,0,0.4,0);
 
     // Tilt variables
     public int tiltMode; // 0-hold position, 1-power

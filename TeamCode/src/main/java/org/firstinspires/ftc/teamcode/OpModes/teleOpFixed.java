@@ -29,7 +29,8 @@ public class teleOpFixed extends LinearOpMode {
         HOMETURRET,
         HOMECENTER,
         HOME,
-        READY
+        READY,
+        EJECT
     }
 
     private TMode teleM;
@@ -69,8 +70,9 @@ public class teleOpFixed extends LinearOpMode {
             if(gamepad2.right_bumper) {
                 bot.intake.setPower(1);
                 bot.intake.flipDown();
-            }else if(gamepad2.left_bumper) {
+            }else if(gamepad2.left_bumper && teleM == TMode.READY) {
                 teleM = TMode.PRIMETRANSFER;
+                bot.time.delaySeconds(0.3);
             }else {
                 bot.intake.setPower(0.1);
                 bot.intake.flipHold();
@@ -105,30 +107,32 @@ public class teleOpFixed extends LinearOpMode {
             }
 
             // AUTOMATIC CONTROLS ///////////////////////////////////
-            if(bot.intake.hasBlock && teleM == TMode.READY) {
+            if(bot.intake.hasBlock && teleM == TMode.READY && bot.outtake.readyReceive) {
                 teleM = TMode.PRIMETRANSFER;
+                bot.time.delaySeconds(0.3);
             }
-            if(gamepad2.left_trigger > 0.2) {
-                teleM = TMode.READY;
+            if(gamepad2.right_trigger > 0.2 && (teleM == TMode.PRIMETRANSFER || teleM == TMode.ALIGNTRANSFER)) {
+                bot.time.delaySeconds(0.4);
+                teleM = TMode.EJECT;
             }
             // State Machine
             switch(teleM) {
                 case PRIMETRANSFER:
-                    if(bot.outtake.readyReceive) {
-                        bot.outtake.setTargets(0, 0, 0, 0);
-                        bot.intake.setExtendPosition(0.2);
-                        bot.intake.flipUp();
-                        bot.time.delaySeconds(0.5);
+                    bot.outtake.setTargets(0, 0, 0, 0);
+                    bot.intake.setExtendPosition(0.2);
+                    bot.intake.flipUp();
+                    if(bot.time.state == State.CONVERGED) {
+                        bot.time.delaySeconds(0.4); // delay is duration of the next state
                         teleM = TMode.ALIGNTRANSFER;
                     }
                     break;
 
                 case ALIGNTRANSFER:
                     bot.outtake.setTargets(0, 0, 0, 0);
+                    bot.intake.setExtendPosition(0.13);
                     bot.intake.flipUp();
                     if(bot.time.state == State.CONVERGED) {
-                        bot.intake.setExtendPosition(0.13);
-                        bot.time.delaySeconds(0.5);
+                        bot.time.delaySeconds(1); // delay is duration of the next state
                         teleM = TMode.TRANSFER;
                     }
                     break;
@@ -136,83 +140,76 @@ public class teleOpFixed extends LinearOpMode {
                     bot.outtake.setTargets(0, 0, 0, 0);
                     bot.intake.setExtendPosition(0.13);
                     bot.intake.flipUp();
+                    bot.intake.setPower(-1);
                     if(bot.time.state == State.CONVERGED) {
-                        bot.intake.setPower(-1);
-                        bot.time.delaySeconds(1);
+                        bot.time.delaySeconds(0.4); // delay is duration of the next state
                         teleM = TMode.PRIMEHOLD;
                     }
                     break;
                 case PRIMEHOLD:
+                    bot.outtake.setTargets(0, 0, 1, 0);
                     if(bot.time.state == State.CONVERGED) {
-                        bot.outtake.setTargets(0, 0, 1, 0);
-                        bot.time.delaySeconds(0.3);
+                        bot.time.delaySeconds(0.3); // delay is duration of the next state
                         teleM = TMode.SETTLEHOLD;
-                    }else {
-                        bot.intake.setExtendPosition(0.13);
-                        bot.intake.flipUp();
-                        bot.intake.setPower(-1);
                     }
                     break;
                 case SETTLEHOLD:
+                    bot.outtake.setTargets(0, 0, 4, 3);
                     if(bot.time.state == State.CONVERGED) {
-                        bot.outtake.setTargets(0, 0, 4, 3);
-                        bot.time.delaySeconds(0.4);
+                        bot.time.delaySeconds(0.4); // delay is duration of the next state
                         teleM = TMode.HOLDING;
                     }
                     break;
                 case HOLDING:
-                    if(bot.time.state == State.CONVERGED) {
-                        bot.outtake.setTargets(0, 2, 20, 1);
-                        if(bot.outtake.state == State.CONVERGED) {
-                            teleM = TMode.DEPOSIT;
-                        }
+                    bot.outtake.setTargets(0, 2, 20, 1);
+                    if(bot.time.state == State.CONVERGED || bot.outtake.state == State.CONVERGED) {
+                        teleM = TMode.DEPOSIT;
                     }
                     break;
                 case DEPOSIT:
-                    if(bot.outtake.getSlideLength() > 10) {
-                        if(gamepad1.right_bumper) {
-                            bot.time.delaySeconds(0.4);
-                            teleM = TMode.HOMESLIDE;
-                        }
+                    if(gamepad1.right_bumper && bot.outtake.getSlideLength() > 10) {
+                        bot.time.delaySeconds(0.6); // delay is duration of the next state
+                        teleM = TMode.HOMESLIDE;
                     }
                     break;
                 case HOMESLIDE:
-                    if(bot.time.state == State.CONVERGED && !gamepad1.right_bumper) {
+                    if(!gamepad1.right_bumper) {
+                        //bot.time.delay(1);
                         bot.outtake.setTargets(bot.outtake.getTurretAngle(), bot.outtake.tiltPosition, 43, 1);
-                        bot.time.delaySeconds(0.6);
+                    }
+                    if(bot.time.state == State.CONVERGED ) {
+                        bot.time.delaySeconds(1); // delay is duration of the next state
                         teleM = TMode.HOMETURRET;
                     }
                     break;
                 case HOMETURRET:
-                    bot.outtake.setTargets(bot.outtake.getTurretAngle(), bot.outtake.tiltPosition, 43, 1);
+                    bot.outtake.setTargets(0, 0, 43, 1);
                     if(bot.time.state == State.CONVERGED) {
-                        bot.outtake.setTargets(0, 0, 40, 1);
-                        bot.time.delaySeconds(0.3);
+                        bot.time.delaySeconds(1); // delay is duration of the next state
                         teleM = TMode.HOMECENTER;
                     }
                     break;
                 case HOMECENTER:
-                    bot.outtake.setTargets(0, 0, 40, 1);
+                    bot.outtake.setTargets(0, 0, 5, 1);
                     if(bot.time.state == State.CONVERGED) {
-                        bot.outtake.setTargets(0, 0, 5, 1);
-                        bot.time.delaySeconds(0.3);
+                        bot.time.delaySeconds(0.6); // delay is duration of the next state
                         teleM = TMode.HOME;
                     }
                     break;
                 case HOME:
-                    bot.outtake.setTargets(0, 0, 5, 1);
+                    bot.outtake.setTargets(0, 0, 0, 0);
                     if(bot.time.state == State.CONVERGED) {
-                        bot.outtake.setTargets(0, 0, 0, 0);
-                        bot.time.delaySeconds(0.4);
                         teleM = TMode.READY;
                     }
-
                     break;
                 case READY:
+                    bot.outtake.setBoxState(0);
+                    break;
+                case EJECT:
+                    bot.intake.flipDown();
+                    bot.intake.setPower(-1);
                     if(bot.time.state == State.CONVERGED) {
-                        bot.outtake.setBoxState(0);
-                    }else {
-                        bot.outtake.setTargets(0, 0, 0, 0);
+                        teleM = TMode.READY;
                     }
                     break;
             }

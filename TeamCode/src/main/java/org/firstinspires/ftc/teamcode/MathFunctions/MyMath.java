@@ -273,4 +273,8 @@ public class MyMath {
         return value;
     }
 
+    public static double lerp(double t, double a, double b) { // linear interpolation from a to b (0 <= t <= 1)
+        return a*(1-t) + b*t;
+    }
+
 }

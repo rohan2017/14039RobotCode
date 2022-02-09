@@ -19,8 +19,8 @@ public class MovementTankDrive extends Movement {
     private ArrayList<PointEx> targetPath;
     private double pathRadius;
 
-    private double distanceThreshold = 0;
-    private double headingThreshold = 0;
+    private double distanceThreshold = 2;
+    private double headingThreshold = 2;
 
     private PID orient;
     private PID longitudinal;
@@ -172,13 +172,20 @@ public class MovementTankDrive extends Movement {
     }
 
     private void updateTargetPointSimple() {
-        double pointHeading = Math.toDegrees(Math.atan2((targetPoint.y - odometer.y), (targetPoint.x - odometer.x))) - 90;
+        double dir;
+        double pointHeading = (Math.toDegrees(Math.atan2((targetPoint.y - odometer.y), (targetPoint.x - odometer.x))) - 90)%360;
+        if((pointHeading - currentPosition.heading%360) < 90 && (pointHeading - currentPosition.heading%360) > -90) {
+            dir = 1;
+        }else {
+            pointHeading = (pointHeading + 180)%360;
+            dir = -1;
+        }
         double distance = MyMath.distance(targetPoint, currentPosition);
         if(distance > distanceThreshold) {
-            orient.update(pointHeading, currentPosition.heading);
+            orient.update(pointHeading, currentPosition.heading%360);
             longitudinal.update(0, distance);
-            rightSpeed = -longitudinal.correction + orient.correction;
-            leftSpeed = -longitudinal.correction - orient.correction;
+            rightSpeed = -(dir*longitudinal.correction) + orient.correction;
+            leftSpeed = -(dir*longitudinal.correction) - orient.correction;
         }else {
             orient.update(targetPoint.heading, currentPosition.heading);
             rightSpeed = orient.correction;
