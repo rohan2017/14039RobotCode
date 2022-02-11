@@ -143,11 +143,14 @@ public class Outtake {
                     }
 
                     if(turretMode == 0) {
+                        turretPower = turretControl.correction;
+                        /*
                         if(slidePosition > 500) {
                             turretPower = turretExtendedCtrl.correction;
                         }else {
                             turretPower = turretControl.correction;
                         }
+                        */
                         //if(turretError < 20) turretPower = 0; // Threshold
                     }
 

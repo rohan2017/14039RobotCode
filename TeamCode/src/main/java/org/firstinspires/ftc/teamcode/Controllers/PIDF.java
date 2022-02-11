@@ -6,7 +6,7 @@ This is a pretty self-explanatory PID controller. sumLimit is the limit of the e
 
 public class PIDF extends Controller {
 
-    private final double pGain, iGain, dGain, fGain;
+    private double pGain, iGain, dGain, fGain;
     private double errorSum, sumLimit, lastError, errorSlope;
     private double P, I, D, F, correctUpLimit, correctLowLimit;
     private double lastSetPoint;
@@ -69,6 +69,18 @@ public class PIDF extends Controller {
         lastError = error;
         lastSetPoint = setPoint;
 
+    }
+
+    public void updateGains(double kP, double kI, double kD, double kF, double iLim) {
+        this.pGain = kP;
+        this.iGain = kI;
+        this.dGain = kD;
+        this.fGain = kF;
+        if(iGain != 0) {
+            this.sumLimit = iLim/iGain;
+        }else {
+            this.sumLimit = 0;
+        }
     }
 
 }
