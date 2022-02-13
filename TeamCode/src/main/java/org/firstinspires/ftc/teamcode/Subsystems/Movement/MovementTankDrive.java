@@ -19,8 +19,8 @@ public class MovementTankDrive extends Movement {
     private ArrayList<PointEx> targetPath;
     private double pathRadius;
 
-    private double distanceThreshold = 2;
-    private double headingThreshold = 2;
+    private double distanceThreshold = 4;
+    private double headingThreshold = 6;
 
     private PID orient;
     private PID longitudinal;
@@ -65,33 +65,29 @@ public class MovementTankDrive extends Movement {
                 }
 
                 // Actions
-                if (state == State.TRANSIENT) {
-                    switch (mode) {
-                        case FollowPath:
-                            if(followTrajectory()) {
+                switch (mode) {
+                    case FollowPath:
+                        if(followTrajectory()) {
 
-                                drivebase.setPowers(leftSpeed*targetPoint.speed, rightSpeed*targetPoint.speed);
-                            }else {
-                                mode = DriveMode.Stopped;
-                            }
-                            break;
-                        case GoToPoint:
-                            if(updateTargetPointArc()) {
-                                drivebase.setPowers(leftSpeed*targetPoint.speed, rightSpeed*targetPoint.speed);
-                            }else {
-                                mode = DriveMode.Stopped;
-                            }
-                            break;
-                        case GoToPointSimple:
-                            updateTargetPointSimple();
-                            drivebase.setPowers(leftSpeed, rightSpeed);
-                            break;
-                        case Stopped:
-                            drivebase.freeze();
-                            break;
-                    }
-                } else if (state == State.CONVERGED) {
-                    drivebase.freeze();
+                            drivebase.setPowers(leftSpeed*targetPoint.speed, rightSpeed*targetPoint.speed);
+                        }else {
+                            mode = DriveMode.Stopped;
+                        }
+                        break;
+                    case GoToPoint:
+                        if(updateTargetPointArc()) {
+                            drivebase.setPowers(leftSpeed*targetPoint.speed, rightSpeed*targetPoint.speed);
+                        }else {
+                            mode = DriveMode.Stopped;
+                        }
+                        break;
+                    case GoToPointSimple:
+                        updateTargetPointSimple();
+                        drivebase.setPowers(leftSpeed, rightSpeed);
+                        break;
+                    case Stopped:
+                        drivebase.freeze();
+                        break;
                 }
             }else {
                 drivebase.freeze();
@@ -184,8 +180,16 @@ public class MovementTankDrive extends Movement {
         if(distance > distanceThreshold) {
             orient.update(pointHeading, currentPosition.heading%360);
             longitudinal.update(0, distance);
-            rightSpeed = -(dir*longitudinal.correction) + orient.correction;
-            leftSpeed = -(dir*longitudinal.correction) - orient.correction;
+            double longCorrect = dir*longitudinal.correction;
+            if(Math.abs(orient.error) > 15) {
+                longCorrect *= 4*Math.pow(Math.abs(1/orient.error), 0.5);
+            }
+            double slow = 1;
+            if(distance < 20 && Math.abs(orient.error) < 15) {
+                slow = 0.5;
+            }
+            rightSpeed = (-longCorrect + orient.correction)*slow;
+            leftSpeed = (-longCorrect - orient.correction)*slow;
         }else {
             orient.update(targetPoint.heading, currentPosition.heading);
             rightSpeed = orient.correction;

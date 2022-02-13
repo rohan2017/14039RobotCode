@@ -92,7 +92,7 @@ public class Intake {
 
     public void setExtendPosition(double pos) {
         if(pos < 0) pos = 0;
-        if(pos > 0.33) pos = 0.33;
+        if(pos > 0.28) pos = 0.28;
         rightExtendPos = 1-pos;
         leftExtendPos = 0+pos;
     }

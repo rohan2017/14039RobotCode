@@ -23,7 +23,7 @@ public class testMovement extends LinearOpMode {
         telemetry.addData("status","running");
         telemetry.update();
 
-        bot.movement.setTarget(new PointEx(0,-60,0));
+        bot.movement.setTarget(new PointEx(0,60,0));
         while (opModeIsActive() && bot.movement.state != State.CONVERGED) {
             telemetry.addData("movement state", bot.movement.state);
             telemetry.update();
@@ -37,7 +37,7 @@ public class testMovement extends LinearOpMode {
             bot.update();
         }
 
-        bot.movement.setTarget(new PointEx(0,60,0));
+        bot.movement.setTarget(new PointEx(40,40,-45));
         while (opModeIsActive() && bot.movement.state != State.CONVERGED) {
             telemetry.addData("movement state", bot.movement.state);
             telemetry.update();

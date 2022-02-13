@@ -43,6 +43,10 @@ public class teleOpFixed extends LinearOpMode {
     private final int sharedSlide = 100;
     private final int sharedTilt = 10;
 
+    // for release behavior of right bumper drop-off
+    private boolean lastGP1RB;
+    private boolean GP1RB;
+
     @Override
     public void runOpMode() {
         initialize();
@@ -66,7 +70,7 @@ public class teleOpFixed extends LinearOpMode {
             }
 
             // INTAKE
-            bot.intake.setExtendPosition((gamepad2.left_trigger + 0.35)*0.33);
+            bot.intake.setExtendPosition((gamepad2.left_trigger*0.33)+0.03);
             if(gamepad2.right_bumper) {
                 bot.intake.setPower(1);
                 bot.intake.flipDown();
@@ -119,7 +123,7 @@ public class teleOpFixed extends LinearOpMode {
             switch(teleM) {
                 case PRIMETRANSFER:
                     bot.outtake.setTargets(0, 0, 0, 0);
-                    bot.intake.setExtendPosition(0.2);
+                    bot.intake.setExtendPosition(0.08);
                     bot.intake.flipUp();
                     if(bot.time.state == State.CONVERGED) {
                         bot.time.delaySeconds(0.4); // delay is duration of the next state
@@ -129,7 +133,7 @@ public class teleOpFixed extends LinearOpMode {
 
                 case ALIGNTRANSFER:
                     bot.outtake.setTargets(0, 0, 0, 0);
-                    bot.intake.setExtendPosition(0.13);
+                    bot.intake.setExtendPosition(0.03);
                     bot.intake.flipUp();
                     if(bot.time.state == State.CONVERGED) {
                         bot.time.delaySeconds(1); // delay is duration of the next state
@@ -138,7 +142,7 @@ public class teleOpFixed extends LinearOpMode {
                     break;
                 case TRANSFER:
                     bot.outtake.setTargets(0, 0, 0, 0);
-                    bot.intake.setExtendPosition(0.13);
+                    bot.intake.setExtendPosition(0.03);
                     bot.intake.flipUp();
                     bot.intake.setPower(-1);
                     if(bot.time.state == State.CONVERGED) {
@@ -167,18 +171,17 @@ public class teleOpFixed extends LinearOpMode {
                     }
                     break;
                 case DEPOSIT:
-                    if(gamepad1.right_bumper && bot.outtake.getSlideLength() > 10) {
-                        bot.time.delaySeconds(0.6); // delay is duration of the next state
+                    GP1RB = gamepad1.right_bumper;
+                    if(!GP1RB && lastGP1RB && bot.outtake.getSlideLength() > 10) {
+                        bot.time.delaySeconds(0.7); // delay is duration of the next state
                         teleM = TMode.HOMESLIDE;
                     }
+                    lastGP1RB = GP1RB;
                     break;
                 case HOMESLIDE:
-                    if(!gamepad1.right_bumper) {
-                        //bot.time.delay(1);
-                        bot.outtake.setTargets(bot.outtake.getTurretAngle(), bot.outtake.tiltPosition, 43, 1);
-                    }
+                    bot.outtake.setTargets(bot.outtake.getTurretAngle(), bot.outtake.tiltPosition, 43, 1);
                     if(bot.time.state == State.CONVERGED ) {
-                        bot.time.delaySeconds(1); // delay is duration of the next state
+                        bot.time.delaySeconds(0.7); // delay is duration of the next state
                         teleM = TMode.HOMETURRET;
                     }
                     break;
@@ -222,6 +225,8 @@ public class teleOpFixed extends LinearOpMode {
             telemetry.addData("outtake state", bot.outtake.state);
             telemetry.addData("ready receive", bot.outtake.readyReceive);
             telemetry.addData("mode", teleM);
+
+            telemetry.addData("tilt", bot.outtake.tiltPosition);
             telemetry.update();
         }
         bot.drivebase.freeze();
@@ -230,6 +235,8 @@ public class teleOpFixed extends LinearOpMode {
     private void initialize() {
         bot.initialize(hardwareMap);
         bot.update();
+        lastGP1RB = false;
+        GP1RB = false;
         telemetry.addData("status","initialized");
         telemetry.update();
     }

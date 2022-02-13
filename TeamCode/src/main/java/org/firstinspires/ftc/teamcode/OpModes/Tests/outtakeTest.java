@@ -14,7 +14,7 @@ public class outtakeTest extends LinearOpMode {
     // Declare OpMode Members
     private FFRobot bot = new FFRobot(this);
     private double kP, kI, kD, iLim;
-    private PIDF turretControl = new PIDF(0,0,0, 0.01, 0,0.4,0);
+    private PIDF turretControl = new PIDF(0,0,0, 0, 0,0.4,0);
     private double targetTurret;
 
     private boolean lastRight;
@@ -46,6 +46,7 @@ public class outtakeTest extends LinearOpMode {
 
             telemetry.addData("turret ticks", bot.outtake.turretPosition);
             telemetry.addData("turret target", targetTurret);
+            telemetry.addData("power", turretControl.correction);
 
             telemetry.addData("P", kP);
             telemetry.addData("I", kI);
@@ -130,12 +131,14 @@ public class outtakeTest extends LinearOpMode {
                 }
             }
 
-            turretControl.updateGains(kP, kI, kD, 0.002, iLim);
+            turretControl.updateGains(kP, kI, kD, 0, iLim);
             turretControl.update(targetTurret, bot.outtake.turretPosition);
             bot.outtake.setTurretPower(turretControl.correction);
+            bot.outtake.setPitchAngle(15);
 
             telemetry.update();
             bot.update();
+            bot.hardware.getMotor("turret").setPower(turretControl.correction);
 
             lastUp  = up;
             lastDown = down;
@@ -150,9 +153,9 @@ public class outtakeTest extends LinearOpMode {
         bot.update();
         targetTurret = 0;
 
-        kP = 0.004;
+        kP = 0;
         kI = 0;
-        kD = 0.0005;
+        kD = 0;
         iLim = 0;
 
         mode = 0;
