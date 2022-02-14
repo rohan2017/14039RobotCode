@@ -52,7 +52,7 @@ public class Outtake {
     public double targetTiltPosition = 0;
     public double tiltError = 0;
     public double tiltPower = 0;
-    private final double tiltLimit = 30; // degrees
+    private final double tiltLimit = 35; // degrees
     public PIDF tiltExtendedCtrl = new PIDF(0.11,0.0000,0,0,0,1,0);
     public PIDF tiltControl = new PIDF(0.035,0.0001,0,0.001,0.07,0.4,0);
 

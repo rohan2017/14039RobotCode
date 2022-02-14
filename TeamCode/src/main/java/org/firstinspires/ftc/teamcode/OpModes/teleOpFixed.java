@@ -35,9 +35,9 @@ public class teleOpFixed extends LinearOpMode {
 
     private TMode teleM;
 
-    private final int allianceTurret = -65;
-    private final int allianceSlide = 140;
-    private final int allianceTilt = 26;
+    private final int allianceTurret = -68;
+    private final int allianceSlide = 130;
+    private final int allianceTilt = 33;
 
     private final int sharedTurret = 30;
     private final int sharedSlide = 100;
@@ -217,7 +217,7 @@ public class teleOpFixed extends LinearOpMode {
                     break;
             }
             if(gamepad2.right_trigger > 0.1) {
-                bot.intake.setPower(-gamepad2.right_trigger);
+                bot.intake.setPower(-gamepad2.right_trigger*.5);
             }
 
             bot.teleUpdate();
