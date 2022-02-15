@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-//@Disabled
+@Disabled
 @TeleOp(name="Color Sensor Distance Test", group="Testing")
 public class colorSensorTest extends LinearOpMode {
 

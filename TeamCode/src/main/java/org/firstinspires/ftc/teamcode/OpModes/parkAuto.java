@@ -50,9 +50,15 @@ public class parkAuto extends LinearOpMode {
         telemetry.addData("status","running");
         telemetry.update();
 
-        autoM = autoMode.EXTEND;
-        bot.time.delaySeconds(4);
+        //autoM = autoMode.EXTEND;
+        sleep(6000);
         while(opModeIsActive()) {
+            
+
+            bot.movement.setTarget(new PointEx(0,80,0));
+            sleep(2000);
+            bot.movement.setTarget(new PointEx(0,0,0));
+
 
 //
 //            // INTAKE
@@ -173,7 +179,7 @@ public class parkAuto extends LinearOpMode {
             }
 
 
-            bot.teleUpdate();
+            bot.update(); //auto update is .update. Teleop update is .teleUpdate
 
             telemetry.addData("outtake state", bot.outtake.state);
             telemetry.addData("ready receive", bot.outtake.readyReceive);

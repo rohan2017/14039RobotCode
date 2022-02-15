@@ -53,6 +53,8 @@ public class Outtake {
     public double tiltError = 0;
     public double tiltPower = 0;
     private final double tiltLimit = 35; // degrees
+    //Currently have a 60rpm motor
+    //     public PIDF tiltExtendedCtrl = new PIDF(0.11,0.0000,0,0,0,1,0);
     public PIDF tiltExtendedCtrl = new PIDF(0.11,0.0000,0,0,0,1,0);
     public PIDF tiltControl = new PIDF(0.035,0.0001,0,0.001,0.07,0.4,0);
 
@@ -156,7 +158,9 @@ public class Outtake {
                 if(slidePosition < -5 && slidePower < 0) {slidePower = 0;}
 
                 hardware.getMotor("turret").setPower(turretPower);
-                hardware.getMotor("tilt").setPower(tiltPower);
+                // Flipping tilt power because the tilt is running backwards now.
+                //Quick fix that will work for TN and MA Qual.
+                hardware.getMotor("tilt").setPower(-tiltPower);
                 hardware.getMotor("extension").setPower(slidePower);
 
                 // Basket Servo

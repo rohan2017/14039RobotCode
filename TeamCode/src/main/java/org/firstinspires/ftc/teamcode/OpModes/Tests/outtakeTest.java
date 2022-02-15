@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Controllers.PIDF;
 import org.firstinspires.ftc.teamcode.Robots.FFRobot;
 import org.firstinspires.ftc.teamcode.Subsystems.State;
-
+@Disabled
 @TeleOp(name="outtake test", group="TeleOp")
 public class outtakeTest extends LinearOpMode {
 
