@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Robots.FFRobot;
 import org.firstinspires.ftc.teamcode.Subsystems.State;
 
-@TeleOp(name="New teleOp", group="TeleOp")
+@TeleOp(name="TN Red Teleop", group="TeleOp")
 public class teleOpFixed extends LinearOpMode {
 
     // Declare OpMode Members
@@ -225,7 +225,8 @@ public class teleOpFixed extends LinearOpMode {
             telemetry.addData("outtake state", bot.outtake.state);
             telemetry.addData("ready receive", bot.outtake.readyReceive);
             telemetry.addData("mode", teleM);
-
+            telemetry.addData("intake intensity", bot.intake.intensity);
+            telemetry.addData("intake filtered intensity", bot.intake.filteredIntensity);
             telemetry.addData("tilt", bot.outtake.tiltPosition);
             telemetry.update();
         }

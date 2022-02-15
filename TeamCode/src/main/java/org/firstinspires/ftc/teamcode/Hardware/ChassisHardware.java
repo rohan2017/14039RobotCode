@@ -4,7 +4,9 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -28,7 +30,7 @@ public class ChassisHardware extends RobotHardware {
     //Intake
     public static DcMotorEx intake;
     public static Servo rightFlipper, leftFlipper, leftExtend,rightExtend;
-    public static ModernRoboticsI2cRangeSensor intakeRange;
+    public static ColorRangeSensor intakeRange;
 
     //Outtake
     public static DcMotorEx turret, tilt, extension;
@@ -64,7 +66,7 @@ public class ChassisHardware extends RobotHardware {
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         leftExtend = hardwareMap.get(Servo.class, "leftExtend");
         rightExtend = hardwareMap.get(Servo.class, "leftFlipper");
-        intakeRange = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "intake_range");
+        intakeRange = hardwareMap.get(ColorRangeSensor.class, "intake_range");
 
         //Outtake
         turret = hardwareMap.get(DcMotorEx.class, "turretSpinner");
@@ -165,7 +167,7 @@ public class ChassisHardware extends RobotHardware {
     }
 
 
-    public ModernRoboticsI2cRangeSensor getRangeSensor(String ID) {
+    public ColorRangeSensor getRangeSensor(String ID) {
         switch (ID) {
             case "intake_range":
                 return intakeRange;
