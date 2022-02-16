@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import static org.firstinspires.ftc.teamcode.OpModes.parkAuto.autoMode.DROPPOS;
 import static org.firstinspires.ftc.teamcode.OpModes.parkAuto.autoMode.PRIMETRANSFER;
+import static org.firstinspires.ftc.teamcode.OpModes.parkAuto.autoMode.SEARCHING;
+import static org.firstinspires.ftc.teamcode.OpModes.parkAuto.autoMode.SEARCHPOS;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -20,7 +23,9 @@ public class parkAuto extends LinearOpMode {
     private FFRobot bot = new FFRobot(this);
 
     public enum autoMode {
+        SEARCHPOS,
         SEARCHING,
+        DROPPOS,
         PRIMETRANSFER,
         ALIGNTRANSFER,
         TRANSFER,
@@ -34,14 +39,16 @@ public class parkAuto extends LinearOpMode {
         HOMECENTER,
         HOME,
         READY,
+
     }
 
     private autoMode autoM;
 
+    private double rightPow = 0.4, leftPow = 0.385;
 
-    private final int allianceTurret = -65;
-    private final int allianceSlide = 140;
-    private final int allianceTilt = 26;
+    private final int allianceTurret = -68;
+    private final int allianceSlide = 130;
+    private final int allianceTilt = 33;
 
     @Override
     public void runOpMode() {
@@ -50,34 +57,9 @@ public class parkAuto extends LinearOpMode {
         telemetry.addData("status","running");
         telemetry.update();
 
-        //autoM = autoMode.EXTEND;
-        sleep(6000);
+        autoM = autoMode.EXTEND;
+        bot.time.delaySeconds(4);
         while(opModeIsActive()) {
-            
-
-            bot.movement.setTarget(new PointEx(0,80,0));
-            sleep(2000);
-            bot.movement.setTarget(new PointEx(0,0,0));
-
-
-//
-//            // INTAKE
-//            bot.intake.setExtendPosition((gamepad2.left_trigger*0.33)+0.03);
-//            if(gamepad2.right_bumper) {
-//                bot.intake.setPower(1);
-//                bot.intake.flipDown();
-//            }else if(gamepad2.left_bumper && autoM == autoMode.READY) {
-//                autoM = autoMode.PRIMETRANSFER;
-//                bot.time.delaySeconds(0.3);
-//            }else {
-//                bot.intake.setPower(0.1);
-//                bot.intake.flipHold();
-//            }
-//            // AUTOMATIC CONTROLS ///////////////////////////////////
-//            if(bot.intake.hasBlock && autoM == autoMode.READY && bot.outtake.readyReceive) {
-//                autoM = autoMode.PRIMETRANSFER;
-//                bot.time.delaySeconds(0.3);
-//            }
 
             // State Machine
             switch(autoM) {
@@ -85,9 +67,9 @@ public class parkAuto extends LinearOpMode {
                     bot.outtake.setTargets(0, 0, 0, 0);
                     bot.intake.setExtendPosition(0.08);
                     bot.intake.flipUp();
-                    if(bot.time.state == State.CONVERGED) {
+                    if (bot.time.state == State.CONVERGED) {
                         bot.time.delaySeconds(0.4); // delay is duration of the next state
-                        autoM =autoMode.ALIGNTRANSFER;
+                        autoM = autoMode.ALIGNTRANSFER;
                     }
                     break;
 
@@ -95,7 +77,7 @@ public class parkAuto extends LinearOpMode {
                     bot.outtake.setTargets(0, 0, 0, 0);
                     bot.intake.setExtendPosition(0.03);
                     bot.intake.flipUp();
-                    if(bot.time.state == State.CONVERGED) {
+                    if (bot.time.state == State.CONVERGED) {
                         bot.time.delaySeconds(1); // delay is duration of the next state
                         autoM = autoMode.TRANSFER;
                     }
@@ -105,35 +87,36 @@ public class parkAuto extends LinearOpMode {
                     bot.intake.setExtendPosition(0.03);
                     bot.intake.flipUp();
                     bot.intake.setPower(-1);
-                    if(bot.time.state == State.CONVERGED) {
+                    if (bot.time.state == State.CONVERGED) {
                         bot.time.delaySeconds(0.4); // delay is duration of the next state
                         autoM = autoMode.PRIMEHOLD;
                     }
                     break;
                 case PRIMEHOLD:
                     bot.outtake.setTargets(0, 0, 1, 0);
-                    if(bot.time.state == State.CONVERGED) {
+                    if (bot.time.state == State.CONVERGED) {
                         bot.time.delaySeconds(0.3); // delay is duration of the next state
                         autoM = autoMode.SETTLEHOLD;
                     }
                     break;
                 case SETTLEHOLD:
                     bot.outtake.setTargets(0, 0, 4, 3);
-                    if(bot.time.state == State.CONVERGED) {
-                        bot.time.delaySeconds(4); // delay is duration of the next state
+                    if (bot.time.state == State.CONVERGED) {
+                        bot.time.delaySeconds(2); // delay is duration of the next state
                         autoM = autoMode.EXTEND;
                     }
                     break;
                 case HOLDING:
                     bot.outtake.setTargets(0, 2, 20, 1);
-                    if(bot.time.state == State.CONVERGED || bot.outtake.state == State.CONVERGED) {
+                    if (bot.time.state == State.CONVERGED || bot.outtake.state == State.CONVERGED) {
+                        bot.time.delaySeconds(2);
                         autoM = autoMode.EXTEND;
                     }
                     break;
 
                 case EXTEND:
                     bot.outtake.setTargets(allianceTurret, allianceTilt, allianceSlide, 1);
-                    if(bot.time.state == State.CONVERGED || bot.outtake.state == State.CONVERGED) {
+                    if (bot.time.state == State.CONVERGED || bot.outtake.state == State.CONVERGED) {
                         bot.time.delaySeconds(4); // delay is duration of the next state
                         autoM = autoMode.DEPOSIT;
                     }
@@ -141,45 +124,69 @@ public class parkAuto extends LinearOpMode {
 
                 case DEPOSIT:
                     bot.outtake.setBoxState(2);
-                    if(bot.time.state == State.CONVERGED || bot.outtake.state == State.CONVERGED) {
-                        bot.time.delaySeconds(4); // delay is duration of the next state
+                    if (bot.time.state == State.CONVERGED || bot.outtake.state == State.CONVERGED) {
+                        bot.time.delaySeconds(2); // delay is duration of the next state
                         autoM = autoMode.HOMESLIDE;
                     }
                     break;
 
                 case HOMESLIDE:
                     bot.outtake.setTargets(bot.outtake.getTurretAngle(), bot.outtake.tiltPosition, 43, 1);
-                    if(bot.time.state == State.CONVERGED ) {
+                    if (bot.time.state == State.CONVERGED) {
                         bot.time.delaySeconds(0.7); // delay is duration of the next state
                         autoM = autoMode.HOMETURRET;
                     }
                     break;
                 case HOMETURRET:
                     bot.outtake.setTargets(0, 0, 43, 1);
-                    if(bot.time.state == State.CONVERGED) {
+                    if (bot.time.state == State.CONVERGED) {
                         bot.time.delaySeconds(1); // delay is duration of the next state
                         autoM = autoMode.HOMECENTER;
                     }
                     break;
                 case HOMECENTER:
                     bot.outtake.setTargets(0, 0, 5, 1);
-                    if(bot.time.state == State.CONVERGED) {
+                    if (bot.time.state == State.CONVERGED) {
                         bot.time.delaySeconds(0.6); // delay is duration of the next state
                         autoM = autoMode.HOME;
                     }
                     break;
                 case HOME:
                     bot.outtake.setTargets(0, 0, 0, 0);
-                    if(bot.time.state == State.CONVERGED) {
+                    if (bot.time.state == State.CONVERGED) {
                         autoM = autoMode.READY;
                     }
                     break;
                 case READY:
                     bot.outtake.setBoxState(0);
+                    autoM = SEARCHING;
+                    break;
+
+
+                case SEARCHING:
+                    bot.intake.setExtendPosition(0.03);
+                    bot.intake.flipDown();
+                    bot.movement.update();
+                    if (!bot.intake.hasBlock) {
+                        bot.intake.setPower(0.8);
+                        bot.drivebase.setPowers(leftPow,rightPow);
+                    } else {
+                        bot.drivebase.setPowers(0,0);
+                        bot.movement.setTarget(new PointEx(0, 0, 0));
+                        autoM = DROPPOS;
+                    }
+                    break;
+
+
+                case DROPPOS:
+                    bot.movement.update();
+                    if (bot.movement.state == State.CONVERGED) {
+                        autoM = PRIMETRANSFER;
+                    }
             }
 
 
-            bot.update(); //auto update is .update. Teleop update is .teleUpdate
+            bot.teleUpdate(); //auto update is .update. Teleop update is .teleUpdate
 
             telemetry.addData("outtake state", bot.outtake.state);
             telemetry.addData("ready receive", bot.outtake.readyReceive);
@@ -193,6 +200,7 @@ public class parkAuto extends LinearOpMode {
 
     private void initialize() {
         bot.initialize(hardwareMap);
+        bot.intake.flipHold();
         bot.update();
         telemetry.addData("status","initialized");
         telemetry.update();

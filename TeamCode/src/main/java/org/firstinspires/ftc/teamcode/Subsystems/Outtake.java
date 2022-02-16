@@ -32,7 +32,7 @@ public class Outtake {
     private final double ticksPerCm = ticksPerRevSpool/spoolCircum;
     private final int slideLimit = 160; // cm
     private PIDF slideExtendedCtrl = new PIDF(0.003, 0.00001, 0.0003, 0.002, 0.05, 0.8, 0);
-    private PIDF slideNearCtrl = new PIDF(0.008, 0.00001, 0.0002, 0.002, 0.08, 0.8, 0);
+    private PIDF slideNearCtrl = new PIDF(0.005, 0.00001, 0.0002, 0.002, 0.08, 0.8, 0);
 
     // Turret variables
     public int turretMode; // 0-hold position, 1-power
@@ -43,7 +43,7 @@ public class Outtake {
     private final double gearRatioT = 10/3; // motor/turret rotations
     private final double ticksPerRevTMotor = 751.8;
     public final double ticksPerDegTurret = ticksPerRevTMotor*gearRatioT/360;
-    private final double turretLimit = 80;
+    private final double turretLimit = 85;
     private TurretController turretControl = new TurretController(slideLimit);
 
     // Tilt variables

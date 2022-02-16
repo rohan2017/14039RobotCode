@@ -44,12 +44,6 @@ public class testMovement extends LinearOpMode {
             bot.update();
         }
 
-        bot.movement.setTarget(new PointEx(40,40,0));
-        while (opModeIsActive() && bot.movement.state != State.CONVERGED) {
-            telemetry.addData("movement state", bot.movement.state);
-            telemetry.update();
-            bot.update();
-        }
 
     }
 

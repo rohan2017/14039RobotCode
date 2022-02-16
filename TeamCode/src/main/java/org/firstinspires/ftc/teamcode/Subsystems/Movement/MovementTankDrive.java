@@ -181,12 +181,12 @@ public class MovementTankDrive extends Movement {
             orient.update(pointHeading, currentPosition.heading%360);
             longitudinal.update(0, distance);
             double longCorrect = dir*longitudinal.correction;
-            if(Math.abs(orient.error) > 15) {
+            if(Math.abs(orient.error) > 15 && distance > 30) {
                 longCorrect *= 4*Math.pow(Math.abs(1/orient.error), 0.5);
             }
             double slow = 1;
-            if(distance < 20 && Math.abs(orient.error) < 15) {
-                slow = 0.5;
+            if(distance < 20) {
+                slow = 0.4;
             }
             rightSpeed = (-longCorrect + orient.correction)*slow;
             leftSpeed = (-longCorrect - orient.correction)*slow;

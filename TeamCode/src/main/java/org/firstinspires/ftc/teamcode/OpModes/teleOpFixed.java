@@ -18,6 +18,8 @@ public class teleOpFixed extends LinearOpMode {
 
     public enum TMode {
         IDLE,
+        SHAREDDEPOT,
+        SHAREDDEPOTTWO,
         PRIMETRANSFER,
         ALIGNTRANSFER,
         TRANSFER,
@@ -36,12 +38,12 @@ public class teleOpFixed extends LinearOpMode {
     private TMode teleM;
 
     private final int allianceTurret = -68;
-    private final int allianceSlide = 130;
+    private final int allianceSlide = 140;
     private final int allianceTilt = 33;
 
-    private final int sharedTurret = 30;
-    private final int sharedSlide = 100;
-    private final int sharedTilt = 10;
+    private final int sharedTurret = 84;
+    private final int sharedSlide = 67;
+    private final int sharedTilt = 20;
 
     // for release behavior of right bumper drop-off
     private boolean lastGP1RB;
@@ -70,7 +72,7 @@ public class teleOpFixed extends LinearOpMode {
             }
 
             // INTAKE
-            bot.intake.setExtendPosition((gamepad2.left_trigger*0.33)+0.03);
+            bot.intake.setExtendPosition((gamepad2.left_trigger*0.33)+0.0); // 0.03
             if(gamepad2.right_bumper) {
                 bot.intake.setPower(1);
                 bot.intake.flipDown();
@@ -97,9 +99,8 @@ public class teleOpFixed extends LinearOpMode {
             if(gamepad2.a) {
                 bot.outtake.setTargets(allianceTurret, allianceTilt, allianceSlide, 1);
                 teleM = TMode.DEPOSIT;
-            }else if(gamepad2.x) {
-                bot.outtake.setTargets(sharedTurret, sharedTilt, sharedSlide, 1);
-                teleM = TMode.DEPOSIT;
+            }if(gamepad2.x) {//else if
+                teleM = TMode.SHAREDDEPOT;
             }
             // Dumping
             if(gamepad1.right_bumper) {
@@ -121,6 +122,23 @@ public class teleOpFixed extends LinearOpMode {
             }
             // State Machine
             switch(teleM) {
+                case SHAREDDEPOT:
+                    bot.outtake.setTargets(84, 5, 20, 1);
+                    if(bot.time.state == State.CONVERGED ) {
+                        bot.time.delaySeconds(.7); // delay is duration of the next state
+                        teleM = TMode.SHAREDDEPOTTWO;
+                    }
+                    break;
+
+                case SHAREDDEPOTTWO:
+                    bot.outtake.setTargets(sharedTurret, sharedTilt, sharedSlide, 1);
+                    if(bot.time.state == State.CONVERGED ) {
+                        bot.time.delaySeconds(.2); // delay is duration of the next state
+                        teleM = TMode.DEPOSIT;
+                    }
+                    break;
+
+
                 case PRIMETRANSFER:
                     bot.outtake.setTargets(0, 0, 0, 0);
                     bot.intake.setExtendPosition(0.08);
