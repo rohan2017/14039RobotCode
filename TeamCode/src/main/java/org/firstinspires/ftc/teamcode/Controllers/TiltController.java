@@ -8,7 +8,7 @@ public class TiltController extends Controller {
     private double rotInertia;
     private final double maxRotInertia;
 
-    private final double minP = 0.035; // Proportional gain when fully in
+    private final double minP = 0.05; // Proportional gain when fully in
     private final double maxP = 0.11; // Proportional gain when fully out
 
     private final double minI = 0.0001;
@@ -24,7 +24,7 @@ public class TiltController extends Controller {
     private double lastSlides;
 
     public TiltController(double slideLimit) {
-        backBone = new PIDF(0,0,0,0, 0,0.4,0);
+        backBone = new PIDF(0,0,0,0, 0,0.5,0);
         maxRotInertia = Math.pow(slideLimit, 2);
         flag = true;
     }
@@ -35,6 +35,7 @@ public class TiltController extends Controller {
             flag = false;
         }
         rotInertia = Math.pow(slideLength, 2)/maxRotInertia;
+
         double kP = MyMath.lerp(rotInertia, minP, maxP);
         double kI = MyMath.lerp(rotInertia, minI, maxI);
         double kD = MyMath.lerp(rotInertia, minD, maxD);
@@ -44,10 +45,10 @@ public class TiltController extends Controller {
         correction = backBone.correction;
         double slideFF = rotInertia * (slideLength-lastSlides) * 0.0003;
         correction += slideFF;
-        if((target - current) > 2000) {
-            correction = 0.4;
-        }else if((target - current) < -2000) {
-            correction = -0.4;
+        if((target - current) > 15) {
+            correction = 0.7;
+        }else if((target - current) < -15) {
+            correction = -0.7;
         }
         lastSlides = slideLength;
     }

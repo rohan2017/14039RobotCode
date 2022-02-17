@@ -66,4 +66,7 @@ public class FFRobot extends Robot {
         intake.update();
         outtake.update();
     }
+
+    // Bot-wide functions or non-subsystem
+
 }

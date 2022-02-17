@@ -87,6 +87,11 @@ public class teleOpFixed extends LinearOpMode {
             // OUTTAKE
             // Manual Turret
             bot.outtake.setTurretPower(-Math.pow(gamepad2.right_stick_x, 3)*0.5);
+            if(gamepad1.dpad_right) {
+                bot.outtake.turretOffset ++;
+            }else if(gamepad1.dpad_left) {
+                bot.outtake.turretOffset --;
+            }
             // Manual Slides
             bot.outtake.incrementSlideLength(-gamepad2.left_stick_y);
             // Manual Tilt
@@ -129,7 +134,6 @@ public class teleOpFixed extends LinearOpMode {
                         teleM = TMode.SHAREDDEPOTTWO;
                     }
                     break;
-
                 case SHAREDDEPOTTWO:
                     bot.outtake.setTargets(sharedTurret, sharedTilt, sharedSlide, 1);
                     if(bot.time.state == State.CONVERGED ) {
@@ -137,8 +141,6 @@ public class teleOpFixed extends LinearOpMode {
                         teleM = TMode.DEPOSIT;
                     }
                     break;
-
-
                 case PRIMETRANSFER:
                     bot.outtake.setTargets(0, 0, 0, 0);
                     bot.intake.setExtendPosition(0.08);
@@ -148,7 +150,6 @@ public class teleOpFixed extends LinearOpMode {
                         teleM = TMode.ALIGNTRANSFER;
                     }
                     break;
-
                 case ALIGNTRANSFER:
                     bot.outtake.setTargets(0, 0, 0, 0);
                     bot.intake.setExtendPosition(0.03);
@@ -211,9 +212,9 @@ public class teleOpFixed extends LinearOpMode {
                     }
                     break;
                 case HOMECENTER:
-                    bot.outtake.setTargets(0, 0, 5, 1);
+                    bot.outtake.setTargets(0, 0, 0, 1);
                     if(bot.time.state == State.CONVERGED) {
-                        bot.time.delaySeconds(0.6); // delay is duration of the next state
+                        bot.time.delaySeconds(0.2); // delay is duration of the next state
                         teleM = TMode.HOME;
                     }
                     break;

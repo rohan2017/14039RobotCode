@@ -6,6 +6,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -34,6 +35,10 @@ public class FFRobotHardware extends RobotHardware {
     public static Servo basket;
     public static AnalogInput potentiometer;
     public static DigitalChannel slideLimit;
+
+    // Duck
+    public static CRServo duckRight;
+    public static CRServo duckLeft;
 
     //IMU
     public static BNO055IMU imu;
@@ -73,6 +78,10 @@ public class FFRobotHardware extends RobotHardware {
         basket = hardwareMap.get(Servo.class, "basketFlipper");
         potentiometer = hardwareMap.get(AnalogInput.class, "slidePivotPot");
         slideLimit = hardwareMap.get(DigitalChannel.class, "slideLimit");
+
+        //Duck
+        duckLeft = hardwareMap.get(CRServo.class, "duckLeft");
+        duckRight = hardwareMap.get(CRServo.class, "duckRight");
 
         //Camera
         cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());

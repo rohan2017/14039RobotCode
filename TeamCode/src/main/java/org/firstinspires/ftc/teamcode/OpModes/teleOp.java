@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.OpModes;
-
+/*
 import static java.lang.Math.abs;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -257,7 +257,7 @@ public class teleOp extends LinearOpMode {
             telemetry.addData("tilt target", bot.outtake.targetTiltPosition);
             telemetry.addData("tilt error", bot.outtake.tiltError);
             telemetry.addData("tilt power", bot.outtake.tiltPower);
-            telemetry.addData("extended PID  power", bot.outtake.tiltExtendedCtrl.correction);
+            telemetry.addData("extended PID  power", bot.outtake.tiltCtrl.correction);
 
             telemetry.addData("slide", bot.outtake.slidePosition);
             telemetry.addData("slide error", bot.outtake.slideError);
@@ -275,3 +275,4 @@ public class teleOp extends LinearOpMode {
         telemetry.update();
     }
 }
+ */

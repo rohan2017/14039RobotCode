@@ -14,8 +14,8 @@ public class TurretController extends Controller {
     private final double minI = 0.0003;
     private final double maxI = 0.0007;
 
-    private final double minD = 0.0037;
-    private final double maxD = 0.0072;
+    private final double minD = 0.0045;
+    private final double maxD = 0.0075;
 
     private final double minILimit = 0.024;
     private final double maxILimit = 0.027;
