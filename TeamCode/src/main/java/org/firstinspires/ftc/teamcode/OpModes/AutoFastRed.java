@@ -287,7 +287,7 @@ public class AutoFastRed extends LinearOpMode {
             bot.movement.update();
             if(!park) {
                 if(autoM == autoMode.DEPOSIT) {
-                    bot.movement.setTarget(new PointEx(0, 74, pointHeading, 2));
+                    bot.movement.setTarget(new PointEx(0, 79, pointHeading, 2));
                 }else if(autoM == autoMode.PRIMETRANSFER) {
                     bot.movement.setTarget(new PointEx(0, -10, 0, 2));
                 }else if(autoM == autoMode.EXTEND) {
