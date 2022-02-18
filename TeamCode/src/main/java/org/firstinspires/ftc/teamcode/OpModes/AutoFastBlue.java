@@ -235,7 +235,7 @@ public class AutoFastBlue extends LinearOpMode {
 
                     if (bot.time.state == State.CONVERGED ) {
                         bot.time.delaySeconds(0.8); // delay is duration of the next state
-                        pointHeading += 7;
+                        pointHeading -= 7;
                         autoM = autoMode.HOMESLIDE;
                     }
                     break;
