@@ -211,7 +211,7 @@ public class AutoFastBlue extends LinearOpMode {
                     // Flip up intake to clear line
                     bot.intake.setFlipPosition(0.55);
 
-                    if (bot.time.state == State.CONVERGED) {
+                    if (bot.time.state == State.CONVERGED || bot.odometer.y < 5) {
                         bot.time.delaySeconds(1.8); // delay is duration of the next state
                         autoM = autoMode.EXTEND;
                     }
@@ -222,7 +222,7 @@ public class AutoFastBlue extends LinearOpMode {
                     // Flip up intake to clear line
                     bot.intake.setFlipPosition(0.55);
 
-                    if (bot.time.state == State.CONVERGED && bot.odometer.y < 5) {
+                    if (bot.time.state == State.CONVERGED || bot.movement.state == State.CONVERGED) {
                         bot.time.delaySeconds(0.15); // delay is duration of the next state
                         autoM = autoMode.DEPOSIT;
                     }
