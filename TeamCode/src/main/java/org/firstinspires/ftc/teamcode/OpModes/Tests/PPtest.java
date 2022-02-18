@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.State;
 import java.util.ArrayList;
 
 @Autonomous(name="PPtest Test", group="Testing")
+@Disabled
 public class PPtest extends LinearOpMode {
 
     // Declare OpMode Members

@@ -5,13 +5,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.CustomCV.Detector;
+import org.firstinspires.ftc.teamcode.CustomCV.RedDetector;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
-@Disabled
 @TeleOp(name="Vision Test", group = "Linear Opmode")
+@Disabled
 public class visionTest extends LinearOpMode {
     OpenCvCamera phoneCam;
 
@@ -19,7 +19,7 @@ public class visionTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
-        Detector detector = new Detector();
+        RedDetector detector = new RedDetector();
         phoneCam.setPipeline(detector);
 
         phoneCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()

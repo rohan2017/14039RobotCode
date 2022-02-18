@@ -1,21 +1,10 @@
-package org.firstinspires.ftc.teamcode.OpModes;
-
-import static org.firstinspires.ftc.teamcode.CustomCV.Detector.Location.LEFT;
-import static org.firstinspires.ftc.teamcode.CustomCV.Detector.Location.MID;
-import static org.firstinspires.ftc.teamcode.CustomCV.Detector.Location.RIGHT;
+package org.firstinspires.ftc.teamcode.OpModes.Tests;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Robots.FourWheelRobot;
 import org.firstinspires.ftc.teamcode.Robots.testBot;
-import org.openftc.easyopencv.OpenCvCamera;
-
-import org.firstinspires.ftc.teamcode.CustomCV.Detector;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
 
 @Disabled
 @Autonomous(name="Intake Auto", group="Testing")

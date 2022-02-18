@@ -10,7 +10,7 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-public class Detector extends OpenCvPipeline {
+public class RedDetector extends OpenCvPipeline {
 
     private Telemetry telemetry;
     private Mat workingMat = new Mat();
@@ -27,9 +27,9 @@ public class Detector extends OpenCvPipeline {
     private double[] leftValue, rightValue, midValue;
     private double leftDist, rightDist, midDist;
 
-    private static final Rect LEFT_ROI = new Rect(new Point(20, 60), new Point(90, 130)); // 0 35 , 70 100
-    private static final Rect RIGHT_ROI = new Rect(new Point(100, 60), new Point(170, 130)); // 80 35 , 150 100
-    private static final Rect MID_ROI = new Rect(new Point(180, 60), new Point(250, 130)); // 160 35 , 230 100
+    private static final Rect LEFT_ROI = new Rect(new Point(90, 60), new Point(150, 100)); // 0 35 , 70 100
+    private static final Rect MID_ROI = new Rect(new Point(260, 105), new Point(319, 170)); // 160 35 , 230 100
+    private static final Rect RIGHT_ROI = new Rect(new Point(180, 60), new Point(250, 125)); // 80 35 , 150 100
 
     private static final double[] targetColor = {125, 153, 145}; // in HSV
 

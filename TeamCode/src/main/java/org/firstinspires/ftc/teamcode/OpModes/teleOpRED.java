@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Robots.FFRobot;
 import org.firstinspires.ftc.teamcode.Subsystems.State;
 
 @TeleOp(name="TN Red Teleop", group="TeleOp")
-public class teleOpFixed extends LinearOpMode {
+public class teleOpRED extends LinearOpMode {
 
     // Declare OpMode Members
     private FFRobot bot = new FFRobot(this);
@@ -57,6 +57,9 @@ public class teleOpFixed extends LinearOpMode {
         telemetry.update();
 
         teleM = TMode.HOME;
+        while(!bot.outtake.homeSlides() && opModeIsActive()) {
+            bot.update();
+        }
 
         while(opModeIsActive()) {
 
@@ -152,6 +155,7 @@ public class teleOpFixed extends LinearOpMode {
                     break;
                 case ALIGNTRANSFER:
                     bot.outtake.setTargets(0, 0, 0, 0);
+                    bot.outtake.setSlidePower(-0.3);
                     bot.intake.setExtendPosition(0.03);
                     bot.intake.flipUp();
                     if(bot.time.state == State.CONVERGED) {
@@ -161,6 +165,7 @@ public class teleOpFixed extends LinearOpMode {
                     break;
                 case TRANSFER:
                     bot.outtake.setTargets(0, 0, 0, 0);
+                    bot.outtake.setSlidePower(-0.3);
                     bot.intake.setExtendPosition(0.03);
                     bot.intake.flipUp();
                     bot.intake.setPower(-1);
@@ -239,6 +244,12 @@ public class teleOpFixed extends LinearOpMode {
                 bot.intake.setPower(-gamepad2.right_trigger*.5);
             }
 
+            if(gamepad2.b) {
+                setDuckPower(1);
+            }else {
+                setDuckPower(0);
+            }
+
             bot.teleUpdate();
 
             telemetry.addData("outtake state", bot.outtake.state);
@@ -247,6 +258,7 @@ public class teleOpFixed extends LinearOpMode {
             telemetry.addData("intake intensity", bot.intake.intensity);
             telemetry.addData("intake filtered intensity", bot.intake.filteredIntensity);
             telemetry.addData("tilt", bot.outtake.tiltPosition);
+            telemetry.addData("turret angle", bot.outtake.getTurretAngle());
             telemetry.update();
         }
         bot.drivebase.freeze();
@@ -259,5 +271,10 @@ public class teleOpFixed extends LinearOpMode {
         GP1RB = false;
         telemetry.addData("status","initialized");
         telemetry.update();
+    }
+
+    private void setDuckPower(double power) {
+        bot.hardware.getCRServo("duckLeft").setPower(power);
+        bot.hardware.getCRServo("duckRight").setPower(-power);
     }
 }

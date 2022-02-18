@@ -12,19 +12,19 @@ public class Vision {
 
     private LinearOpMode opMode;
     private RobotHardware hardware;
-    public Detector detector;
+    public RedDetector detector;
 
     private OpenCvCamera camera;
     public Vision(LinearOpMode opMode, RobotHardware hardware) {
         this.opMode = opMode;
         this.hardware = hardware;
-        this.detector = new Detector();
+        this.detector = new RedDetector();
     }
 
     public void initialize() {
         int cameraMonitorViewId = hardware.getCameraID("");
         camera = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
-        Detector detector = new Detector();
+        RedDetector detector = new RedDetector();
         camera.setPipeline(detector);
 
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()

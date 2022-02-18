@@ -73,8 +73,8 @@ public class Intake {
     }
 
     public void flipUp() {
-        leftPos = 0.85;
-        rightPos = 0.15;
+        leftPos = 0.8;
+        rightPos = 0.2;
     }
 
     public void flipDown() {

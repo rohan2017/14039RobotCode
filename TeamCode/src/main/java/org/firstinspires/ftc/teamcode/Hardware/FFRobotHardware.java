@@ -174,6 +174,17 @@ public class FFRobotHardware extends RobotHardware {
         }
     }
 
+    public CRServo getCRServo(String ID) {
+        switch (ID) {
+            case "duckLeft":
+                return duckLeft;
+            case "duckRight":
+                return duckRight;
+            default:
+                return null;
+        }
+    }
+
     public ColorRangeSensor getRangeSensor(String ID) {
         switch (ID) {
             case "intake_range":

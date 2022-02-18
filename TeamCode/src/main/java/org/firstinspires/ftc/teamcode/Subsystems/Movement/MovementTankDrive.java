@@ -19,7 +19,7 @@ public class MovementTankDrive extends Movement {
     private ArrayList<PointEx> targetPath;
     private double pathRadius;
 
-    private double distanceThreshold = 4;
+    private double distanceThreshold = 8;
     private double headingThreshold = 6;
 
     private PID orient;
@@ -68,7 +68,6 @@ public class MovementTankDrive extends Movement {
                 switch (mode) {
                     case FollowPath:
                         if(followTrajectory()) {
-
                             drivebase.setPowers(leftSpeed*targetPoint.speed, rightSpeed*targetPoint.speed);
                         }else {
                             mode = DriveMode.Stopped;
@@ -181,12 +180,12 @@ public class MovementTankDrive extends Movement {
             orient.update(pointHeading, currentPosition.heading%360);
             longitudinal.update(0, distance);
             double longCorrect = dir*longitudinal.correction;
-            if(Math.abs(orient.error) > 15 && distance > 30) {
+            if(Math.abs(orient.error) > 15 && distance > 40) {
                 longCorrect *= 4*Math.pow(Math.abs(1/orient.error), 0.5);
             }
             double slow = 1;
             if(distance < 20) {
-                slow = 0.4;
+                slow = 0.3;
             }
             rightSpeed = (-longCorrect + orient.correction)*slow;
             leftSpeed = (-longCorrect - orient.correction)*slow;

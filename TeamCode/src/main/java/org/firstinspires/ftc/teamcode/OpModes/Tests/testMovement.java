@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.Robots.testBot;
 import org.firstinspires.ftc.teamcode.Subsystems.State;
 
 @Autonomous(name="Movement Test", group="Testing")
+@Disabled
 public class testMovement extends LinearOpMode {
 
     // Declare OpMode Members

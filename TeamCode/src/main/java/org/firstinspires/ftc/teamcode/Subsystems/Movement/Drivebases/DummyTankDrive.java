@@ -49,6 +49,15 @@ public class DummyTankDrive extends Drivebase {
         }
     }
 
+    public void update(double leftCorrect, double rightCorrect) {
+        if(opMode.opModeIsActive()){
+            hardware.getMotor("driveFrontRight").setPower(rightPower + rightCorrect);
+            hardware.getMotor("driveFrontLeft").setPower(leftPower + leftCorrect);
+            hardware.getMotor("driveBackLeft").setPower(leftPower + leftCorrect);
+            hardware.getMotor("driveBackRight").setPower(rightPower + rightCorrect);
+        }
+    }
+
     @Override
     public void freeze(){
 

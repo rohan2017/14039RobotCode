@@ -52,21 +52,20 @@ public class FFRobot extends Robot {
 
     public void update() {
         time.update();
+        intake.update();
+        outtake.update();
         odometer.update();
         movement.update();
         drivebase.update();
-        intake.update();
-        outtake.update();
+
     }
 
     public void teleUpdate() {
         time.update();
-        odometer.update();
-        drivebase.update();
         intake.update();
         outtake.update();
+        odometer.update();
+        drivebase.update();
     }
-
-    // Bot-wide functions or non-subsystem
 
 }
