@@ -212,7 +212,7 @@ public class AutoFastBlue extends LinearOpMode {
                     // Flip to hold pos and bucket past walls, spin out turret
                     bot.outtake.setTargets(allianceTurret, 2, 20, 1);
                     // Flip up intake to clear line
-                    bot.intake.setFlipPosition(0.55);
+                    bot.intake.setFlipPosition(0.6);
 
                     if (bot.time.state == State.CONVERGED && bot.movement.state == State.CONVERGED) {
                         bot.time.delaySeconds(1.8); // delay is duration of the next state
@@ -223,7 +223,7 @@ public class AutoFastBlue extends LinearOpMode {
                     // Out to drop-off position
                     bot.outtake.setTargets(allianceTurret, allianceTilt, allianceSlide, 1);
                     // Flip up intake to clear line
-                    bot.intake.setFlipPosition(0.55);
+                    bot.intake.setFlipPosition(0.62);
 
                     if (bot.time.state == State.CONVERGED || bot.outtake.state == State.CONVERGED) {
                         bot.time.delaySeconds(0.15); // delay is duration of the next state
@@ -234,7 +234,7 @@ public class AutoFastBlue extends LinearOpMode {
                     // Drop block
                     bot.outtake.setBoxState(2);
                     // Flip up intake to clear line
-                    bot.intake.setFlipPosition(0.55);
+                    bot.intake.setFlipPosition(0.6);
 
                     if (bot.time.state == State.CONVERGED ) {
                         bot.time.delaySeconds(0.8); // delay is duration of the next state
