@@ -188,6 +188,7 @@ public class AutoBlue extends LinearOpMode {
                 case PRIMEHOLD:
                     // Retract slide slightly now with block
                     bot.outtake.setTargets(0, 0, 1, 0);
+                    bot.intake.setFlipPosition(0.5);
 
                     if (bot.time.state == State.CONVERGED) {
                         bot.time.delaySeconds(0.4); // delay is duration of the next state
@@ -197,6 +198,7 @@ public class AutoBlue extends LinearOpMode {
                 case SETTLEHOLD:
                     // Let block settle and flip to intermediate hold
                     bot.outtake.setTargets(0, 0, 4, 3);
+                    bot.intake.setFlipPosition(0.5);
 
                     if (bot.time.state == State.CONVERGED) {
                         bot.time.delaySeconds(0.3); // delay is duration of the next state
@@ -291,9 +293,10 @@ public class AutoBlue extends LinearOpMode {
             }
 
             // Emergency parking logic
-            if(getRuntime() > 29 && !park) {
+            if(getRuntime() > 28.5 && !park) {
                 park = true;
                 autoM = autoMode.HOMESLIDE;
+                bot.time.delaySeconds(0.3);
                 bot.movement.setTarget(new PointEx(0, 70, 0, 1.5));
             }
 

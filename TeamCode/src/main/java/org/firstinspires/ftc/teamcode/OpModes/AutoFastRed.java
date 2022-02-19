@@ -90,7 +90,7 @@ public class AutoFastRed extends LinearOpMode {
             bot.outtake.setTargets(allianceTurret+8, allianceTilt, allianceSlide, 1);
         }
         // Wait for extend
-        while(bot.time.state != State.CONVERGED && opModeIsActive()) {
+        while(bot.time.state != State.CONVERGED && bot.outtake.state != State.CONVERGED && opModeIsActive()) {
             bot.update();
         }
         // Drop off
@@ -105,6 +105,9 @@ public class AutoFastRed extends LinearOpMode {
         bot.intake.setPower(0.7);
         bot.intake.setFlipPosition(0.6);
         bot.intake.setExtendPosition(0.06);
+        // Start driving forward
+        bot.movement.setTarget(new PointEx(0, 72, 0, 1)); // You can decrease
+        bot.intake.flipHold();
         bot.time.delaySeconds(0.4);
         while(bot.time.state != State.CONVERGED && opModeIsActive()) {
             bot.update();
@@ -129,9 +132,9 @@ public class AutoFastRed extends LinearOpMode {
         // CYCLING
         boolean park = false;
         double pointHeading = 0;
+        double pointY = 78;
         autoM = autoMode.READY;
         bot.time.delaySeconds(5); // For first cycle to occur
-        bot.movement.setTarget(new PointEx(0, 74, 0, 2));
         while(opModeIsActive()) {
 
             // Intake logic
@@ -180,7 +183,7 @@ public class AutoFastRed extends LinearOpMode {
                     bot.intake.setPower(-1);
 
                     if (bot.time.state == State.CONVERGED) {
-                        bot.time.delaySeconds(0.3); // delay is duration of the next state
+                        bot.time.delaySeconds(0.1); // delay is duration of the next state
                         bot.intake.setPower(0);
                         autoM = autoMode.PRIMEHOLD;
                     }
@@ -190,13 +193,13 @@ public class AutoFastRed extends LinearOpMode {
                     bot.outtake.setTargets(0, 0, 1, 0);
 
                     if (bot.time.state == State.CONVERGED) {
-                        bot.time.delaySeconds(0.4); // delay is duration of the next state
+                        bot.time.delaySeconds(0.3); // delay is duration of the next state
                         autoM = autoMode.SETTLEHOLD;
                     }
                     break;
                 case SETTLEHOLD:
-                    // Let block settle and flip to intermediate hold
-                    bot.outtake.setTargets(0, 0, 4, 3);
+                    // Let block settle and flip to intermediate hold, spin out turret
+                    bot.outtake.setTargets(allianceTurret, 0, 4, 3);
                     // Flip up intake to clear line
                     bot.intake.setFlipPosition(0.55);
 
@@ -206,12 +209,12 @@ public class AutoFastRed extends LinearOpMode {
                     }
                     break;
                 case HOLDING:
-                    // Flip to hold pos and bucket past walls
+                    // Flip to hold pos and bucket past walls, spin out turret
                     bot.outtake.setTargets(allianceTurret, 2, 20, 1);
                     // Flip up intake to clear line
                     bot.intake.setFlipPosition(0.55);
 
-                    if (bot.time.state == State.CONVERGED || bot.odometer.y < 5) {
+                    if (bot.time.state == State.CONVERGED && bot.movement.state == State.CONVERGED) {
                         bot.time.delaySeconds(1.8); // delay is duration of the next state
                         autoM = autoMode.EXTEND;
                     }
@@ -222,7 +225,7 @@ public class AutoFastRed extends LinearOpMode {
                     // Flip up intake to clear line
                     bot.intake.setFlipPosition(0.55);
 
-                    if (bot.time.state == State.CONVERGED || bot.movement.state == State.CONVERGED) {
+                    if (bot.time.state == State.CONVERGED || bot.outtake.state == State.CONVERGED) {
                         bot.time.delaySeconds(0.15); // delay is duration of the next state
                         autoM = autoMode.DEPOSIT;
                     }
@@ -236,6 +239,7 @@ public class AutoFastRed extends LinearOpMode {
                     if (bot.time.state == State.CONVERGED ) {
                         bot.time.delaySeconds(0.8); // delay is duration of the next state
                         pointHeading += 7;
+                        pointY += 5;
                         autoM = autoMode.HOMESLIDE;
                     }
                     break;
@@ -287,19 +291,22 @@ public class AutoFastRed extends LinearOpMode {
             bot.movement.update();
             if(!park) {
                 if(autoM == autoMode.DEPOSIT) {
-                    bot.movement.setTarget(new PointEx(0, 79, pointHeading, 2));
+                    bot.movement.setTarget(new PointEx(0, pointY, pointHeading, 1.6));
                 }else if(autoM == autoMode.PRIMETRANSFER) {
-                    bot.movement.setTarget(new PointEx(0, -10, 0, 2));
+                    bot.movement.setTarget(new PointEx(0, -10, 0, 1.6));
                 }else if(autoM == autoMode.EXTEND) {
                     bot.drivebase.freeze();
+                }else if(autoM == autoMode.READY && bot.odometer.y > 70) {
+                    bot.drivebase.setPowers(0.1, 0.11);
                 }
             }
 
             // Emergency parking logic
-            if(getRuntime() > 29 && !park) {
+            if(getRuntime() > 28.5 && !park) {
                 park = true;
                 autoM = autoMode.HOMESLIDE;
-                bot.movement.setTarget(new PointEx(0, 70, 0, 2));
+                bot.time.delaySeconds(0.3);
+                bot.movement.setTarget(new PointEx(0, 70, 0, 1.6));
             }
 
             bot.teleUpdate(); // since we want custom movement.update()
@@ -313,7 +320,7 @@ public class AutoFastRed extends LinearOpMode {
 
     private void initialize() {
         bot.initialize(hardwareMap);
-        bot.outtake.setTurretOffsetAngle(77.2);
+        bot.outtake.setTurretOffsetAngle(-72);
         bot.update();
         telemetry.addData("status","initialized");
         telemetry.update();
