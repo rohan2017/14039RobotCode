@@ -290,6 +290,9 @@ public class AutoBlue extends LinearOpMode {
                     bot.movement.setTarget(new PointEx(0, -10, 0));
                 }else if(autoM == autoMode.EXTEND) {
                     bot.drivebase.freeze();
+                    // Added coast forward
+                }else if(autoM == autoMode.READY && !bot.intake.hasBlock && bot.odometer.y > 70) {
+                    bot.drivebase.setPowers(0.21, 0.2);
                 }
             }
 
