@@ -79,9 +79,10 @@ public class AutoRED extends LinearOpMode {
         } else if (en == RedDetector.Location.RIGHT){
             pos = 1;
         }
+
         if(pos == 0) {
             bot.time.delaySeconds(1.5);
-            bot.outtake.setTargets(-60, 6, 83, 1);
+            bot.outtake.setTargets(-60, 6, 85, 1);
         }else if(pos == 1) {
             bot.time.delaySeconds(1.5);
             bot.outtake.setTargets(-63, 20, 90, 1); // update for different positions
@@ -103,7 +104,7 @@ public class AutoRED extends LinearOpMode {
         bot.outtake.setTargets(bot.outtake.getTurretAngle(), bot.outtake.tiltPosition, 30, 1);
         // and Deploy intake
         bot.intake.setPower(0.7);
-        bot.intake.setFlipPosition(0.6);
+        bot.intake.setFlipPosition(0.7);
         bot.intake.setExtendPosition(0.06);
         bot.time.delaySeconds(0.4);
         while(bot.time.state != State.CONVERGED && opModeIsActive()) {
@@ -188,7 +189,7 @@ public class AutoRED extends LinearOpMode {
                 case PRIMEHOLD:
                     // Retract slide slightly now with block
                     bot.outtake.setTargets(0, 0, 1, 0);
-                    bot.intake.setFlipPosition(0.5);
+                    bot.intake.setFlipPosition(0.7);
 
                     if (bot.time.state == State.CONVERGED) {
                         bot.time.delaySeconds(0.4); // delay is duration of the next state
@@ -198,7 +199,7 @@ public class AutoRED extends LinearOpMode {
                 case SETTLEHOLD:
                     // Let block settle and flip to intermediate hold
                     bot.outtake.setTargets(0, 0, 4, 3);
-                    bot.intake.setFlipPosition(0.5);
+                    bot.intake.setFlipPosition(0.7);
 
                     if (bot.time.state == State.CONVERGED) {
                         bot.time.delaySeconds(0.3); // delay is duration of the next state
@@ -208,7 +209,7 @@ public class AutoRED extends LinearOpMode {
                 case HOLDING:
                     // Flip to hold pos and bucket past walls
                     bot.outtake.setTargets(allianceTurret, 2, 20, 1);
-                    bot.intake.setFlipPosition(0.5);
+                    bot.intake.setFlipPosition(0.7);
 
                     if (bot.time.state == State.CONVERGED && bot.movement.state == State.CONVERGED) {
                         bot.time.delaySeconds(1.8); // delay is duration of the next state
@@ -218,7 +219,7 @@ public class AutoRED extends LinearOpMode {
                 case EXTEND:
                     // Out to drop-off position
                     bot.outtake.setTargets(allianceTurret, allianceTilt, allianceSlide, 1);
-                    bot.intake.setFlipPosition(0.5);
+                    bot.intake.setFlipPosition(0.7);
 
                     if (bot.time.state == State.CONVERGED) {
                         bot.time.delaySeconds(0.15); // delay is duration of the next state
@@ -228,7 +229,7 @@ public class AutoRED extends LinearOpMode {
                 case DEPOSIT:
                     // Drop block
                     bot.outtake.setBoxState(2);
-                    bot.intake.setFlipPosition(0.5);
+                    bot.intake.setFlipPosition(0.7);
 
                     if (bot.time.state == State.CONVERGED ) {
                         bot.time.delaySeconds(0.8); // delay is duration of the next state

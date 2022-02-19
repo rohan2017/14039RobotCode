@@ -119,6 +119,10 @@ public class teleOpBLUE extends LinearOpMode {
                 teleM = TMode.HOMECENTER;
             }
 
+            if (gamepad1.x){
+                bot.outtake.resetTurret();
+            }
+
             // AUTOMATIC CONTROLS ///////////////////////////////////
             if(bot.intake.hasBlock && teleM == TMode.READY && bot.outtake.readyReceive) {
                 teleM = TMode.PRIMETRANSFER;

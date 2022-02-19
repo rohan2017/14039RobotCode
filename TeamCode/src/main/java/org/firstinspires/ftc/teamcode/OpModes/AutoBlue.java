@@ -119,6 +119,7 @@ public class AutoBlue extends LinearOpMode {
         while(!bot.outtake.homeSlides() && opModeIsActive()) {
             bot.update();
         }
+
         // Home everything to begin cycles
         bot.outtake.setTargets(0, 0, 0, 0);
         bot.time.delaySeconds(0.1);
@@ -139,7 +140,7 @@ public class AutoBlue extends LinearOpMode {
                 if(bot.odometer.y > 60 && !bot.intake.hasBlock) {
                     bot.intake.flipDown();
                     bot.intake.setPower(1);
-                    if(bot.odometer.y > 70 && !bot.intake.hasBlock){
+                    if(bot.odometer.y > 60 && !bot.intake.hasBlock){
                         bot.intake.setExtendPosition(0.2 + 0.1*Math.sin(getRuntime()*2));
                     }
                 }else {

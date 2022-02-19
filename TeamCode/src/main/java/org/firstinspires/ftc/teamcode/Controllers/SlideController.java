@@ -30,7 +30,7 @@ public class SlideController extends Controller {
             correction = -maxSlidePwr;
         }else {
             correction = backbone.correction;
-            if(Math.abs(target - current) < 30) {
+            if(Math.abs(target - current) < 60) {
                 correction *= 0.2;
             }
         }

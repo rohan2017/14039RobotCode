@@ -252,6 +252,13 @@ public class Outtake {
         setSlideLength(length);
     }
 
+    public void resetTurret(){
+        hardware.getMotor("turret").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hardware.getMotor("turret").setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hardware.getMotor("turret").setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hardware.getMotor("turret").setDirection(DcMotor.Direction.REVERSE);
+    }
+
     public boolean homeSlides() {
         homingSlides = true;
         setSlidePower(-0.6);

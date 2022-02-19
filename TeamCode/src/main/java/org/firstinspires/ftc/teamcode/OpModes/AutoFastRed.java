@@ -296,8 +296,6 @@ public class AutoFastRed extends LinearOpMode {
                     bot.movement.setTarget(new PointEx(0, -10, 0, 1.6));
                 }else if(autoM == autoMode.EXTEND) {
                     bot.drivebase.freeze();
-                }else if(autoM == autoMode.READY && bot.odometer.y > 70) {
-                    bot.drivebase.setPowers(0.1, 0.11);
                 }
             }
 
