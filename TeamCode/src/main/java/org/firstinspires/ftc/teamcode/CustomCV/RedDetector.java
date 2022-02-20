@@ -27,9 +27,9 @@ public class RedDetector extends OpenCvPipeline {
     private double[] leftValue, rightValue, midValue;
     private double leftDist, rightDist, midDist;
 
-    private static final Rect LEFT_ROI = new Rect(new Point(90, 60), new Point(150, 100)); // 0 35 , 70 100
-    private static final Rect MID_ROI = new Rect(new Point(260, 105), new Point(319, 170)); // 160 35 , 230 100
-    private static final Rect RIGHT_ROI = new Rect(new Point(180, 60), new Point(250, 125)); // 80 35 , 150 100
+    private static final Rect LEFT_ROI = new Rect(new Point(150, 40), new Point(200, 90)); // 90, 60, 150, 100
+    private static final Rect MID_ROI = new Rect(new Point(240, 90), new Point(280, 140)); // 180, 60, 250, 125
+    private static final Rect RIGHT_ROI = new Rect(new Point(310, 105), new Point(319, 170)); // 260, 105, 319, 170
 
     private static final double[] targetColor = {125, 153, 145}; // in HSV
 

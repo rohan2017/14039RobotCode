@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Movement.MovementDummyTankDrive
 import org.firstinspires.ftc.teamcode.Subsystems.Movement.MovementTankDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Outtake;
 import org.firstinspires.ftc.teamcode.Hardware.RobotHardware;
+import org.firstinspires.ftc.teamcode.Subsystems.State;
 import org.firstinspires.ftc.teamcode.Subsystems.Timer;
 
 
@@ -23,9 +24,11 @@ public class FFRobot extends Robot {
     public Intake intake;
     public Outtake outtake;
     public Timer time;
+    private LinearOpMode opMode;
 
     public FFRobot(LinearOpMode opMode) {
         super(opMode);
+        this.opMode = opMode;
         this.hardware = new FFRobotHardware();
         this.drivebase = new DummyTankDrive(opMode, hardware);
         this.odometer = new Odometer6WD(opMode, hardware);
@@ -66,6 +69,21 @@ public class FFRobot extends Robot {
         outtake.update();
         odometer.update();
         drivebase.update();
+    }
+
+    public void homeSlides() {
+        time.delaySeconds(0.8);
+        while(!outtake.homeSlides() && opMode.opModeIsActive()) {
+            update();
+            if(time.state == State.CONVERGED) {
+                time.delaySeconds(0.4);
+                while(time.state != State.CONVERGED && opMode.opModeIsActive()) {
+                    outtake.setSlidePower(1);
+                    update();
+                }
+                time.delaySeconds(0.8);
+            }
+        }
     }
 
 }

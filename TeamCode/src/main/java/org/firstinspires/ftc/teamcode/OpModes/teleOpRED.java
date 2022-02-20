@@ -38,7 +38,7 @@ public class teleOpRED extends LinearOpMode {
     private TMode teleM;
 
     private final int allianceTurret = -68;
-    private final int allianceSlide = 140;
+    private final int allianceSlide = 130;
     private final int allianceTilt = 33;
 
     private final int sharedTurret = 84;
@@ -48,6 +48,7 @@ public class teleOpRED extends LinearOpMode {
     // for release behavior of right bumper drop-off
     private boolean lastGP1RB;
     private boolean GP1RB;
+    private boolean doDaDucks = false;
 
     @Override
     public void runOpMode() {
@@ -57,9 +58,7 @@ public class teleOpRED extends LinearOpMode {
         telemetry.update();
 
         teleM = TMode.HOME;
-        while(!bot.outtake.homeSlides() && opModeIsActive()) {
-            bot.update();
-        }
+        bot.homeSlides();
 
         while(opModeIsActive()) {
 
@@ -84,24 +83,28 @@ public class teleOpRED extends LinearOpMode {
                 bot.time.delaySeconds(0.3);
             }else {
                 bot.intake.setPower(0.1);
-                bot.intake.flipHold();
+                if(doDaDucks) {
+                    bot.intake.setFlipPosition(0.7);
+                }else {
+                    bot.intake.flipHold();
+                }
             }
 
             // OUTTAKE
             // Manual Turret
-            bot.outtake.setTurretPower(-Math.pow(gamepad2.right_stick_x, 3)*0.5);
+            bot.outtake.setTurretPower(-Math.pow(gamepad2.right_stick_x, 3)*0.3);
             if(gamepad1.dpad_right) {
                 bot.outtake.turretOffset ++;
             }else if(gamepad1.dpad_left) {
                 bot.outtake.turretOffset --;
             }
             // Manual Slides
-            bot.outtake.incrementSlideLength(-gamepad2.left_stick_y);
+            bot.outtake.incrementSlideLength(-gamepad2.left_stick_y*3);
             // Manual Tilt
             if(gamepad2.dpad_up) {
-                bot.outtake.setPitchAngle(bot.outtake.targetTiltPosition + 3);
+                bot.outtake.setPitchAngle(bot.outtake.targetTiltPosition + 1.5);
             }else if(gamepad2.dpad_down) {
-                bot.outtake.setPitchAngle(bot.outtake.targetTiltPosition - 3);
+                bot.outtake.setPitchAngle(bot.outtake.targetTiltPosition - 1.5);
             }
             // Preset Drop-off
             if(gamepad2.a) {
@@ -112,11 +115,19 @@ public class teleOpRED extends LinearOpMode {
             }
             // Dumping
             if(gamepad1.right_bumper) {
-                bot.outtake.setBoxState(2);
+                if(doDaDucks) {
+                    bot.outtake.setBoxState(4);
+                }else {
+                    bot.outtake.setBoxState(2);
+                }
             }
             // Y-reset
             if(gamepad2.y) {
                 teleM = TMode.HOMECENTER;
+            }
+            // Home slides
+            if(gamepad1.left_stick_button && gamepad1.right_stick_button) {
+                bot.homeSlides();
             }
             if (gamepad1.x){
                 bot.outtake.resetTurret();
@@ -134,6 +145,7 @@ public class teleOpRED extends LinearOpMode {
             switch(teleM) {
                 case SHAREDDEPOT:
                     bot.outtake.setTargets(84, 5, 20, 1);
+                    bot.intake.setFlipPosition(0.7);
                     if(bot.time.state == State.CONVERGED ) {
                         bot.time.delaySeconds(.7); // delay is duration of the next state
                         teleM = TMode.SHAREDDEPOTTWO;
@@ -141,6 +153,7 @@ public class teleOpRED extends LinearOpMode {
                     break;
                 case SHAREDDEPOTTWO:
                     bot.outtake.setTargets(sharedTurret, sharedTilt, sharedSlide, 1);
+                    bot.intake.setFlipPosition(0.7);
                     if(bot.time.state == State.CONVERGED ) {
                         bot.time.delaySeconds(.2); // delay is duration of the next state
                         teleM = TMode.DEPOSIT;
@@ -161,7 +174,7 @@ public class teleOpRED extends LinearOpMode {
                     bot.intake.setExtendPosition(0.03);
                     bot.intake.flipUp();
                     if(bot.time.state == State.CONVERGED) {
-                        bot.time.delaySeconds(1); // delay is duration of the next state
+                        bot.time.delaySeconds(1.2); // delay is duration of the next state
                         teleM = TMode.TRANSFER;
                     }
                     break;
@@ -178,6 +191,7 @@ public class teleOpRED extends LinearOpMode {
                     break;
                 case PRIMEHOLD:
                     bot.outtake.setTargets(0, 0, 1, 0);
+                    bot.intake.setFlipPosition(0.7);
                     if(bot.time.state == State.CONVERGED) {
                         bot.time.delaySeconds(0.3); // delay is duration of the next state
                         teleM = TMode.SETTLEHOLD;
@@ -185,6 +199,7 @@ public class teleOpRED extends LinearOpMode {
                     break;
                 case SETTLEHOLD:
                     bot.outtake.setTargets(0, 0, 4, 3);
+                    bot.intake.setFlipPosition(0.7);
                     if(bot.time.state == State.CONVERGED) {
                         bot.time.delaySeconds(0.4); // delay is duration of the next state
                         teleM = TMode.HOLDING;
@@ -192,13 +207,15 @@ public class teleOpRED extends LinearOpMode {
                     break;
                 case HOLDING:
                     bot.outtake.setTargets(0, 2, 20, 1);
+                    bot.intake.setFlipPosition(0.7);
                     if(bot.time.state == State.CONVERGED || bot.outtake.state == State.CONVERGED) {
                         teleM = TMode.DEPOSIT;
                     }
                     break;
                 case DEPOSIT:
                     GP1RB = gamepad1.right_bumper;
-                    if(!GP1RB && lastGP1RB && bot.outtake.getSlideLength() > 10) {
+                    bot.intake.setFlipPosition(0.7);
+                    if(!GP1RB && lastGP1RB && bot.outtake.getSlideLength() > 10 && !doDaDucks) {
                         bot.time.delaySeconds(0.7); // delay is duration of the next state
                         teleM = TMode.HOMESLIDE;
                     }
@@ -231,9 +248,6 @@ public class teleOpRED extends LinearOpMode {
                         teleM = TMode.READY;
                     }
                     break;
-                case READY:
-                    bot.outtake.setBoxState(0);
-                    break;
                 case EJECT:
                     bot.intake.flipDown();
                     bot.intake.setPower(-1);
@@ -247,9 +261,15 @@ public class teleOpRED extends LinearOpMode {
             }
 
             if(gamepad2.b) {
-                setDuckPower(1);
+                setDuckPower(-1);
+                bot.intake.setFlipPosition(0.7);
             }else {
                 setDuckPower(0);
+            }
+            if(gamepad2.back) {
+                doDaDucks = true;
+            }else if(gamepad2.start) {
+                doDaDucks = false;
             }
 
             bot.teleUpdate();

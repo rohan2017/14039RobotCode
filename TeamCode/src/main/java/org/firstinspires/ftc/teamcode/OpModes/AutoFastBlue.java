@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.CustomCV.BlueDetector;
@@ -13,6 +14,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
 @Autonomous(name="Fast (untested) Blue Auto", group="OpMode")
+@Disabled
 public class AutoFastBlue extends LinearOpMode {
 
     // Declare OpMode Members

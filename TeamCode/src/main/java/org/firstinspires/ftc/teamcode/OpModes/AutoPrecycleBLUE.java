@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.CustomCV.BlueDetector;
@@ -14,6 +15,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
 @Autonomous(name="Park Blue Auto", group="OpMode")
+@Disabled
 public class AutoPrecycleBLUE extends LinearOpMode {
 
     // Declare OpMode Members
@@ -22,7 +24,7 @@ public class AutoPrecycleBLUE extends LinearOpMode {
     OpenCvCamera phoneCam;
 
     private final int allianceTurret = 68;
-    private final int allianceSlide = 145;
+    private final int allianceSlide = 134;
     private final int allianceTilt = 30;
 
     @Override
@@ -58,10 +60,11 @@ public class AutoPrecycleBLUE extends LinearOpMode {
         if (en == BlueDetector.Location.LEFT){
             pos = 0;
         } else if (en == BlueDetector.Location.MID){
-            pos = 2;
-        } else if (en == BlueDetector.Location.RIGHT){
             pos = 1;
+        } else if (en == BlueDetector.Location.RIGHT){
+            pos = 2;
         }
+
         if(pos == 0) {
             bot.time.delaySeconds(1.5);
             bot.outtake.setTargets(60, 6, 83, 1);
@@ -70,7 +73,7 @@ public class AutoPrecycleBLUE extends LinearOpMode {
             bot.outtake.setTargets(63, 20, 90, 1); // update for different positions
         }else {
             bot.time.delaySeconds(1.5);
-            bot.outtake.setTargets(allianceTurret-8, allianceTilt, allianceSlide, 1);
+            bot.outtake.setTargets(allianceTurret-5, allianceTilt, allianceSlide-30, 1);
         }
         // Wait for extend
         while(bot.time.state != State.CONVERGED && opModeIsActive()) {
@@ -88,7 +91,7 @@ public class AutoPrecycleBLUE extends LinearOpMode {
         bot.intake.setPower(0.7);
         bot.intake.setFlipPosition(0.6);
         bot.intake.setExtendPosition(0.06);
-        bot.time.delaySeconds(0.4);
+        bot.time.delaySeconds(0.8);
         while(bot.time.state != State.CONVERGED && opModeIsActive()) {
             bot.update();
         }

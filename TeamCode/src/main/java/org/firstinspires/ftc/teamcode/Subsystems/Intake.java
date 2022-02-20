@@ -95,10 +95,11 @@ public class Intake {
     }
 
     public void setExtendPosition(double pos) {
-        if(pos < 0) pos = 0;
-        if(pos > 0.28) pos = 0.28;
-        rightExtendPos = 1-pos;
-        leftExtendPos = 0+pos;
+        double posShifted = pos-0.02;
+        if(posShifted < 0) posShifted = 0;
+        if(posShifted > 0.28) posShifted = 0.28;
+        rightExtendPos = 1-posShifted;
+        leftExtendPos = 0+posShifted;
     }
 
 }

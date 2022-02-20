@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.CustomCV.RedDetector;
@@ -13,6 +14,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
 @Autonomous(name="Park Red Auto", group="OpMode")
+@Disabled
 public class AutoPrecycleRED extends LinearOpMode {
 
     // Declare OpMode Members
@@ -21,7 +23,7 @@ public class AutoPrecycleRED extends LinearOpMode {
     OpenCvCamera phoneCam;
 
     private final int allianceTurret = -68;
-    private final int allianceSlide = 145;
+    private final int allianceSlide = 134;
     private final int allianceTilt = 30;
 
     @Override
@@ -61,15 +63,16 @@ public class AutoPrecycleRED extends LinearOpMode {
         } else if (en == RedDetector.Location.RIGHT){
             pos = 1;
         }
+
         if(pos == 0) {
             bot.time.delaySeconds(1.5);
-            bot.outtake.setTargets(-60, 6, 83, 1);
+            bot.outtake.setTargets(-60, 6, 85, 1);
         }else if(pos == 1) {
             bot.time.delaySeconds(1.5);
             bot.outtake.setTargets(-63, 20, 90, 1); // update for different positions
         }else {
             bot.time.delaySeconds(1.5);
-            bot.outtake.setTargets(allianceTurret+8, allianceTilt, allianceSlide, 1);
+            bot.outtake.setTargets(allianceTurret+5, allianceTilt, allianceSlide-30, 1);
         }
         // Wait for extend
         while(bot.time.state != State.CONVERGED && opModeIsActive()) {
@@ -87,7 +90,7 @@ public class AutoPrecycleRED extends LinearOpMode {
         bot.intake.setPower(0.7);
         bot.intake.setFlipPosition(0.6);
         bot.intake.setExtendPosition(0.06);
-        bot.time.delaySeconds(0.4);
+        bot.time.delaySeconds(0.8);
         while(bot.time.state != State.CONVERGED && opModeIsActive()) {
             bot.update();
         }

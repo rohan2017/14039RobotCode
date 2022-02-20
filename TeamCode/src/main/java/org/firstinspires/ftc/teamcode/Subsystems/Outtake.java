@@ -31,7 +31,7 @@ public class Outtake {
     private final double spoolCircum = 26.33; // cm
     private final double ticksPerRevSpool = 145.1;
     private final double ticksPerCm = ticksPerRevSpool/spoolCircum;
-    private final int slideLimit = 160; // cm
+    private final int slideLimit = 167; // cm
     public SlideController slideCtrl = new SlideController();
 
     // Turret variables
@@ -64,6 +64,7 @@ public class Outtake {
     private final double primePos = 0.13;
     private final double holdPos = 0.23;
     private final double dropPos = 0.95;
+    private final double capPos = 0.75;
 
     public State state;
     public boolean readyReceive = false;
@@ -116,7 +117,7 @@ public class Outtake {
                     state = State.TRANSIENT;
                 }
 
-                readyReceive = (getSlideLength() < 2 && Math.abs(getTurretAngle()) < 8 && tiltPosition < 5 && servoState == 0);
+                readyReceive = (slideLimitSwitch && Math.abs(getTurretAngle()) < 9 && tiltPosition < 4 && servoState == 0);
 
                 // Actions
                 // Tilt and Turret
@@ -161,6 +162,8 @@ public class Outtake {
                     hardware.getServo("basketFlipper").setPosition(dropPos);
                 }else if(servoState == 3) {
                     hardware.getServo("basketFlipper").setPosition(primePos);
+                }else if(servoState == 4) {
+                    hardware.getServo("basketFlipper").setPosition(capPos);
                 }
                 servoError = 0;
 
@@ -218,7 +221,7 @@ public class Outtake {
         // 1 - Hold
         // 2 - Drop
         // 3 - Between Receive and Hold
-        if(thing == 0 || thing == 1 || thing == 2 || thing == 3) {
+        if(thing == 0 || thing == 1 || thing == 2 || thing == 3 || thing == 4) {
             if(thing == servoState) {
                 servoError = 0;
             }else {

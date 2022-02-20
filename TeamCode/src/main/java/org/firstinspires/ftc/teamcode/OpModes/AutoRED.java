@@ -39,7 +39,7 @@ public class AutoRED extends LinearOpMode {
     OpenCvCamera phoneCam;
 
     private final int allianceTurret = -68;
-    private final int allianceSlide = 145;
+    private final int allianceSlide = 134;
     private final int allianceTilt = 30;
 
     @Override
@@ -75,9 +75,9 @@ public class AutoRED extends LinearOpMode {
         if (en == RedDetector.Location.LEFT){
             pos = 0;
         } else if (en == RedDetector.Location.MID){
-            pos = 2;
-        } else if (en == RedDetector.Location.RIGHT){
             pos = 1;
+        } else if (en == RedDetector.Location.RIGHT){
+            pos = 2;
         }
 
         if(pos == 0) {
@@ -88,10 +88,10 @@ public class AutoRED extends LinearOpMode {
             bot.outtake.setTargets(-63, 20, 90, 1); // update for different positions
         }else {
             bot.time.delaySeconds(1.5);
-            bot.outtake.setTargets(allianceTurret+8, allianceTilt, allianceSlide, 1);
+            bot.outtake.setTargets(allianceTurret+5, allianceTilt, allianceSlide-30, 1);
         }
         // Wait for extend
-        while(bot.time.state != State.CONVERGED && opModeIsActive()) {
+        while(bot.time.state != State.CONVERGED || bot.outtake.state == State.CONVERGED && opModeIsActive()) {
             bot.update();
         }
         // Drop off
@@ -103,27 +103,42 @@ public class AutoRED extends LinearOpMode {
         // Retract slides
         bot.outtake.setTargets(bot.outtake.getTurretAngle(), bot.outtake.tiltPosition, 30, 1);
         // and Deploy intake
-        bot.intake.setPower(0.7);
+        bot.intake.setPower(1);
         bot.intake.setFlipPosition(0.7);
-        bot.intake.setExtendPosition(0.06);
-        bot.time.delaySeconds(0.4);
-        while(bot.time.state != State.CONVERGED && opModeIsActive()) {
+        bot.intake.setExtendPosition(0.09);
+        bot.time.delaySeconds(0.6);
+        while(bot.time.state != State.CONVERGED || bot.outtake.state == State.CONVERGED && opModeIsActive()) {
             bot.update();
         }
         // Home tilt and turret
         bot.outtake.setTargets(0, 0, 20, 1);
-        bot.time.delaySeconds(0.3);
+        bot.movement.setTarget(new PointEx(0, 100, 0, 0.7));
+        bot.intake.flipDown();
+        bot.intake.setPower(0);
+        bot.time.delaySeconds(0.6);
         while(bot.time.state != State.CONVERGED && opModeIsActive()) {
+            if(bot.odometer.y > 80 && !bot.intake.hasBlock) {
+                bot.intake.flipDown();
+                bot.intake.setPower(1);
+            }else {
+                bot.intake.flipDown();
+            }
             bot.update();
         }
+        bot.time.delaySeconds(0.4);
         // Home slides (no delay needed)
-        while(!bot.outtake.homeSlides() && opModeIsActive()) {
-            bot.update();
-        }
+        bot.homeSlides();
+
         // Home everything to begin cycles
         bot.outtake.setTargets(0, 0, 0, 0);
         bot.time.delaySeconds(0.1);
         while(bot.time.state != State.CONVERGED && opModeIsActive()) {
+            if(bot.odometer.y > 80 && !bot.intake.hasBlock) {
+                bot.intake.flipDown();
+                bot.intake.setPower(1);
+            }else {
+                bot.intake.flipDown();
+            }
             bot.update();
         }
 
@@ -131,20 +146,23 @@ public class AutoRED extends LinearOpMode {
         boolean park = false;
         double pointHeading = 0;
         autoM = autoMode.READY;
-        bot.time.delaySeconds(5); // For first cycle to occur
-        bot.movement.setTarget(new PointEx(0, 74, 0));
+        bot.movement.setTarget(new PointEx(0, 100, 0, 1));
+        bot.time.delaySeconds(4); // For first cycle to occur
         while(opModeIsActive()) {
+
+            telemetry.addData("Y", bot.odometer.y);
+            telemetry.addData("State", autoM.toString());
+            telemetry.addData("time", bot.time.getTime());
+            telemetry.update();
 
             // Intake logic
             if(!park) {
-                if(bot.odometer.y > 60 && !bot.intake.hasBlock) {
+                if(bot.odometer.y > 80 && !bot.intake.hasBlock) {
                     bot.intake.flipDown();
                     bot.intake.setPower(1);
-                    if(bot.odometer.y > 70 && !bot.intake.hasBlock){
-                        bot.intake.setExtendPosition(0.2 + 0.1*Math.sin(getRuntime()*2));
-                    }
                 }else {
-                    bot.intake.flipHold();
+                    bot.intake.flipDown();
+                    bot.intake.setPower(0);
                 }
             }
 
@@ -156,7 +174,7 @@ public class AutoRED extends LinearOpMode {
                     bot.intake.flipUp();
 
                     if (bot.time.state == State.CONVERGED) {
-                        bot.time.delaySeconds(0.3); // delay is duration of the next state
+                        bot.time.delaySeconds(0.25); // delay is duration of the next state
                         autoM = autoMode.ALIGNTRANSFER;
                     }
                     break;
@@ -167,8 +185,8 @@ public class AutoRED extends LinearOpMode {
                     bot.intake.setExtendPosition(0.03);
                     bot.intake.flipUp();
 
-                    if (bot.time.state == State.CONVERGED) {
-                        bot.time.delaySeconds(0.5); // delay is duration of the next state
+                    if (bot.time.state == State.CONVERGED && bot.outtake.readyReceive) {
+                        bot.time.delaySeconds(0.8); // delay is duration of the next state
                         autoM = autoMode.TRANSFER;
                     }
                     break;
@@ -198,7 +216,7 @@ public class AutoRED extends LinearOpMode {
                     break;
                 case SETTLEHOLD:
                     // Let block settle and flip to intermediate hold
-                    bot.outtake.setTargets(0, 0, 4, 3);
+                    bot.outtake.setTargets(allianceTurret, 0, 4, 3);
                     bot.intake.setFlipPosition(0.7);
 
                     if (bot.time.state == State.CONVERGED) {
@@ -212,7 +230,7 @@ public class AutoRED extends LinearOpMode {
                     bot.intake.setFlipPosition(0.7);
 
                     if (bot.time.state == State.CONVERGED && bot.movement.state == State.CONVERGED) {
-                        bot.time.delaySeconds(1.8); // delay is duration of the next state
+                        bot.time.delaySeconds(1.4); // delay is duration of the next state
                         autoM = autoMode.EXTEND;
                     }
                     break;
@@ -220,8 +238,8 @@ public class AutoRED extends LinearOpMode {
                     // Out to drop-off position
                     bot.outtake.setTargets(allianceTurret, allianceTilt, allianceSlide, 1);
                     bot.intake.setFlipPosition(0.7);
-
-                    if (bot.time.state == State.CONVERGED) {
+                    bot.outtake.update();
+                    if (bot.time.state == State.CONVERGED || bot.outtake.state == State.CONVERGED) {
                         bot.time.delaySeconds(0.15); // delay is duration of the next state
                         autoM = autoMode.DEPOSIT;
                     }
@@ -275,8 +293,9 @@ public class AutoRED extends LinearOpMode {
                     }
                     break;
                 case READY:
-                    if(bot.intake.hasBlock || bot.time.state == State.CONVERGED) {
-                        bot.time.delaySeconds(0.5); // delay is duration of the next state
+                    bot.intake.flipDown();
+                    if(bot.intake.hasBlock || bot.time.state == State.CONVERGED || bot.odometer.y > 103) {
+                        bot.time.delaySeconds(0.25); // delay is duration of the next state
                         autoM = autoMode.PRIMETRANSFER;
                     }
                     break;
@@ -285,30 +304,32 @@ public class AutoRED extends LinearOpMode {
             bot.movement.update();
             if(!park) {
                 if(autoM == autoMode.DEPOSIT) {
-                    bot.movement.setTarget(new PointEx(0, 74, pointHeading));
+                    bot.movement.setTarget(new PointEx(0, 96, pointHeading, 1.3));
                 }else if(autoM == autoMode.PRIMETRANSFER) {
-                    bot.movement.setTarget(new PointEx(0, -10, 0));
+                    bot.movement.setTarget(new PointEx(0, -10, 0, 1.3));
                 }else if(autoM == autoMode.EXTEND) {
                     bot.drivebase.freeze();
                     // Added coast forward
-                }else if(autoM == autoMode.READY && !bot.intake.hasBlock && bot.odometer.y > 70) {
-                    bot.drivebase.setPowers(0.2, 0.21);
+                }else if(autoM == autoMode.READY || autoM == autoMode.HOME || autoM == autoMode.HOMECENTER && !bot.intake.hasBlock && bot.odometer.y > 70) {
+                    bot.drivebase.setPowers(0.25, 0.26);
                 }
             }
 
             // Emergency parking logic
-            if(getRuntime() > 28.5 && !park) {
+            if(getRuntime() > 28.9 && !park) {
                 park = true;
                 autoM = autoMode.HOMESLIDE;
                 bot.time.delaySeconds(0.3);
-                bot.movement.setTarget(new PointEx(0, 70, 0, 1.5));
+                bot.intake.setFlipPosition(0.7);
+                bot.intake.setExtendPosition(0.01);
+                bot.movement.setTarget(new PointEx(0, 95, 0, 2.3));
+            }
+            if(park && autoM == autoMode.PRIMETRANSFER) {
+                autoM = autoMode.READY;
             }
 
             bot.teleUpdate(); // since we want custom movement.update()
 
-            telemetry.addData("time", bot.time.getTime());
-            telemetry.addData("mode", autoM);
-            telemetry.update();
         }
         bot.drivebase.freeze();
     }
