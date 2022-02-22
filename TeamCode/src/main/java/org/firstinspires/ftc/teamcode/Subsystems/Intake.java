@@ -45,13 +45,13 @@ public class Intake {
         if(opMode.opModeIsActive()) {
             //changed Rev Color Sensor V2, named "intakeSensor" in config
             intensity = hardware.getRangeSensor("intake_range").getRawLightDetected();
-            if(intensity >= 0 && intensity < 2000) {
+            if(intensity >= 0 && intensity < 2048) {
                 filteredIntensity += 0.5*(intensity - filteredIntensity);
             }
             // For Rev Color Sensor V3: max light => intensity = 2048.
             //Typical block values: 600-800
             //Typical ball values: 800-1600
-            hasBlock = filteredIntensity > 200; //used to be 20
+            hasBlock = filteredIntensity > 150; //used to be 20
 
             hardware.getMotor("intake").setPower(power);
 
@@ -78,8 +78,8 @@ public class Intake {
     }
 
     public void flipDown() {
-        leftPos = 0.20;
-        rightPos = 0.80;
+        leftPos = 0.18;
+        rightPos = 0.82;
     }
 
     public void retract() {

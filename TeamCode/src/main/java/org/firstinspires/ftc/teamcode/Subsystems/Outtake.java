@@ -117,7 +117,7 @@ public class Outtake {
                     state = State.TRANSIENT;
                 }
 
-                readyReceive = (slideLimitSwitch && Math.abs(getTurretAngle()) < 9 && tiltPosition < 4 && servoState == 0);
+                readyReceive = (slideLimitSwitch || getSlideLength() < 1.5 && Math.abs(getTurretAngle()) < 9 && tiltPosition < 4 && servoState == 0);
 
                 // Actions
                 // Tilt and Turret

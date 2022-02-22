@@ -27,11 +27,11 @@ public class BlueDetector extends OpenCvPipeline {
     private double[] leftValue, rightValue, midValue;
     private double leftDist, rightDist, midDist;
 
-    private static final Rect LEFT_ROI = new Rect(new Point(0, 70), new Point(50, 100));
-    private static final Rect MID_ROI = new Rect(new Point(90, 60), new Point(140, 100));
-    private static final Rect RIGHT_ROI = new Rect(new Point(150, 50), new Point(180, 80));
+    private static final Rect LEFT_ROI = new Rect(new Point(0, 75), new Point(40, 120));
+    private static final Rect MID_ROI = new Rect(new Point(75, 65), new Point(135, 110));
+    private static final Rect RIGHT_ROI = new Rect(new Point(150, 55), new Point(180, 90));
 
-    private static final double[] targetColor = {125, 153, 145}; // in HSV
+    private static final double[] targetColor = {125, 153, 145}; // in HSV z
 
     @Override
     public Mat processFrame(Mat input) {

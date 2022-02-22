@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Hardware.FFRobotHardware;
+import org.firstinspires.ftc.teamcode.OpModes.AutoBlue;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Subsystems.Localization.DummyOdometer;
 import org.firstinspires.ftc.teamcode.Subsystems.Localization.Odometer6WD;
@@ -25,6 +26,24 @@ public class FFRobot extends Robot {
     public Outtake outtake;
     public Timer time;
     private LinearOpMode opMode;
+
+    public enum bMode {
+        PRIMETRANSFER,
+        ALIGNTRANSFER,
+        TRANSFER,
+        PRIMEHOLD,
+        SETTLEHOLD,
+        HOLDING,
+        EXTEND,
+        DEPOSIT,
+        HOMESLIDE,
+        HOMETURRET,
+        HOMECENTER,
+        HOME,
+        READY
+    }
+
+    public bMode botMode;
 
     public FFRobot(LinearOpMode opMode) {
         super(opMode);
@@ -83,6 +102,152 @@ public class FFRobot extends Robot {
                 }
                 time.delaySeconds(0.8);
             }
+        }
+    }
+
+    private double dropTurret;
+    private double dropTilt;
+    private double dropSlide;
+
+    public void updateDropPosition(double dropTurret, double dropTilt, double dropSlide) {
+        this.dropTurret = dropTurret;
+        this.dropTilt = dropTilt;
+        this.dropSlide = dropSlide;
+    }
+
+    public void stateMachine( ) {
+
+        switch(botMode) {
+            case PRIMETRANSFER:
+                // Extrude out intake and fLip up
+                outtake.setTargets(0, 0, 0, 0);
+                intake.setExtendPosition(0.08);
+                intake.flipUp();
+
+                if (time.state == State.CONVERGED) {
+                    time.delaySeconds(0.25); // delay is duration of the next state
+                    botMode = bMode.ALIGNTRANSFER;
+                }
+                break;
+            case ALIGNTRANSFER:
+                // Retract intake and stabilize bucket
+                outtake.setTargets(0, 0, 0, 0);
+                outtake.setSlidePower(-0.3);
+                intake.setExtendPosition(0.03);
+                intake.flipUp();
+
+                if (time.state == State.CONVERGED && outtake.readyReceive) {
+                    time.delaySeconds(0.8); // delay is duration of the next state
+                    botMode = bMode.TRANSFER;
+                }
+                break;
+            case TRANSFER:
+                // Run motor
+                outtake.setTargets(0, 0, 0, 0);
+                outtake.setSlidePower(-0.3);
+                intake.setExtendPosition(0.03);
+                intake.flipUp();
+                intake.setPower(-1);
+
+                if (time.state == State.CONVERGED) {
+                    time.delaySeconds(0.3); // delay is duration of the next state
+                    intake.setPower(0);
+                    botMode = bMode.PRIMEHOLD;
+                }
+                break;
+            case PRIMEHOLD:
+                // Retract slide slightly now with block
+                outtake.setTargets(dropTurret, 0, 1, 0);
+
+                if (time.state == State.CONVERGED) {
+                    time.delaySeconds(0.4); // delay is duration of the next state
+                    botMode = bMode.SETTLEHOLD;
+                }
+                break;
+            case SETTLEHOLD:
+                // Let block settle and flip to intermediate hold
+                outtake.setTargets(dropTurret, 0, 4, 3);
+                intake.setFlipPosition(0.7);
+
+                if (time.state == State.CONVERGED) {
+                    time.delaySeconds(0.3); // delay is duration of the next state
+                    botMode = bMode.HOLDING;
+                }
+                break;
+            case HOLDING:
+                // Flip to hold pos and bucket past walls
+                outtake.setTargets(dropTurret, 2, 20, 1);
+                intake.setFlipPosition(0.7);
+
+                if (time.state == State.CONVERGED) {
+                    time.delaySeconds(1.4); // delay is duration of the next state
+                    botMode = bMode.EXTEND;
+                }
+                break;
+            case EXTEND:
+                // Out to drop-off position
+                outtake.setTargets(dropTurret, dropTilt, dropSlide, 1);
+                intake.setFlipPosition(0.7);
+                outtake.update();
+                if (time.state == State.CONVERGED || outtake.state == State.CONVERGED) {
+                    time.delaySeconds(0.15); // delay is duration of the next state
+                    botMode = bMode.DEPOSIT;
+                }
+                break;
+            case DEPOSIT:
+                // Drop block
+                outtake.setBoxState(2);
+                intake.setFlipPosition(0.7);
+
+                if (time.state == State.CONVERGED) {
+                    time.delaySeconds(0.8); // delay is duration of the next state
+                    botMode = bMode.HOMESLIDE;
+                }
+                break;
+            case HOMESLIDE:
+                // Retract slides and nothing else
+                outtake.setTargets(outtake.getTurretAngle(), outtake.tiltPosition, 43, 1);
+                // Flip hold intake
+                intake.flipHold();
+
+                if (time.state == State.CONVERGED) {
+                    time.delaySeconds(0.7); // delay is duration of the next state
+                    botMode = bMode.HOMETURRET;
+                }
+                break;
+            case HOMETURRET:
+                // Turret and tilt
+                outtake.setTargets(0, 0, 43, 1);
+
+                if (time.state == State.CONVERGED) {
+                    time.delaySeconds(0.6); // delay is duration of the next state
+                    botMode = bMode.HOMECENTER;
+                }
+                break;
+            case HOMECENTER:
+                // Home slides
+                outtake.setTargets(0, 0, 0, 1);
+
+                if (time.state == State.CONVERGED) {
+                    time.delaySeconds(0.2); // delay is duration of the next state
+                    botMode = bMode.HOME;
+                }
+                break;
+            case HOME:
+                // Home bucket
+                outtake.setTargets(0, 0, 0, 0);
+                if (time.state == State.CONVERGED) {
+                    time.delaySeconds(5);
+                    botMode = bMode.READY;
+                }
+                break;
+
+            case READY:
+                if(intake.hasBlock || time.state == State.CONVERGED) {
+                    time.delaySeconds(0.25); // delay is duration of the next state
+                    botMode = bMode.PRIMETRANSFER;
+                }
+                break;
         }
     }
 
