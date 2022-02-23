@@ -51,7 +51,7 @@ public class Intake {
             // For Rev Color Sensor V3: max light => intensity = 2048.
             //Typical block values: 600-800
             //Typical ball values: 800-1600
-            hasBlock = filteredIntensity > 150; //used to be 20
+            hasBlock = filteredIntensity > 200;
 
             hardware.getMotor("intake").setPower(power);
 

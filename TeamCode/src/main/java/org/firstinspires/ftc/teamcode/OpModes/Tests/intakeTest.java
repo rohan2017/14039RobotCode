@@ -37,8 +37,6 @@ public class intakeTest extends LinearOpMode {
         bot.initialize(hardwareMap);
         bot.update();
 
-        intakemode = InMode.SEARCHING;
-
         telemetry.addData("status","initialized");
         telemetry.update();
     }
