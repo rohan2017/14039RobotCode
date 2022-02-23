@@ -86,7 +86,7 @@ public class AutoBlue extends LinearOpMode {
             }
 
             bot.stateMachine(true, bot.movement.state == State.CONVERGED, true, bot.intake.hasBlock || bot.time.state == State.CONVERGED);
-            bot.updateDropPosition(-68, 30, 120, 1.4);
+            bot.updateDropPosition(-68, 30, 120, 2, 1.4);
 
             bot.movement.update();
             if(!park) {
@@ -95,7 +95,7 @@ public class AutoBlue extends LinearOpMode {
                 }else if(bot.botMode == FFRobot.bMode.PRIMETRANSFER) {
                     bot.movement.setTarget(new PointEx(0, -10, 0, 1.3));
                 }else if((bot.botMode == FFRobot.bMode.READY || bot.botMode == FFRobot.bMode.HOME || bot.botMode == FFRobot.bMode.HOMECENTER) && !bot.intake.hasBlock && bot.odometer.y > 73) {
-                    bot.drivebase.setPowers(0.25, 0.26);
+                    bot.drivebase.setPowers(0.26, 0.23);
                 }
             }
 

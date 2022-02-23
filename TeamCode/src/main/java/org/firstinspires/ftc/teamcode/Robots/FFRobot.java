@@ -30,7 +30,6 @@ public class FFRobot extends Robot {
 
     public enum bMode {
         PRIMETRANSFER,
-        ALIGNTRANSFER,
         TRANSFER,
         PRIMEHOLD,
         SETTLEHOLD,
@@ -111,37 +110,26 @@ public class FFRobot extends Robot {
     private double dropTilt;
     private double dropSlide;
     private double extendDelay;
+    private int dropPos;
 
-    public void updateDropPosition(double dropTurret, double dropTilt, double dropSlide, double extendDelay) {
+    public void updateDropPosition(double dropTurret, double dropTilt, double dropSlide, int dropPos, double extendDelay) {
         this.dropTurret = dropTurret;
         this.dropTilt = dropTilt;
         this.dropSlide = dropSlide;
+        this.dropPos = dropPos;
         this.extendDelay = extendDelay;
     }
 
-    public void stateMachine(boolean extendCondition, boolean dropCondition, boolean homeCondition, boolean intakeCondition) {
-
+    public void stateMachine(boolean extendCondition, boolean dropCondition, boolean homeCondition, boolean transferCondition) {
+        intake.setExtendPosition(0.2); // Deployed Position
         switch(botMode) {
             case PRIMETRANSFER:
                 // Extrude out intake and fLip up
                 outtake.setTargets(0, 0, 0, 0);
-                outtake.setSlidePower(0);
-                intake.setExtendPosition(0.08);
+                outtake.setSlidePower(-0.3);
                 intake.flipUp();
 
                 if (time.state == State.CONVERGED) {
-                    time.delaySeconds(0.25); // delay is duration of the next state
-                    botMode = bMode.ALIGNTRANSFER;
-                }
-                break;
-            case ALIGNTRANSFER:
-                // Retract intake and stabilize bucket
-                outtake.setTargets(0, 0, 0, 0);
-                outtake.setSlidePower(-0.3);
-                intake.setExtendPosition(0.03);
-                intake.flipUp();
-
-                if (time.state == State.CONVERGED && outtake.readyReceive) {
                     time.delaySeconds(0.8); // delay is duration of the next state
                     botMode = bMode.TRANSFER;
                 }
@@ -149,8 +137,7 @@ public class FFRobot extends Robot {
             case TRANSFER:
                 // Run motor
                 outtake.setTargets(0, 0, 0, 0);
-                outtake.setSlidePower(-0.3);
-                intake.setExtendPosition(0.03);
+                outtake.setSlidePower(-0.4);
                 intake.flipUp();
                 intake.setPower(-1);
 
@@ -163,7 +150,7 @@ public class FFRobot extends Robot {
             case PRIMEHOLD:
                 // Retract slide slightly now with block
                 outtake.setTargets(0, 0, 1, 0);
-
+                intake.setFlipPosition(0.7);
                 if (time.state == State.CONVERGED) {
                     time.delaySeconds(0.4); // delay is duration of the next state
                     botMode = bMode.SETTLEHOLD;
@@ -194,14 +181,14 @@ public class FFRobot extends Robot {
                 outtake.setTargets(dropTurret, dropTilt, dropSlide, 1);
                 intake.setFlipPosition(0.7);
                 outtake.update();
-                if ((time.state == State.CONVERGED || outtake.state == State.CONVERGED) && dropCondition) {
+                if ((time.state == State.CONVERGED || outtake.state == State.CONVERGED) && outtake.getSlideLength() > 10 && dropCondition) {
                     time.delaySeconds(0.15); // delay is duration of the next state
                     botMode = bMode.DEPOSIT;
                 }
                 break;
             case DEPOSIT:
                 // Drop block
-                outtake.setBoxState(2);
+                outtake.setBoxState(dropPos);
                 intake.setFlipPosition(0.7);
 
                 if (time.state == State.CONVERGED && homeCondition) {
@@ -249,7 +236,7 @@ public class FFRobot extends Robot {
 
             case READY:
                 outtake.setSlidePower(0);
-                if (intakeCondition) {
+                if (outtake.readyReceive && transferCondition) {
                     time.delaySeconds(0.25); // delay is duration of the next state
                     botMode = bMode.PRIMETRANSFER;
                 }
