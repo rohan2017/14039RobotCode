@@ -16,7 +16,6 @@ public class SCurve extends Controller {
     public SCurve(double distance) {
         this.distance = distance;
 
-
         t = Math.log(maxVel/minVel - 1) / maxVel;
         d = t/decelerationSlope + distance;
         c = t/accelerationSlope;

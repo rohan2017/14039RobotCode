@@ -86,11 +86,11 @@ public class BasicRobotHardware extends RobotHardware {
     public DcMotorEx getMotor(String ID) {
         switch (ID) {
             case "driveFrontRight":
+            case "verticalEncoder":
                 return rightFront;
             case "driveFrontLeft":
                 return leftFront;
             case "driveBackLeft":
-            case "verticalEncoder":
                 return leftBack;
             case "driveBackRight":
             case "horizontalEncoder":

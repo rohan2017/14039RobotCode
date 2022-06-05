@@ -22,7 +22,7 @@ public class MovementHolonomic extends Movement {
     private DrivebaseHolonomic drivebase;
 
     private PID orient;
-    private SCurve speedFinder;
+    private PID speedFinder;
 
     public MovementHolonomic (LinearOpMode opmode, DrivebaseHolonomic drivebase, Odometer odometer) {
         super(opmode, odometer);
@@ -34,9 +34,9 @@ public class MovementHolonomic extends Movement {
         targetY = 0;
         targetHeading = 0;
 
-        orient = new PID(0.2,0,0.2,0,0.5,0);
+        orient = new PID(0.02,0,0.02,0,0.3,0);
         //speedFinder = new TrapezoidalCurve(10, 0.8);
-        speedFinder = new SCurve(10);
+        speedFinder = new PID(0.05,0,0.02,0,0.5,0);
         state = State.IDLE;
     }
 
@@ -99,7 +99,7 @@ public class MovementHolonomic extends Movement {
         this.targetX = X;
         this.targetY = Y;
         this.targetHeading = Heading;
-        updateControllers();
+        //updateControllers();
         state = State.TRANSIENT;
     }
 
@@ -110,7 +110,7 @@ public class MovementHolonomic extends Movement {
     public void setTargetPath(ArrayList<PointEx> path) {}
 
     private void updateControllers() {
-        speedFinder = new SCurve(distance(targetX, targetY, odometer.x, odometer.y));
+        //speedFinder = new SCurve(distance(targetX, targetY, odometer.x, odometer.y));
     }
 
     public double getDistance() {

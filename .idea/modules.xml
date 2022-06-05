@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/14039RobotCode.iml" filepath="$PROJECT_DIR$/.idea/14039RobotCode.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/14039RobotCode.iml" filepath="$PROJECT_DIR$/.idea/modules/14039RobotCode.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/FtcRobotController/14039RobotCode.FtcRobotController.iml" filepath="$PROJECT_DIR$/.idea/modules/FtcRobotController/14039RobotCode.FtcRobotController.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/TeamCode/14039RobotCode.TeamCode.iml" filepath="$PROJECT_DIR$/.idea/modules/TeamCode/14039RobotCode.TeamCode.iml" />
     </modules>
   </component>
 </project>

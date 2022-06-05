@@ -33,9 +33,9 @@ public class MecanumDrive extends DrivebaseHolonomic {
         rf = 0;
         lb = 0;
         rb = 0;
-        velocityConvergeX = new PID(0.003, 0, 0.002, 0, 0.2, 0);
-        velocityConvergeY = new PID(0.003, 0, 0.002, 0, 0.2, 0);
-        velocityConvergeH = new PID(0.003, 0, 0.002, 0, 0.2, 0);
+        velocityConvergeX = new PID(0.00001, 0, 0.00001, 0, 0.1, 0);
+        velocityConvergeY = new PID(0.00001, 0, 0.00001, 0, 0.1, 0);
+        velocityConvergeH = new PID(0.00001, 0, 0.00001, 0, 0.1, 0);
     }
 
     @Override
@@ -43,30 +43,31 @@ public class MecanumDrive extends DrivebaseHolonomic {
         if(opMode.opModeIsActive()) {
 
             // Ensure that no motor power is outside -1 to 1 range, preserving ratio
+            double max = 0.4;
             double scaleDown = 1;
-            if(Math.abs(lf) > 1) {
-                scaleDown = 1/Math.abs(lf);
+            if(Math.abs(lf) > max) {
+                scaleDown = max/Math.abs(lf);
                 lf *= scaleDown;
                 rf *= scaleDown;
                 lb *= scaleDown;
                 rb *= scaleDown;
             }
-            if(Math.abs(rf) > 1) {
-                scaleDown = 1/Math.abs(rf);
+            if(Math.abs(rf) > max) {
+                scaleDown = max/Math.abs(rf);
                 lf *= scaleDown;
                 rf *= scaleDown;
                 lb *= scaleDown;
                 rb *= scaleDown;
             }
-            if(Math.abs(lb) > 1) {
-                scaleDown = 1/Math.abs(lb);
+            if(Math.abs(lb) > max) {
+                scaleDown = max/Math.abs(lb);
                 lf *= scaleDown;
                 rf *= scaleDown;
                 lb *= scaleDown;
                 rb *= scaleDown;
             }
-            if(Math.abs(rb) > 1) {
-                scaleDown = 1/Math.abs(rb);
+            if(Math.abs(rb) > max) {
+                scaleDown = max/Math.abs(rb);
                 lf *= scaleDown;
                 rf *= scaleDown;
                 lb *= scaleDown;
