@@ -59,7 +59,7 @@ public class teleOpRED extends LinearOpMode {
                 bot.intake.flipDown();
             }else if(gamepad2.left_bumper && bot.botMode == FFRobot.bMode.READY) {
                 bot.botMode = FFRobot.bMode.PRIMETRANSFER;
-                bot.time.delaySeconds(0.3);
+                bot.time.delaySeconds(0.7);
             }else {
                 bot.intake.setPower(0.1);
                 if(doDaDucks) {

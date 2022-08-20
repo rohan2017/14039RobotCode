@@ -237,7 +237,7 @@ public class FFRobot extends Robot {
             case READY:
                 outtake.setSlidePower(0);
                 if (outtake.readyReceive && transferCondition) {
-                    time.delaySeconds(0.25); // delay is duration of the next state
+                    time.delaySeconds(0.7); // delay is duration of the next state
                     botMode = bMode.PRIMETRANSFER;
                 }
                 break;
